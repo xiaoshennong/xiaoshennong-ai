@@ -637,7 +637,10 @@
     </div>
     
     <script>
-        const API_BASE = 'http://43.247.135.91';
+        // 支持多个API后端，优先使用本地API（5002端口），回退到远程服务器
+        const LOCAL_API = 'http://localhost:5002';
+        const REMOTE_API = 'http://43.247.135.91';
+        let API_BASE = LOCAL_API;  // 默认使用本地API
         let isProcessing = false;
         let currentMode = 'dialogue';  // 'dialogue' or 'direct'
         let dialogueSession = null;    // 对话会话ID
@@ -650,20 +653,36 @@
             loadAgentStats();
         });
         
-        // 检查API状态
+        // 检查API状态（先尝试本地，再尝试远程）
         async function checkAPIStatus() {
             const statusEl = document.getElementById('apiStatus');
+            // 先尝试本地API
             try {
-                const resp = await fetch(`${API_BASE}/api/health`, { method: 'GET' });
+                const resp = await fetch(`${LOCAL_API}/api/health`, { method: 'GET', signal: AbortSignal.timeout(3000) });
                 if (resp.ok) {
                     const data = await resp.json();
-                    statusEl.textContent = `API已连接 | 知识库: ${data.rag_stats.total_documents}条`;
+                    API_BASE = LOCAL_API;
+                    statusEl.textContent = `本地API已连接 | 知识库: ${data.knowledge_count}条`;
                     statusEl.className = 'api-status connected';
-                } else {
-                    throw new Error('API error');
+                    document.getElementById('apiBase').value = LOCAL_API;
+                    return;
                 }
             } catch (e) {
-                statusEl.textContent = 'API未连接 - 请启动后端服务';
+                console.log('本地API未连接，尝试远程服务器...');
+            }
+            // 回退到远程API
+            try {
+                const resp = await fetch(`${REMOTE_API}/api/health`, { method: 'GET', signal: AbortSignal.timeout(5000) });
+                if (resp.ok) {
+                    const data = await resp.json();
+                    API_BASE = REMOTE_API;
+                    statusEl.textContent = `远程API已连接 | 知识库: ${data.rag_stats.total_documents}条`;
+                    statusEl.className = 'api-status connected';
+                    document.getElementById('apiBase').value = REMOTE_API;
+                    return;
+                }
+            } catch (e) {
+                statusEl.textContent = 'API未连接 - 请启动本地服务 (python backend/local_api.py)';
                 statusEl.className = 'api-status disconnected';
             }
         }

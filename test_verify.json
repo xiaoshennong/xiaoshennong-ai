@@ -1,0 +1,19 @@
+{
+  "case_id": "REAL-001",
+  "patient_age": 45,
+  "patient_gender": "男",
+  "symptoms": [
+    "头痛",
+    "眩晕",
+    "失眠",
+    "心烦"
+  ],
+  "syndrome": "肝阳上亢",
+  "diagnosis": "患者头痛眩晕，失眠心烦，舌红苔黄，脉弦数。辨证为肝阳上亢。",
+  "treatment": "平肝潜阳，清热安神",
+  "formula": "天麻钩藤饮",
+  "doctor": "经典医案",
+  "source": "《中医内科学》",
+  "effectiveness": "痊愈",
+  "authenticity": "verified"
+}
