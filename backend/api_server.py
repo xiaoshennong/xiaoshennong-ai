@@ -97,15 +97,32 @@ print(f"[API] LLM客户端: {llm_provider}")
 # 初始化数据管道
 data_pipeline = DataPipeline()
 
-# 导入新的知识库
+# 导入新的知识库（延迟加载模式）
+_knowledge_base_instance = None
+
+def get_kb():
+    """获取知识库单例（延迟加载）"""
+    global _knowledge_base_instance
+    if _knowledge_base_instance is None:
+        print("[API] 延迟加载知识库...")
+        try:
+            from knowledge_base_v3 import get_knowledge_base
+            _knowledge_base_instance = get_knowledge_base()
+            print("[API] 知识库延迟加载完成")
+        except Exception as e:
+            print(f"[API] 知识库延迟加载失败: {e}")
+            import traceback
+            traceback.print_exc()
+            _knowledge_base_instance = None
+    return _knowledge_base_instance
+
+# 尝试预加载知识库
 print("[API] 初始化大规模知识库...")
-try:
-    from knowledge_base_v3 import get_knowledge_base
-    knowledge_base = get_knowledge_base()
-    print("[API] 大规模知识库加载完成")
-except Exception as e:
-    print(f"[API] 知识库加载失败: {e}")
-    knowledge_base = None
+knowledge_base = get_kb()
+if knowledge_base:
+    print("[API] 大规模知识库预加载完成")
+else:
+    print("[API] 知识库预加载失败，将在首次请求时重试")
 
 # 初始化对话式问诊引擎
 print("[API] 初始化对话式问诊引擎...")
@@ -163,12 +180,14 @@ def format_diagnosis_result(result) -> dict:
 
 def enhance_diagnosis_with_kb(symptoms_text: str, result: dict) -> dict:
     """使用知识库增强诊断结果（补充方剂/药物/医案）"""
-    if not knowledge_base:
+    kb = get_kb()
+    if not kb:
+        print("[API] 知识库不可用，跳过增强")
         return result
     
     try:
         # 识别症状
-        matched_symptoms = knowledge_base.find_symptoms_by_text(symptoms_text)
+        matched_symptoms = kb.find_symptoms_by_text(symptoms_text)
         if not matched_symptoms:
             return result
         
@@ -176,7 +195,7 @@ def enhance_diagnosis_with_kb(symptoms_text: str, result: dict) -> dict:
         
         # 补充方剂（如果RAG结果为空）
         if not result.get('matched_formulas'):
-            formulas = knowledge_base.find_formulas_by_symptoms(symptom_ids)
+            formulas = kb.find_formulas_by_symptoms(symptom_ids)
             result['matched_formulas'] = [
                 {
                     'id': f['id'],
@@ -192,7 +211,7 @@ def enhance_diagnosis_with_kb(symptoms_text: str, result: dict) -> dict:
         
         # 补充药物（如果RAG结果为空）
         if not result.get('matched_drugs'):
-            drugs = knowledge_base.find_drugs_by_symptoms(symptom_ids)
+            drugs = kb.find_drugs_by_symptoms(symptom_ids)
             result['matched_drugs'] = [
                 {
                     'id': d['id'],
@@ -206,7 +225,7 @@ def enhance_diagnosis_with_kb(symptoms_text: str, result: dict) -> dict:
             ]
         
         # 补充相似医案
-        similar_cases = knowledge_base.search_cases(symptom_ids, limit=3)
+        similar_cases = kb.search_cases(symptom_ids, limit=3)
         if similar_cases:
             result['similar_cases'] = [
                 {
@@ -220,7 +239,7 @@ def enhance_diagnosis_with_kb(symptoms_text: str, result: dict) -> dict:
             ]
         
         # 补充知识库统计
-        result['knowledge_base_stats'] = knowledge_base.get_stats()
+        result['knowledge_base_stats'] = kb.get_stats()
         
     except Exception as e:
         print(f"[API] 知识库增强失败: {e}")
@@ -277,7 +296,21 @@ def diagnose():
     }
     """
     try:
-        data = request.get_json()
+        # 健壮地解析请求数据
+        data = None
+        try:
+            data = request.get_json(force=True, silent=True)
+        except Exception:
+            pass
+        
+        # 如果get_json失败，尝试手动解析
+        if not data:
+            try:
+                raw_data = request.get_data(as_text=True)
+                if raw_data:
+                    data = json.loads(raw_data)
+            except Exception:
+                pass
         
         if not data or "symptoms" not in data:
             return jsonify({
@@ -318,8 +351,11 @@ def diagnose():
         
         # 使用知识库增强结果（补充方剂/药物/医案）
         if knowledge_base:
+            print(f"[API] 知识库增强输入: symptoms='{symptoms[:30]}...', type={type(symptoms)}")
             formatted = enhance_diagnosis_with_kb(symptoms, formatted)
             print(f"[API] 知识库增强后: formulas={len(formatted.get('matched_formulas', []))}, drugs={len(formatted.get('matched_drugs', []))}")
+        else:
+            print(f"[API] 知识库未加载，跳过增强")
         
         return jsonify({
             "success": True,

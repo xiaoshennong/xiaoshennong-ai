@@ -60,11 +60,11 @@ class MassiveKnowledgeBase:
         # 3. 加载方剂（使用合并后的数据）
         self._load_formulas('merged_formulas.json')
         
-        # 4. 加载医案（只加载前1000条避免内存过大）
-        self._load_cases(max_count=1000)
+        # 4. 加载医案（加载30000条）
+        self._load_cases(max_count=30000)
         
-        # 5. 加载古籍（只加载前1000条）
-        self._load_texts(max_count=1000)
+        # 5. 加载古籍（加载30000条）
+        self._load_texts(max_count=30000)
         
         # 6. 构建索引
         self._build_indexes()
@@ -130,9 +130,11 @@ class MassiveKnowledgeBase:
         self.formulas = data
         print(f"[方剂] 加载 {len(data)} 个")
     
-    def _load_cases(self, max_count=1000):
-        """加载医案数据"""
+    def _load_cases(self, max_count=20000):
+        """加载医案数据（包括v2/v3批次）"""
         count = 0
+        
+        # 加载原始批次
         for i in range(1, 6):
             filepath = os.path.join(RAW_DIR, f'medical_cases_batch_{i}.json')
             if not os.path.exists(filepath):
@@ -150,11 +152,70 @@ class MassiveKnowledgeBase:
             if count >= max_count:
                 break
         
+        # 加载v2批次
+        if count < max_count:
+            for i in range(1, 51):
+                filepath = os.path.join(RAW_DIR, f'medical_cases_v2_batch_{i}.json')
+                if not os.path.exists(filepath):
+                    continue
+                
+                with open(filepath, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                
+                for case in data:
+                    if count >= max_count:
+                        break
+                    self.cases.append(case)
+                    count += 1
+                
+                if count >= max_count:
+                    break
+        
+        # 加载v3批次（最新生成的40,000个医案）
+        if count < max_count:
+            for i in range(1, 41):
+                filepath = os.path.join(RAW_DIR, f'medical_cases_v3_batch_{i}.json')
+                if not os.path.exists(filepath):
+                    continue
+                
+                with open(filepath, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                
+                for case in data:
+                    if count >= max_count:
+                        break
+                    self.cases.append(case)
+                    count += 1
+                
+                if count >= max_count:
+                    break
+        
+        # 加载最终批次（最新生成的30,000个医案）
+        if count < max_count:
+            for i in range(1, 31):
+                filepath = os.path.join(RAW_DIR, f'medical_cases_final_batch_{i}.json')
+                if not os.path.exists(filepath):
+                    continue
+                
+                with open(filepath, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                
+                for case in data:
+                    if count >= max_count:
+                        break
+                    self.cases.append(case)
+                    count += 1
+                
+                if count >= max_count:
+                    break
+        
         print(f"[医案] 加载 {len(self.cases)} 个")
     
-    def _load_texts(self, max_count=1000):
-        """加载古籍数据"""
+    def _load_texts(self, max_count=20000):
+        """加载古籍数据（包括v2/v3批次）"""
         count = 0
+        
+        # 加载原始批次
         for i in range(1, 6):
             filepath = os.path.join(RAW_DIR, f'classical_texts_batch_{i}.json')
             if not os.path.exists(filepath):
@@ -171,6 +232,63 @@ class MassiveKnowledgeBase:
             
             if count >= max_count:
                 break
+        
+        # 加载v2批次
+        if count < max_count:
+            for i in range(1, 51):
+                filepath = os.path.join(RAW_DIR, f'classical_texts_v2_batch_{i}.json')
+                if not os.path.exists(filepath):
+                    continue
+                
+                with open(filepath, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                
+                for text in data:
+                    if count >= max_count:
+                        break
+                    self.texts.append(text)
+                    count += 1
+                
+                if count >= max_count:
+                    break
+        
+        # 加载v3批次（最新生成的40,000条古籍）
+        if count < max_count:
+            for i in range(1, 41):
+                filepath = os.path.join(RAW_DIR, f'classical_texts_v3_batch_{i}.json')
+                if not os.path.exists(filepath):
+                    continue
+                
+                with open(filepath, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                
+                for text in data:
+                    if count >= max_count:
+                        break
+                    self.texts.append(text)
+                    count += 1
+                
+                if count >= max_count:
+                    break
+        
+        # 加载最终批次（最新生成的30,000条古籍）
+        if count < max_count:
+            for i in range(1, 31):
+                filepath = os.path.join(RAW_DIR, f'classical_texts_final_batch_{i}.json')
+                if not os.path.exists(filepath):
+                    continue
+                
+                with open(filepath, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                
+                for text in data:
+                    if count >= max_count:
+                        break
+                    self.texts.append(text)
+                    count += 1
+                
+                if count >= max_count:
+                    break
         
         print(f"[古籍] 加载 {len(self.texts)} 条")
     
@@ -349,13 +467,20 @@ class MassiveKnowledgeBase:
 # 全局单例
 _kb_instance = None
 
-def get_knowledge_base() -> MassiveKnowledgeBase:
-    """获取知识库单例"""
+def get_knowledge_base(force_reload=False) -> MassiveKnowledgeBase:
+    """获取知识库单例（支持强制重新加载）"""
     global _kb_instance
-    if _kb_instance is None:
+    if _kb_instance is None or force_reload:
         _kb_instance = MassiveKnowledgeBase()
         _kb_instance.load_all()
     return _kb_instance
+
+
+def reload_knowledge_base():
+    """强制重新加载知识库"""
+    global _kb_instance
+    _kb_instance = None
+    return get_knowledge_base(force_reload=True)
 
 
 if __name__ == '__main__':
