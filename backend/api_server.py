@@ -97,6 +97,16 @@ print(f"[API] LLM客户端: {llm_provider}")
 # 初始化数据管道
 data_pipeline = DataPipeline()
 
+# 导入新的知识库
+print("[API] 初始化大规模知识库...")
+try:
+    from knowledge_base_v3 import get_knowledge_base
+    knowledge_base = get_knowledge_base()
+    print("[API] 大规模知识库加载完成")
+except Exception as e:
+    print(f"[API] 知识库加载失败: {e}")
+    knowledge_base = None
+
 # 初始化对话式问诊引擎
 print("[API] 初始化对话式问诊引擎...")
 dialogue_engine = get_dialogue_engine()
@@ -149,6 +159,73 @@ def format_diagnosis_result(result) -> dict:
         "knowledge_gap_report": result.knowledge_gap_report,
         "import_suggestions": result.import_suggestions,
     }
+
+
+def enhance_diagnosis_with_kb(symptoms_text: str, result: dict) -> dict:
+    """使用知识库增强诊断结果（补充方剂/药物/医案）"""
+    if not knowledge_base:
+        return result
+    
+    try:
+        # 识别症状
+        matched_symptoms = knowledge_base.find_symptoms_by_text(symptoms_text)
+        if not matched_symptoms:
+            return result
+        
+        symptom_ids = [s['id'] for s in matched_symptoms]
+        
+        # 补充方剂（如果RAG结果为空）
+        if not result.get('matched_formulas'):
+            formulas = knowledge_base.find_formulas_by_symptoms(symptom_ids)
+            result['matched_formulas'] = [
+                {
+                    'id': f['id'],
+                    'name': f['name'],
+                    'source': f['source'],
+                    'syndrome': f['syndrome'],
+                    'match_score': round(f['match_score'], 2),
+                    'matched_symptoms': f['matched_symptoms'],
+                    'contraindications': f['contraindications']
+                }
+                for f in formulas[:5]
+            ]
+        
+        # 补充药物（如果RAG结果为空）
+        if not result.get('matched_drugs'):
+            drugs = knowledge_base.find_drugs_by_symptoms(symptom_ids)
+            result['matched_drugs'] = [
+                {
+                    'id': d['id'],
+                    'name': d['name'],
+                    'properties': d['properties'],
+                    'match_score': round(d['match_score'], 2),
+                    'matched_symptoms': d['matched_symptoms'],
+                    'contraindications': d['contraindications']
+                }
+                for d in drugs[:5]
+            ]
+        
+        # 补充相似医案
+        similar_cases = knowledge_base.search_cases(symptom_ids, limit=3)
+        if similar_cases:
+            result['similar_cases'] = [
+                {
+                    'case_id': c['case_id'],
+                    'syndrome': c['syndrome'],
+                    'formula': c['formula_name'],
+                    'effectiveness': c['effectiveness'],
+                    'doctor': c['doctor']
+                }
+                for c in similar_cases
+            ]
+        
+        # 补充知识库统计
+        result['knowledge_base_stats'] = knowledge_base.get_stats()
+        
+    except Exception as e:
+        print(f"[API] 知识库增强失败: {e}")
+    
+    return result
 
 
 def require_auth(f):
@@ -238,6 +315,11 @@ def diagnose():
         formatted = format_diagnosis_result(result)
         print(f"[API] formatted: symptom_analysis={bool(formatted.get('symptom_analysis'))}, formulas={len(formatted.get('matched_formulas', []))}, drugs={len(formatted.get('matched_drugs', []))}")
         sys.stdout.flush()
+        
+        # 使用知识库增强结果（补充方剂/药物/医案）
+        if knowledge_base:
+            formatted = enhance_diagnosis_with_kb(symptoms, formatted)
+            print(f"[API] 知识库增强后: formulas={len(formatted.get('matched_formulas', []))}, drugs={len(formatted.get('matched_drugs', []))}")
         
         return jsonify({
             "success": True,
