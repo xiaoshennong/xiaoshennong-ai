@@ -71,6 +71,15 @@ try:
         for a in acu_data.get('acupoints', []):
             ACUPOINT_MAP[a['id']] = a
             ACUPOINT_NAME_MAP[a['name']] = a
+    # 加载扩展穴位
+    try:
+        with open(os.path.join(DATA_DIR, 'acupuncture_extended.json'), 'r', encoding='utf-8') as f:
+            acu_ext = json.load(f)
+            for a in acu_ext.get('acupoints', []):
+                ACUPOINT_MAP[a['id']] = a
+                ACUPOINT_NAME_MAP[a['name']] = a
+    except:
+        pass
     print(f"[LocalAPI v4.0] 穴位: {len(ACUPOINT_MAP)} 条")
 except Exception as e:
     print(f"[LocalAPI v4.0] 穴位加载失败: {e}")
@@ -273,7 +282,12 @@ class XiaoShennongEngineV4:
             match_count = 0
             for sid in symptom_ids:
                 symptom_name = SYMPTOM_MAP.get(sid, {}).get('name', '')
-                if symptom_name and any(symptom_name in ind for ind in acu_symptoms):
+                # 检查症状名及其别名
+                symptom_names = [symptom_name]
+                for alias, std in SYMPTOM_ALIASES.items():
+                    if std == symptom_name:
+                        symptom_names.append(alias)
+                if any(any(sn in ind for sn in symptom_names) for ind in acu_symptoms):
                     match_count += 1
             if match_count > 0:
                 results.append({
@@ -291,7 +305,11 @@ class XiaoShennongEngineV4:
             match_count = 0
             for sid in symptom_ids:
                 symptom_name = SYMPTOM_MAP.get(sid, {}).get('name', '')
-                if symptom_name and any(symptom_name in ind for ind in diet_symptoms):
+                symptom_names = [symptom_name]
+                for alias, std in SYMPTOM_ALIASES.items():
+                    if std == symptom_name:
+                        symptom_names.append(alias)
+                if any(any(sn in ind for sn in symptom_names) for ind in diet_symptoms):
                     match_count += 1
             if match_count > 0:
                 results.append({
@@ -309,7 +327,11 @@ class XiaoShennongEngineV4:
             match_count = 0
             for sid in symptom_ids:
                 symptom_name = SYMPTOM_MAP.get(sid, {}).get('name', '')
-                if symptom_name and any(symptom_name in ind for ind in qg_symptoms):
+                symptom_names = [symptom_name]
+                for alias, std in SYMPTOM_ALIASES.items():
+                    if std == symptom_name:
+                        symptom_names.append(alias)
+                if any(any(sn in ind for sn in symptom_names) for ind in qg_symptoms):
                     match_count += 1
             if match_count > 0:
                 results.append({
@@ -323,21 +345,25 @@ class XiaoShennongEngineV4:
         
         # 6. 查找包含这些症状的推拿套路
         for mid, mass in self.massage_routines.items():
-            mass_symptoms = set(mass.get('indications', []))
-            match_count = 0
-            for sid in symptom_ids:
-                symptom_name = SYMPTOM_MAP.get(sid, {}).get('name', '')
-                if symptom_name and any(symptom_name in ind for ind in mass_symptoms):
-                    match_count += 1
-            if match_count > 0:
-                results.append({
-                    'type': 'massage',
-                    'id': mid,
-                    'name': mass.get('name', ''),
-                    'score': match_count / len(query_symptoms),
-                    'data': mass,
-                    'matched_symptoms': []
-                })
+                mass_symptoms = set(mass.get('indications', []))
+                match_count = 0
+                for sid in symptom_ids:
+                    symptom_name = SYMPTOM_MAP.get(sid, {}).get('name', '')
+                    symptom_names = [symptom_name]
+                    for alias, std in SYMPTOM_ALIASES.items():
+                        if std == symptom_name:
+                            symptom_names.append(alias)
+                    if any(any(sn in ind for sn in symptom_names) for ind in mass_symptoms):
+                        match_count += 1
+                if match_count > 0:
+                    results.append({
+                        'type': 'massage',
+                        'id': mid,
+                        'name': mass.get('name', ''),
+                        'score': match_count / len(query_symptoms),
+                        'data': mass,
+                        'matched_symptoms': []
+                    })
         
         # 排序
         results.sort(key=lambda x: x['score'], reverse=True)
