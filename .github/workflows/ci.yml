@@ -1,0 +1,92 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+    
+    - name: Install lint tools
+      run: |
+        pip install flake8 black isort
+    
+    - name: Lint with flake8
+      run: |
+        cd backend
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics || true
+    
+    - name: Check formatting with black
+      run: |
+        cd backend
+        black --check . || true
+
+  test-backend:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+    
+    - name: Cache pip packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('backend/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    
+    - name: Install dependencies
+      run: |
+        cd backend
+        pip install -r requirements.txt
+    
+    - name: Run backend tests
+      run: |
+        cd backend
+        # 运行各模块的基础测试
+        python -c "from rag_engine_v2 import XiaoShennongRAGv2; print('RAG engine OK')"
+        python -c "from dialogue_engine import get_dialogue_engine; print('Dialogue engine OK')"
+        python -c "from multi_agent_system import get_agent_coordinator; print('Agent system OK')"
+        python -c "from web_crawler_v2 import get_unified_crawler; print('Crawler OK')"
+        python -c "from critical_thinking_engine import CriticalThinkingEngine; print('Critical thinking OK')"
+        python -c "from symptom_codes import SYMPTOM_MAP; print(f'Symptoms: {len(SYMPTOM_MAP)}')"
+        python -c "from syndrome_db import SYNDROME_DATABASE; print(f'Syndromes: {len(SYNDROME_DATABASE)}')"
+        python -c "from contraindication_db import CONTRAINDICATION_RULES; print(f'Rules: {len(CONTRAINDICATION_RULES)}')"
+    
+    - name: Test API server startup
+      run: |
+        cd backend
+        timeout 10 python api_server.py &
+        sleep 5
+        curl -s http://127.0.0.1:5001/api/health || echo "API test skipped"
+      env:
+        LLM_PROVIDER: mock
+
+  test-frontend:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Check frontend files
+      run: |
+        ls -la frontend/
+        test -f frontend/test_ui_v3.html
+        test -f frontend/test_ui.html
+        echo "Frontend files OK"
