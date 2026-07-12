@@ -2,46 +2,38 @@ name: Deploy to Server
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    branches: [ main, master ]
+  workflow_dispatch:
 
 jobs:
-  test:
+  build-and-deploy:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Set up Python
-      uses: actions/setup-python@v5
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      
+    - name: Build Docker image
+      run: |
+        docker build -f docker/Dockerfile -t xiaoshennong-api:latest .
+        
+    - name: Deploy to server via SSH
+      uses: appleboy/ssh-action@master
       with:
-        python-version: '3.12'
-    
-    - name: Install dependencies
-      run: |
-        cd backend
-        pip install -r requirements.txt
-    
-    - name: Run tests
-      run: |
-        cd backend
-        python -m pytest tests/ -v || echo "No tests yet"
-  
-  deploy:
-    needs: test
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Deploy to production
-      run: |
-        echo "Deploying to production server..."
-        # 这里可以添加SSH部署脚本
-        # ssh user@server "cd /app/xiaoshennong && git pull && systemctl restart xiaoshennong"
-    
-    - name: Notify deployment
-      run: |
-        echo "Deployment completed at $(date)"
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USER }}
+        key: ${{ secrets.SERVER_SSH_KEY }}
+        script: |
+          cd /opt/xiaoshennong
+          git pull origin main
+          docker-compose down
+          docker-compose up -d --build
+          docker image prune -f
+          echo "Deployment completed at $(date)"
+      env:
+        SERVER_HOST: ${{ secrets.SERVER_HOST }}
+        SERVER_USER: ${{ secrets.SERVER_USER }}
+        SERVER_SSH_KEY: ${{ secrets.SERVER_SSH_KEY }}
