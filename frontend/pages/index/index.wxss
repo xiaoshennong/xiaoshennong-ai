@@ -1,0 +1,212 @@
+/* 小神农中医AI - 首页样式 */
+.container {
+  padding: 30rpx;
+  background: #f8f5f0;
+  min-height: 100vh;
+}
+
+/* 头部 */
+.header {
+  text-align: center;
+  padding: 40rpx 0;
+}
+
+.logo {
+  width: 120rpx;
+  height: 120rpx;
+  margin-bottom: 20rpx;
+}
+
+.slogan {
+  display: block;
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #2d5016;
+  margin-bottom: 10rpx;
+}
+
+.subtitle {
+  display: block;
+  font-size: 24rpx;
+  color: #8b7355;
+}
+
+/* 主入口 */
+.main-entry {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+  border-radius: 20rpx;
+  padding: 40rpx;
+  margin: 30rpx 0;
+  color: white;
+  box-shadow: 0 4rpx 20rpx rgba(45, 80, 22, 0.3);
+}
+
+.entry-icon {
+  font-size: 60rpx;
+  margin-right: 30rpx;
+}
+
+.entry-text {
+  flex: 1;
+}
+
+.entry-title {
+  display: block;
+  font-size: 36rpx;
+  font-weight: bold;
+  margin-bottom: 10rpx;
+}
+
+.entry-desc {
+  display: block;
+  font-size: 24rpx;
+  opacity: 0.9;
+  line-height: 1.4;
+}
+
+.entry-arrow {
+  font-size: 48rpx;
+  opacity: 0.8;
+}
+
+/* 快捷功能 */
+.quick-actions {
+  display: flex;
+  justify-content: space-around;
+  margin: 30rpx 0;
+}
+
+.action-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20rpx;
+}
+
+.action-icon {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48rpx;
+  margin-bottom: 15rpx;
+}
+
+.action-shop { background: #e8f5e9; }
+.action-book { background: #fff3e0; }
+.action-health { background: #e3f2fd; }
+
+.action-text {
+  font-size: 26rpx;
+  color: #5d4037;
+}
+
+/* 推荐区 */
+.section {
+  margin: 30rpx 0;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #2d5016;
+}
+
+.section-more {
+  font-size: 26rpx;
+  color: #8b7355;
+}
+
+/* 商品卡片 */
+.product-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20rpx;
+}
+
+.product-card {
+  width: calc(50% - 10rpx);
+  background: white;
+  border-radius: 16rpx;
+  overflow: hidden;
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.05);
+}
+
+.product-img {
+  width: 100%;
+  height: 200rpx;
+  background: #f0f0f0;
+}
+
+.product-info {
+  padding: 20rpx;
+}
+
+.product-name {
+  display: block;
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 8rpx;
+}
+
+.product-source {
+  display: block;
+  font-size: 22rpx;
+  color: #8b7355;
+  margin-bottom: 10rpx;
+}
+
+.product-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10rpx;
+  margin-bottom: 10rpx;
+}
+
+.product-price {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #c62828;
+}
+
+.product-original {
+  font-size: 24rpx;
+  color: #999;
+  text-decoration: line-through;
+}
+
+.product-tag {
+  display: inline-block;
+  font-size: 20rpx;
+  color: #4a7c59;
+  background: #e8f5e9;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+}
+
+/* 免责声明 */
+.disclaimer {
+  margin-top: 40rpx;
+  padding: 20rpx;
+  background: #fff8e1;
+  border-radius: 12rpx;
+  text-align: center;
+}
+
+.disclaimer text {
+  font-size: 22rpx;
+  color: #8b7355;
+  line-height: 1.5;
+}

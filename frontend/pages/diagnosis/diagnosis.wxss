@@ -1,0 +1,419 @@
+/* 小神农中医AI - 辨证页面样式 */
+.container {
+  padding: 30rpx;
+  background: #f8f5f0;
+  min-height: 100vh;
+}
+
+/* 进度条 */
+.progress-bar {
+  margin-bottom: 30rpx;
+  position: relative;
+  height: 8rpx;
+  background: #e0e0e0;
+  border-radius: 4rpx;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4a7c59, #2d5016);
+  border-radius: 4rpx;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  position: absolute;
+  right: 0;
+  top: -40rpx;
+  font-size: 24rpx;
+  color: #8b7355;
+}
+
+/* 欢迎页 */
+.welcome-screen {
+  text-align: center;
+  padding: 60rpx 40rpx;
+}
+
+.welcome-icon {
+  font-size: 100rpx;
+  margin-bottom: 30rpx;
+}
+
+.welcome-title {
+  display: block;
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #2d5016;
+  margin-bottom: 20rpx;
+}
+
+.welcome-desc {
+  display: block;
+  font-size: 28rpx;
+  color: #5d4037;
+  line-height: 1.6;
+  margin-bottom: 40rpx;
+}
+
+.feature-list {
+  text-align: left;
+  margin: 40rpx 0;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  margin: 20rpx 0;
+  font-size: 28rpx;
+  color: #5d4037;
+}
+
+.feature-check {
+  color: #4a7c59;
+  font-weight: bold;
+  margin-right: 20rpx;
+  font-size: 32rpx;
+}
+
+.start-btn {
+  margin-top: 60rpx;
+  background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+  color: white;
+  border-radius: 50rpx;
+  font-size: 32rpx;
+  padding: 30rpx 80rpx;
+  border: none;
+}
+
+/* 问题页 */
+.question-screen {
+  padding: 20rpx 0;
+}
+
+.question-card {
+  background: white;
+  border-radius: 20rpx;
+  padding: 40rpx;
+  margin-bottom: 40rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.05);
+}
+
+.question-number {
+  display: block;
+  font-size: 24rpx;
+  color: #4a7c59;
+  margin-bottom: 15rpx;
+}
+
+.question-text {
+  display: block;
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #2d5016;
+  margin-bottom: 30rpx;
+  line-height: 1.5;
+}
+
+/* 选项 */
+.options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.option-item {
+  padding: 30rpx;
+  border-radius: 16rpx;
+  border: 2rpx solid #e0e0e0;
+  background: #fafafa;
+  transition: all 0.2s;
+}
+
+.option-item.selected {
+  border-color: #4a7c59;
+  background: #e8f5e9;
+}
+
+.option-item:active {
+  transform: scale(0.98);
+}
+
+.option-text {
+  font-size: 30rpx;
+  color: #333;
+}
+
+/* 文本输入 */
+.text-input-wrap {
+  margin-top: 20rpx;
+}
+
+.text-input {
+  width: 100%;
+  height: 200rpx;
+  padding: 20rpx;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 16rpx;
+  font-size: 28rpx;
+  box-sizing: border-box;
+}
+
+/* 导航按钮 */
+.nav-buttons {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 40rpx;
+}
+
+.nav-btn {
+  flex: 1;
+  padding: 30rpx;
+  border-radius: 50rpx;
+  font-size: 30rpx;
+  border: none;
+}
+
+.nav-btn.prev {
+  background: #f5f5f5;
+  color: #666;
+}
+
+.nav-btn.next {
+  background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+  color: white;
+}
+
+.nav-btn.disabled {
+  opacity: 0.5;
+}
+
+/* 加载中 */
+.loading-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100rpx 40rpx;
+}
+
+.loading-spinner {
+  width: 80rpx;
+  height: 80rpx;
+  border: 6rpx solid #e0e0e0;
+  border-top-color: #4a7c59;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 30rpx;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: 32rpx;
+  color: #2d5016;
+  margin-bottom: 15rpx;
+}
+
+.loading-sub {
+  font-size: 24rpx;
+  color: #8b7355;
+}
+
+/* 结果页 */
+.result-screen {
+  padding: 20rpx 0;
+}
+
+.result-header {
+  text-align: center;
+  margin-bottom: 40rpx;
+}
+
+.result-title {
+  display: block;
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #2d5016;
+  margin-bottom: 20rpx;
+}
+
+.constitution-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+  color: white;
+  padding: 15rpx 40rpx;
+  border-radius: 50rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+/* 结果卡片 */
+.result-card {
+  background: white;
+  border-radius: 20rpx;
+  padding: 40rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.05);
+}
+
+.card-title {
+  display: block;
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #4a7c59;
+  margin-bottom: 20rpx;
+  padding-bottom: 15rpx;
+  border-bottom: 2rpx solid #e8f5e9;
+}
+
+.card-content {
+  font-size: 28rpx;
+  color: #5d4037;
+  line-height: 1.8;
+}
+
+/* 溯源 */
+.sources-section {
+  margin: 30rpx 0;
+}
+
+.section-title {
+  display: block;
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #2d5016;
+  margin-bottom: 20rpx;
+}
+
+.source-item {
+  background: white;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  border-left: 6rpx solid #4a7c59;
+}
+
+.source-book {
+  display: block;
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #4a7c59;
+  margin-bottom: 10rpx;
+}
+
+.source-text {
+  display: block;
+  font-size: 26rpx;
+  color: #5d4037;
+  line-height: 1.6;
+  margin-bottom: 10rpx;
+}
+
+.source-original {
+  display: block;
+  font-size: 24rpx;
+  color: #8b7355;
+  font-style: italic;
+  background: #f8f5f0;
+  padding: 15rpx;
+  border-radius: 8rpx;
+}
+
+/* 推荐 */
+.recommend-section {
+  margin: 30rpx 0;
+}
+
+.recommend-subtitle {
+  display: block;
+  font-size: 26rpx;
+  color: #8b7355;
+  margin-bottom: 20rpx;
+}
+
+.recommend-list {
+  display: flex;
+  gap: 20rpx;
+  overflow-x: auto;
+}
+
+.recommend-card {
+  min-width: 200rpx;
+  background: white;
+  border-radius: 16rpx;
+  overflow: hidden;
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.05);
+}
+
+.recommend-img {
+  width: 200rpx;
+  height: 150rpx;
+  background: #f0f0f0;
+}
+
+.recommend-info {
+  padding: 15rpx;
+}
+
+.recommend-name {
+  display: block;
+  font-size: 24rpx;
+  color: #333;
+  margin-bottom: 8rpx;
+}
+
+.recommend-price {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #c62828;
+}
+
+/* 警告 */
+.warning-box {
+  display: flex;
+  align-items: flex-start;
+  background: #fff8e1;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin: 30rpx 0;
+}
+
+.warning-icon {
+  font-size: 36rpx;
+  margin-right: 20rpx;
+}
+
+.warning-text {
+  flex: 1;
+  font-size: 26rpx;
+  color: #8b7355;
+  line-height: 1.6;
+}
+
+/* 操作按钮 */
+.action-buttons {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 40rpx;
+}
+
+.action-btn {
+  flex: 1;
+  padding: 30rpx;
+  border-radius: 50rpx;
+  font-size: 30rpx;
+  border: none;
+}
+
+.action-btn.primary {
+  background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+  color: white;
+}
+
+.action-btn.secondary {
+  background: #f5f5f5;
+  color: #666;
+}

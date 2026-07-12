@@ -1,0 +1,67 @@
+<!-- 小神农中医AI - 首页 -->
+<view class="container">
+  <!-- 头部品牌区 -->
+  <view class="header">
+    <image class="logo" src="/assets/logo.png" mode="aspectFit"/>
+    <text class="slogan">让中医更可信</text>
+    <text class="subtitle">纯古籍权威数据 · 100%可溯源 · 零幻觉</text>
+  </view>
+
+  <!-- AI辨证入口 -->
+  <view class="main-entry" bindtap="goToDiagnosis">
+    <view class="entry-icon">🌿</view>
+    <view class="entry-text">
+      <text class="entry-title">AI中医辨证</text>
+      <text class="entry-desc">基于《黄帝内经》《伤寒论》等古籍，引经据典给出调理建议</text>
+    </view>
+    <view class="entry-arrow">›</view>
+  </view>
+
+  <!-- 快捷功能 -->
+  <view class="quick-actions">
+    <view class="action-item" bindtap="goToProducts">
+      <view class="action-icon action-shop">🛒</view>
+      <text class="action-text">养生商城</text>
+    </view>
+    <view class="action-item" bindtap="goToKnowledge">
+      <view class="action-icon action-book">📚</view>
+      <text class="action-text">古籍查询</text>
+    </view>
+    <view class="action-item" bindtap="goToHealth">
+      <view class="action-icon action-health">📋</view>
+      <text class="action-text">健康档案</text>
+    </view>
+  </view>
+
+  <!-- 推荐养生品 -->
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">🔥 热门养生方</text>
+      <text class="section-more" bindtap="goToProducts">查看更多 ›</text>
+    </view>
+    
+    <view class="product-list">
+      <view class="product-card" 
+            wx:for="{{hotProducts}}" 
+            wx:key="id"
+            bindtap="goToProductDetail"
+            data-id="{{item.id}}">
+        <image class="product-img" src="{{item.image}}" mode="aspectFill"/>
+        <view class="product-info">
+          <text class="product-name">{{item.name}}</text>
+          <text class="product-source">{{item.source}}</text>
+          <view class="product-price-row">
+            <text class="product-price">¥{{item.price/100}}</text>
+            <text class="product-original">¥{{item.originalPrice/100}}</text>
+          </view>
+          <view class="product-tag">{{item.expert}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 免责声明 -->
+  <view class="disclaimer">
+    <text>本平台仅提供中医知识参考，不构成诊疗建议。如有不适，请及时就医。</text>
+  </view>
+</view>

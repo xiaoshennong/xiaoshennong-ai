@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小神农中医AI - 测试平台</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+            background: #f8f5f0;
+            color: #333;
+            line-height: 1.6;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* 头部 */
+        .header {
+            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        .header h1 { font-size: 20px; margin-bottom: 3px; }
+        .header .subtitle { font-size: 12px; opacity: 0.9; }
+        .header .api-status {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            background: rgba(255,255,255,0.2);
+        }
+        .api-status.connected { background: #52c41a; }
+        .api-status.disconnected { background: #ff4d4f; }
+        
+        /* 导航 */
+        .nav {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px;
+            background: white;
+            border-bottom: 1px solid #e8e8e8;
+            flex-shrink: 0;
+        }
+        .nav-btn {
+            padding: 6px 16px;
+            border: none;
+            border-radius: 20px;
+            background: #f0f0f0;
+            color: #666;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+        .nav-btn:hover { background: #e8f5e9; color: #4a7c59; }
+        .nav-btn.active {
+            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+            color: white;
+        }
+        
+        /* 内容区 */
+        .container {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .section {
+            display: none;
+            flex: 1;
+            overflow: hidden;
+            flex-direction: column;
+        }
+        .section.active { display: flex; }
+        
+        /* 聊天界面 */
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        .chat-message {
+            display: flex;
+            margin-bottom: 15px;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+            margin-right: 10px;
+        }
+        .bot-message .message-avatar { background: #e8f5e9; }
+        .user-message .message-avatar { background: #2d5016; color: white; }
+        
+        .message-content { flex: 1; max-width: calc(100% - 50px); }
+        
+        .message-bubble {
+            padding: 12px 15px;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .bot-message .message-bubble {
+            background: white;
+            border: 1px solid #e8e8e8;
+            border-top-left-radius: 4px;
+        }
+        .user-message .message-bubble {
+            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+            color: white;
+            border-top-right-radius: 4px;
+            margin-left: auto;
+            max-width: 80%;
+        }
+        .user-message { flex-direction: row-reverse; }
+        .user-message .message-avatar { margin-right: 0; margin-left: 10px; }
+        .user-message .message-content { display: flex; justify-content: flex-end; }
+        
+        .message-time {
+            font-size: 11px;
+            color: #999;
+            margin-top: 4px;
+            padding: 0 5px;
+        }
+        
+        /* AI思考过程 - 强制显示，不可关闭 */
+        .thinking-process {
+            background: #f0f7f0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 10px;
+            border-left: 3px solid #4a7c59;
+        }
+        .thinking-title {
+            font-weight: bold;
+            color: #2d5016;
+            font-size: 14px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .thinking-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 8px;
+            padding: 8px;
+            background: white;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+        .step-number {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #4a7c59;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        .step-content { flex: 1; }
+        .step-name { font-weight: 500; color: #333; margin-bottom: 2px; }
+        .step-desc { color: #666; font-size: 12px; }
+        .step-time { color: #999; font-size: 11px; margin-top: 2px; }
+        .step-status {
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            flex-shrink: 0;
+        }
+        .status-completed { background: #e8f5e9; color: #4a7c59; }
+        .status-running { background: #fff8e1; color: #f9a825; }
+        .status-failed { background: #ffebee; color: #c62828; }
+        
+        .thinking-summary {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #e0e0e0;
+            font-size: 12px;
+            color: #666;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        /* 输入区 */
+        .chat-input-area {
+            background: white;
+            border-top: 1px solid #e8e8e8;
+            padding: 10px 15px;
+            flex-shrink: 0;
+        }
+        .quick-symptoms {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+        .quick-symptoms::-webkit-scrollbar { display: none; }
+        .quick-tag {
+            padding: 6px 14px;
+            background: #f0f0f0;
+            border-radius: 16px;
+            font-size: 13px;
+            color: #555;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s;
+            border: none;
+        }
+        .quick-tag:hover {
+            background: #e8f5e9;
+            color: #4a7c59;
+        }
+        
+        .input-row {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+        .chat-input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            font-size: 14px;
+            resize: none;
+            outline: none;
+            transition: border-color 0.3s;
+            font-family: inherit;
+            max-height: 120px;
+        }
+        .chat-input:focus { border-color: #4a7c59; }
+        .send-btn {
+            padding: 10px 24px;
+            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+        .send-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(45,80,22,0.3); }
+        .send-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        
+        /* 加载动画 */
+        .loading-dots {
+            display: flex;
+            gap: 4px;
+            padding: 10px 0;
+        }
+        .loading-dots span {
+            width: 8px;
+            height: 8px;
+            background: #4a7c59;
+            border-radius: 50%;
+            animation: bounce 1.4s ease-in-out infinite both;
+        }
+        .loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+        
+        /* 结果卡片 */
+        .result-card {
+            background: #f8f5f0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        .result-constitution {
+            display: inline-block;
+            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+        .result-section-title {
+            font-weight: bold;
+            color: #4a7c59;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        .result-section-content {
+            color: #555;
+            line-height: 1.8;
+            font-size: 14px;
+        }
+        
+        /* 溯源 */
+        .source-item {
+            background: white;
+            border-left: 3px solid #4a7c59;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            border-radius: 0 6px 6px 0;
+        }
+        .source-book {
+            font-weight: bold;
+            color: #4a7c59;
+            font-size: 13px;
+        }
+        .source-text {
+            color: #666;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+        .source-original {
+            color: #999;
+            font-size: 11px;
+            font-style: italic;
+            margin-top: 4px;
+            background: #f8f5f0;
+            padding: 6px;
+            border-radius: 4px;
+        }
+        
+        /* 推荐商品 */
+        .product-recommend {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 10px 0;
+        }
+        .product-recommend::-webkit-scrollbar { display: none; }
+        .product-mini {
+            min-width: 140px;
+            background: white;
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+        .product-mini-icon { font-size: 32px; margin-bottom: 6px; }
+        .product-mini-name { font-size: 13px; font-weight: bold; color: #333; margin-bottom: 4px; }
+        .product-mini-price { color: #c62828; font-size: 15px; font-weight: bold; }
+        .product-mini-tag {
+            font-size: 11px;
+            color: #4a7c59;
+            background: #e8f5e9;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-top: 6px;
+            display: inline-block;
+        }
+        
+        /* 警告 */
+        .warning-box {
+            background: #fff8e1;
+            border: 1px solid #ffe082;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+        .warning-icon { font-size: 16px; }
+        .warning-text { color: #8b7355; font-size: 12px; line-height: 1.5; }
+        
+        /* 其他页面 */
+        .page-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .card-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2d5016;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e8f5e9;
+        }
+        
+        /* 搜索 */
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .search-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+        }
+        .search-input:focus { border-color: #4a7c59; }
+        .search-btn {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        /* 商品 */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .product-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+        }
+        .product-card:hover { transform: translateY(-3px); }
+        .product-img {
+            width: 100%;
+            height: 150px;
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+        }
+        .product-info { padding: 15px; }
+        .product-name { font-weight: bold; font-size: 16px; margin-bottom: 5px; }
+        .product-source { font-size: 12px; color: #8b7355; margin-bottom: 8px; }
+        .product-price { color: #c62828; font-size: 20px; font-weight: bold; }
+        .product-original { color: #999; text-decoration: line-through; font-size: 14px; margin-left: 8px; }
+        .product-tag {
+            display: inline-block;
+            font-size: 12px;
+            color: #4a7c59;
+            background: #e8f5e9;
+            padding: 4px 10px;
+            border-radius: 4px;
+            margin-top: 8px;
+        }
+        
+        /* JSON */
+        .json-viewer {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Consolas', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        .json-key { color: #9cdcfe; }
+        .json-string { color: #ce9178; }
+        .json-number { color: #b5cea8; }
+        
+        /* 响应式 */
+        @media (max-width: 600px) {
+            .header h1 { font-size: 18px; }
+            .nav-btn { padding: 5px 12px; font-size: 12px; }
+            .product-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+            .chat-input { font-size: 16px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🌿 小神农中医AI</h1>
+        <div class="subtitle">纯古籍权威数据 · 100%可溯源 · 零幻觉</div>
+        <div class="api-status disconnected" id="apiStatus">API连接中...</div>
+    </div>
+    
+    <div class="nav">
+        <button class="nav-btn active" onclick="showSection('diagnosis')">AI辨证</button>
+        <button class="nav-btn" onclick="showSection('search')">古籍检索</button>
+        <button class="nav-btn" onclick="showSection('products')">养生商城</button>
+        <button class="nav-btn" onclick="showSection('api')">API测试</button>
+    </div>
+    
+    <div class="container">
+        <!-- AI辨证 - 对话框模式 -->
+        <div class="section active" id="section-diagnosis">
+            <div class="chat-container" id="chatContainer">
+                <!-- 欢迎消息 -->
+                <div class="chat-message bot-message">
+                    <div class="message-avatar">🌿</div>
+                    <div class="message-content">
+                        <div class="message-bubble">
+                            <p>您好，我是小神农AI助手。</p>
+                            <p style="margin-top: 8px;">请直接描述您目前的症状，比如：</p>
+                            <ul style="margin-top: 8px; padding-left: 20px; color: #666;">
+                                <li>"我最近头痛发热，怕冷，没有汗"</li>
+                                <li>"失眠多梦，口干舌燥，手心发热"</li>
+                                <li>"腹胀腹泻，食欲不振，乏力"</li>
+                            </ul>
+                            <p style="margin-top: 10px; font-size: 12px; color: #999;">
+                                ⚠️ 本结果仅供参考，不能替代专业医生诊断
+                            </p>
+                        </div>
+                        <div class="message-time">刚刚</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 输入区 -->
+            <div class="chat-input-area">
+                <div class="quick-symptoms">
+                    <span class="quick-tag" onclick="sendQuickMessage('头痛发热，怕冷，没有汗')">头痛发热</span>
+                    <span class="quick-tag" onclick="sendQuickMessage('失眠多梦，口干')">失眠多梦</span>
+                    <span class="quick-tag" onclick="sendQuickMessage('腹胀腹泻，食欲不振')">腹胀腹泻</span>
+                    <span class="quick-tag" onclick="sendQuickMessage('咳嗽，咽痛，发热')">咳嗽咽痛</span>
+                    <span class="quick-tag" onclick="sendQuickMessage('腰痛，关节痛，乏力')">腰痛关节痛</span>
+                </div>
+                <div class="input-row">
+                    <textarea 
+                        class="chat-input" 
+                        id="chatInput" 
+                        placeholder="请描述您的症状，越详细越好..."
+                        rows="1"
+                        oninput="autoResize(this)"
+                        onkeydown="handleKeyDown(event)"
+                    ></textarea>
+                    <button class="send-btn" onclick="sendMessage()" id="sendBtn">发送</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 古籍检索 -->
+        <div class="section" id="section-search">
+            <div class="page-content">
+                <div class="card">
+                    <div class="card-title">🔍 古籍知识检索</div>
+                    <div class="search-box">
+                        <input type="text" class="search-input" id="searchInput" placeholder="输入中医术语，如：麻黄汤、风寒感冒、气虚..." onkeypress="if(event.key==='Enter') searchKnowledge()">
+                        <button class="search-btn" onclick="searchKnowledge()">检索</button>
+                    </div>
+                    <div id="searchResults"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 养生商城 -->
+        <div class="section" id="section-products">
+            <div class="page-content">
+                <div class="card">
+                    <div class="card-title">🍵 药食同源养生方</div>
+                    <p style="color: #666; margin-bottom: 15px;">根据中国中医科学院配方监制</p>
+                    <div class="product-grid" id="productGrid"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- API测试 -->
+        <div class="section" id="section-api">
+            <div class="page-content">
+                <div class="card">
+                    <div class="card-title">🔧 API接口测试</div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; color: #555;">API地址</label>
+                        <input type="text" class="search-input" id="apiBase" value="http://localhost:5001">
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+                        <button class="search-btn" onclick="testHealth()">测试健康</button>
+                        <button class="search-btn" onclick="testDiagnosis()">测试辨证</button>
+                        <button class="search-btn" onclick="testRetrieve()">测试检索</button>
+                        <button class="search-btn" onclick="testProducts()">测试商品</button>
+                    </div>
+                    <div class="json-viewer" id="apiResponse">点击上方按钮测试API...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE = 'http://127.0.0.1:5001';  // 使用127.0.0.1避免Privoxy代理拦截
+        let isProcessing = false;
+        
+        // 页面加载
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAPIStatus();
+            loadProducts();
+        });
+        
+        // 检查API状态
+        async function checkAPIStatus() {
+            const statusEl = document.getElementById('apiStatus');
+            try {
+                const resp = await fetch(`${API_BASE}/api/health`, { method: 'GET' });
+                if (resp.ok) {
+                    const data = await resp.json();
+                    statusEl.textContent = `API已连接 | 知识库: ${data.rag_stats.total_documents}条`;
+                    statusEl.className = 'api-status connected';
+                } else {
+                    throw new Error('API error');
+                }
+            } catch (e) {
+                statusEl.textContent = 'API未连接 - 请启动后端服务';
+                statusEl.className = 'api-status disconnected';
+            }
+        }
+        
+        // 切换页面
+        function showSection(name) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`section-${name}`).classList.add('active');
+            event.target.classList.add('active');
+        }
+        
+        // 自动调整输入框高度
+        function autoResize(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+        }
+        
+        // 回车发送
+        function handleKeyDown(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        }
+        
+        // 发送快捷消息
+        function sendQuickMessage(text) {
+            document.getElementById('chatInput').value = text;
+            sendMessage();
+        }
+        
+        // 发送消息
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            
+            if (!text || isProcessing) return;
+            
+            // 添加用户消息
+            addUserMessage(text);
+            input.value = '';
+            input.style.height = 'auto';
+            
+            // 显示加载（带思考过程）- 强制显示
+            showThinkingProcess();
+            isProcessing = true;
+            document.getElementById('sendBtn').disabled = true;
+            
+            try {
+                const resp = await fetch(`${API_BASE}/api/diagnosis`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ symptoms: text })
+                });
+                
+                const data = await resp.json();
+                hideThinkingProcess();
+                
+                if (data.success) {
+                    addDiagnosisResult(data.data);
+                } else {
+                    addBotMessage(`抱歉，辨证失败：${data.error || '请稍后重试'}`);
+                }
+            } catch (e) {
+                hideThinkingProcess();
+                addBotMessage('抱歉，连接失败。请确保后端服务已启动（python api_server.py）');
+            } finally {
+                isProcessing = false;
+                document.getElementById('sendBtn').disabled = false;
+            }
+        }
+        
+        // 添加用户消息
+        function addUserMessage(text) {
+            const container = document.getElementById('chatContainer');
+            const time = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+            
+            container.innerHTML += `
+                <div class="chat-message user-message">
+                    <div class="message-avatar">👤</div>
+                    <div class="message-content">
+                        <div class="message-bubble">${escapeHtml(text)}</div>
+                        <div class="message-time">${time}</div>
+                    </div>
+                </div>
+            `;
+            scrollToBottom();
+        }
+        
+        // 添加机器人消息
+        function addBotMessage(text) {
+            const container = document.getElementById('chatContainer');
+            const time = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+            
+            container.innerHTML += `
+                <div class="chat-message bot-message">
+                    <div class="message-avatar">🌿</div>
+                    <div class="message-content">
+                        <div class="message-bubble">${text}</div>
+                        <div class="message-time">${time}</div>
+                    </div>
+                </div>
+            `;
+            scrollToBottom();
+        }
+        
+        // 显示AI思考过程 - 强制显示，不可关闭
+        function showThinkingProcess() {
+            const container = document.getElementById('chatContainer');
+            const time = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+            
+            container.innerHTML += `
+                <div class="chat-message bot-message" id="thinkingMessage">
+                    <div class="message-avatar">🌿</div>
+                    <div class="message-content">
+                        <div class="message-bubble">
+                            <div class="thinking-process">
+                                <div class="thinking-title">
+                                    <span>🧠</span> AI正在思考...
+                                </div>
+                                <div id="thinkingSteps">
+                                    <div class="thinking-step">
+                                        <div class="step-number">1</div>
+                                        <div class="step-content">
+                                            <div class="step-name">接收查询</div>
+                                            <div class="step-desc">分析用户症状描述</div>
+                                        </div>
+                                        <span class="step-status status-completed">✓</span>
+                                    </div>
+                                    <div class="thinking-step">
+                                        <div class="step-number">2</div>
+                                        <div class="step-content">
+                                            <div class="step-name">标准化术语</div>
+                                            <div class="step-desc">转换症状为中医标准术语</div>
+                                        </div>
+                                        <span class="step-status status-completed">✓</span>
+                                    </div>
+                                    <div class="thinking-step">
+                                        <div class="step-number">3</div>
+                                        <div class="step-content">
+                                            <div class="step-name">检索知识库</div>
+                                            <div class="step-desc">从古籍数据库中检索相关记载...</div>
+                                        </div>
+                                        <span class="step-status status-running">●</span>
+                                    </div>
+                                    <div class="thinking-step">
+                                        <div class="step-number">4</div>
+                                        <div class="step-content">
+                                            <div class="step-name">构建提示词</div>
+                                            <div class="step-desc">整理古籍资料作为AI参考</div>
+                                        </div>
+                                        <span class="step-status status-running">○</span>
+                                    </div>
+                                    <div class="thinking-step">
+                                        <div class="step-number">5</div>
+                                        <div class="step-content">
+                                            <div class="step-name">AI生成回答</div>
+                                            <div class="step-desc">基于古籍资料生成辨证结果...</div>
+                                        </div>
+                                        <span class="step-status status-running">○</span>
+                                    </div>
+                                    <div class="thinking-step">
+                                        <div class="step-number">6</div>
+                                        <div class="step-content">
+                                            <div class="step-name">输出校验</div>
+                                            <div class="step-desc">验证回答是否有古籍依据</div>
+                                        </div>
+                                        <span class="step-status status-running">○</span>
+                                    </div>
+                                </div>
+                                <div class="thinking-summary">
+                                    <span>已检索: 加载中...</span>
+                                    <span id="thinkingTime">耗时: 0ms</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="message-time">${time}</div>
+                    </div>
+                </div>
+            `;
+            scrollToBottom();
+            
+            // 启动计时器
+            startThinkingTimer();
+        }
+        
+        let thinkingTimer = null;
+        let thinkingStartTime = 0;
+        
+        function startThinkingTimer() {
+            thinkingStartTime = Date.now();
+            thinkingTimer = setInterval(() => {
+                const elapsed = Date.now() - thinkingStartTime;
+                const timeEl = document.getElementById('thinkingTime');
+                if (timeEl) {
+                    timeEl.textContent = `耗时: ${elapsed}ms`;
+                }
+            }, 100);
+        }
+        
+        function hideThinkingProcess() {
+            if (thinkingTimer) {
+                clearInterval(thinkingTimer);
+                thinkingTimer = null;
+            }
+            const thinking = document.getElementById('thinkingMessage');
+            if (thinking) thinking.remove();
+        }
+        
+        // 添加辨证结果（v2.0双源验证格式）
+        function addDiagnosisResult(data) {
+            const container = document.getElementById('chatContainer');
+            const time = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+            
+            // 构建思考过程HTML - 强制显示，不可关闭
+            let thinkingHtml = '';
+            if (data.thinking_process && data.thinking_process.length > 0) {
+                const steps = data.thinking_process.map((step, i) => {
+                    const statusClass = step.status === 'completed' ? 'status-completed' : 
+                                       step.status === 'failed' ? 'status-failed' : 'status-running';
+                    const statusText = step.status === 'completed' ? '✓' : 
+                                      step.status === 'failed' ? '✗' : '●';
+                    
+                    // 步骤详情 - v2.0新增
+                    let detailsHtml = '';
+                    if (step.details) {
+                        if (step.details.symptom_count !== undefined) {
+                            detailsHtml = `<div style="color: #999; font-size: 11px; margin-top: 4px;">识别到 ${step.details.symptom_count} 个症状</div>`;
+                        }
+                        if (step.details.retrieved_count !== undefined) {
+                            detailsHtml = `<div style="color: #999; font-size: 11px; margin-top: 4px;">检索到 ${step.details.retrieved_count} 条古籍记载</div>`;
+                        }
+                        if (step.details.matched_formulas_count !== undefined) {
+                            detailsHtml = `<div style="color: #999; font-size: 11px; margin-top: 4px;">匹配 ${step.details.matched_formulas_count} 个方剂, ${step.details.matched_drugs_count} 个药物</div>`;
+                        }
+                        if (step.details.llm_time_ms !== undefined) {
+                            detailsHtml = `<div style="color: #999; font-size: 11px; margin-top: 4px;">AI生成耗时: ${step.details.llm_time_ms}ms</div>`;
+                        }
+                        if (step.details.verification_passed !== undefined) {
+                            detailsHtml = `<div style="color: #999; font-size: 11px; margin-top: 4px;">校验${step.details.verification_passed ? '通过' : '失败'}</div>`;
+                        }
+                    }
+                    
+                    return `
+                        <div class="thinking-step">
+                            <div class="step-number">${step.step}</div>
+                            <div class="step-content">
+                                <div class="step-name">${step.name}</div>
+                                <div class="step-desc">${step.description}</div>
+                                ${detailsHtml}
+                                <div class="step-time">${step.time_ms}ms</div>
+                            </div>
+                            <span class="step-status ${statusClass}">${statusText}</span>
+                        </div>
+                    `;
+                }).join('');
+                
+                thinkingHtml = `
+                    <div class="thinking-process">
+                        <div class="thinking-title">
+                            <span>🧠</span> AI双源验证思考过程（共${data.total_time_ms}ms）<span style="font-size:11px;color:#999;font-weight:normal;margin-left:8px;">— 不可关闭</span>
+                        </div>
+                        ${steps}
+                        <div class="thinking-summary">
+                            <span>总耗时: ${data.total_time_ms}ms</span>
+                            <span>症状: ${data.symptom_analysis && data.symptom_analysis.extracted_symptoms ? data.symptom_analysis.extracted_symptoms.length : 0}个</span>
+                            <span>证型: ${data.syndrome_analysis ? data.syndrome_analysis.length : 0}个</span>
+                            <span>方剂: ${data.matched_formulas ? data.matched_formulas.length : 0}个</span>
+                            <span>药物: ${data.matched_drugs ? data.matched_drugs.length : 0}个</span>
+                            <span>配伍: ${data.drug_relations ? data.drug_relations.length : 0}条</span>
+                            <span>可信度: ${data.credibility_assessment ? data.credibility_assessment.length : 0}项</span>
+                            <span>副作用: ${data.adverse_detection && data.adverse_detection.adverse_events ? data.adverse_detection.adverse_events.length : 0}个</span>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // 构建症状分析HTML
+            let symptomHtml = '';
+            if (data.symptom_analysis && data.symptom_analysis.extracted_symptoms) {
+                symptomHtml = data.symptom_analysis.extracted_symptoms.map(s => `
+                    <div style="display: inline-block; background: #e8f5e9; color: #2d5016; padding: 4px 10px; border-radius: 12px; margin: 2px; font-size: 12px;">
+                        ${s.name} <span style="color: #999; font-size: 10px;">[${s.id}]</span>
+                    </div>
+                `).join('');
+            }
+            
+            // 构建证型分析HTML（v2.1新增）
+            let syndromeHtml = '';
+            if (data.syndrome_analysis && data.syndrome_analysis.length > 0) {
+                syndromeHtml = data.syndrome_analysis.map((sa, i) => {
+                    const matchPercent = Math.round((sa.match_score || 0) * 100);
+                    const severityColor = sa.severity === '危重' ? '#c62828' : 
+                                         sa.severity === '重' ? '#e65100' : 
+                                         sa.severity === '中-重' ? '#f57c00' :
+                                         sa.severity === '中' ? '#f9a825' : '#4a7c59';
+                    const isTop = i === 0;
+                    return `
+                        <div style="background: ${isTop ? '#f0f7f0' : '#fafafa'}; border-radius: 8px; padding: 12px; margin-bottom: 10px; border-left: 3px solid ${severityColor};">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <div style="font-weight: bold; color: #2d5016; font-size: 15px;">
+                                    ${isTop ? '⭐ ' : ''}${sa.name} <span style="font-size: 11px; color: #999;">[${sa.id}]</span>
+                                </div>
+                                <div style="display: flex; gap: 8px; align-items: center;">
+                                    <span style="background: ${severityColor}20; color: ${severityColor}; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: bold;">${sa.severity}</span>
+                                    <span style="background: #e8f5e9; color: #2d5016; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: bold;">匹配度 ${matchPercent}%</span>
+                                </div>
+                            </div>
+                            <div style="color: #666; font-size: 12px; line-height: 1.8;">
+                                <div><span style="color: #999;">辨证体系：</span>${sa.system}</div>
+                                <div><span style="color: #999;">病机：</span>${sa.pathogenesis}</div>
+                                <div><span style="color: #999;">治则：</span>${sa.treatment_principle}</div>
+                                ${sa.main_formula ? `<div><span style="color: #999;">主方：</span>${sa.main_formula.formula_name} <span style="color: #999; font-size: 10px;">[${sa.main_formula.formula_id}]</span></div>` : ''}
+                                ${sa.key_signs ? `<div><span style="color: #999;">关键体征：</span>脉${sa.key_signs.pulse || '未知'}，舌${sa.key_signs.tongue || '未知'}</div>` : ''}
+                                ${sa.differentiation && sa.differentiation.length > 0 ? `
+                                    <div style="margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e0e0e0;">
+                                        <span style="color: #999;">鉴别要点：</span>
+                                        <div style="margin-top: 4px;">
+                                            ${sa.differentiation.map(d => `<span style="display: inline-block; background: #fff8e1; color: #8b7355; padding: 2px 8px; border-radius: 4px; margin: 2px; font-size: 11px;">${d}</span>`).join('')}
+                                        </div>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+            
+            // 构建配伍关系HTML（v2.1新增）
+            let relationsHtml = '';
+            if (data.drug_relations && data.drug_relations.length > 0) {
+                const critical = data.drug_relations.filter(r => r.alert && r.alert.includes('🔴'));
+                const warning = data.drug_relations.filter(r => r.alert && r.alert.includes('🟠'));
+                const good = data.drug_relations.filter(r => r.alert && r.alert.includes('🟢'));
+                
+                let relationsSections = '';
+                
+                if (critical.length > 0) {
+                    relationsSections += `
+                        <div style="margin-bottom: 10px;">
+                            <div style="font-weight: bold; color: #c62828; font-size: 13px; margin-bottom: 6px;">🔴 严重禁忌 - 绝对不可同用</div>
+                            ${critical.map(r => `
+                                <div style="background: #ffebee; border-radius: 6px; padding: 8px; margin-bottom: 6px; font-size: 12px;">
+                                    <div style="font-weight: bold; color: #c62828;">${r.drug_a} + ${r.drug_b}</div>
+                                    <div style="color: #666; margin-top: 2px;">${r.mechanism}</div>
+                                    <div style="color: #999; font-size: 11px; margin-top: 2px;">[${r.type}] ${r.verse || ''}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+                
+                if (warning.length > 0) {
+                    relationsSections += `
+                        <div style="margin-bottom: 10px;">
+                            <div style="font-weight: bold; color: #e65100; font-size: 13px; margin-bottom: 6px;">🟠 配伍警告 - 慎用</div>
+                            ${warning.map(r => `
+                                <div style="background: #fff3e0; border-radius: 6px; padding: 8px; margin-bottom: 6px; font-size: 12px;">
+                                    <div style="font-weight: bold; color: #e65100;">${r.drug_a} + ${r.drug_b}</div>
+                                    <div style="color: #666; margin-top: 2px;">${r.mechanism}</div>
+                                    <div style="color: #999; font-size: 11px; margin-top: 2px;">[${r.type}] ${r.verse || ''}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+                
+                if (good.length > 0) {
+                    relationsSections += `
+                        <div style="margin-bottom: 10px;">
+                            <div style="font-weight: bold; color: #2e7d32; font-size: 13px; margin-bottom: 6px;">🟢 优良配伍 - 协同增效</div>
+                            ${good.map(r => `
+                                <div style="background: #e8f5e9; border-radius: 6px; padding: 8px; margin-bottom: 6px; font-size: 12px;">
+                                    <div style="font-weight: bold; color: #2e7d32;">${r.drug_a} + ${r.drug_b}</div>
+                                    <div style="color: #666; margin-top: 2px;">${r.mechanism}</div>
+                                    <div style="color: #999; font-size: 11px; margin-top: 2px;">[${r.type}] ${r.example_formula || ''}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+                
+                relationsHtml = `
+                    <div style="margin-bottom: 12px;">
+                        <div class="result-section-title">🔗 配伍关系分析</div>
+                        ${relationsSections}
+                    </div>
+                `;
+            }
+            
+            // 构建古籍溯源HTML
+            const sourcesHtml = (data.sources || []).map(s => `
+                <div class="source-item">
+                    <div class="source-book">《${s.book}》·${s.section}</div>
+                    <div class="source-text">${s.text}</div>
+                    ${s.original_text ? `<div class="source-original">原文：${s.original_text}</div>` : ''}
+                </div>
+            `).join('');
+            
+            // 构建方剂匹配HTML
+            let formulaHtml = '';
+            if (data.matched_formulas && data.matched_formulas.length > 0) {
+                formulaHtml = data.matched_formulas.map(f => `
+                    <div style="background: #f0f7f0; border-radius: 8px; padding: 10px; margin-bottom: 8px; border-left: 3px solid #4a7c59;">
+                        <div style="font-weight: bold; color: #2d5016; font-size: 14px;">${f.name} <span style="font-size: 11px; color: #999;">[${f.id}]</span></div>
+                        <div style="color: #666; font-size: 12px; margin-top: 4px;">证型：${f.syndrome || '未知'}</div>
+                        <div style="color: #999; font-size: 11px; margin-top: 2px;">来源：《${f.source || '未知'}》 | 匹配度：${(f.match_score * 100).toFixed(0)}%</div>
+                    </div>
+                `).join('');
+            }
+            
+            // 构建药物匹配HTML
+            let drugHtml = '';
+            if (data.matched_drugs && data.matched_drugs.length > 0) {
+                drugHtml = data.matched_drugs.map(d => `
+                    <div style="display: inline-block; background: #fff8e1; color: #8b7355; padding: 4px 10px; border-radius: 12px; margin: 2px; font-size: 12px;">
+                        ${d.name} <span style="color: #999; font-size: 10px;">[${d.id}]</span>
+                    </div>
+                `).join('');
+            }
+            
+            // 构建禁忌提醒HTML
+            let contraHtml = '';
+            if (data.contraindications && data.contraindications.length > 0) {
+                contraHtml = data.contraindications.map(c => `
+                    <div style="background: #ffebee; border-radius: 6px; padding: 8px; margin-bottom: 6px; font-size: 12px; color: #c62828;">
+                        <span style="font-weight: bold;">⚠️ ${c.type} - ${c.name}：</span>
+                        ${c.contraindications ? c.contraindications.join('、') : ''}
+                    </div>
+                `).join('');
+            }
+            
+            // 构建推荐商品HTML
+            const productsHtml = getRecommendedProducts(data.constitution);
+            
+            container.innerHTML += `
+                <div class="chat-message bot-message">
+                    <div class="message-avatar">🌿</div>
+                    <div class="message-content">
+                        <div class="message-bubble">
+                            ${thinkingHtml}
+                            
+                            <div class="result-card">
+                                <div class="result-constitution">${data.constitution || '待辨识'}</div>
+                                
+                                <div style="margin-bottom: 12px;">
+                                    <div class="result-section-title">📋 症状分析</div>
+                                    <div style="margin-top: 8px;">${symptomHtml || '<span style="color: #999; font-size: 12px;">未识别到标准症状</span>'}</div>
+                                </div>
+                                
+                                <div style="margin-bottom: 12px;">
+                                    <div class="result-section-title">🔬 证候分析</div>
+                                    <div class="result-section-content">${data.syndrome || ''}</div>
+                                </div>
+                                
+                                <div style="margin-bottom: 12px;">
+                                    <div class="result-section-title">🔬 证型分析</div>
+                                    ${syndromeHtml || '<p style="color: #999; font-size: 12px;">未识别到匹配证型</p>'}
+                                </div>
+                                
+                                <div style="margin-bottom: 12px;">
+                                    <div class="result-section-title">💊 双源验证报告</div>
+                                    <div class="result-section-content" style="white-space: pre-wrap;">${data.advice || ''}</div>
+                                </div>
+                                
+                                <div style="margin-bottom: 12px;">
+                                    <div class="result-section-title">🔬 证型分析</div>
+                                    ${syndromeHtml || '<p style="color: #999; font-size: 12px;">未识别到匹配证型</p>'}
+                                </div>
+                                
+                                <div style="margin-bottom: 12px;">
+                                    <div class="result-section-title">📜 古籍溯源</div>
+                                    ${sourcesHtml || '<p style="color: #999; font-size: 12px;">暂无溯源信息</p>'}
+                                </div>
+                                
+                                <div style="margin-bottom: 12px;">
+                                    <div class="result-section-title">🏥 匹配方剂</div>
+                                    ${formulaHtml || '<p style="color: #999; font-size: 12px;">未匹配到相关方剂</p>'}
+                                </div>
+                                
+                                <div style="margin-bottom: 12px;">
+                                    <div class="result-section-title">🌿 相关药物</div>
+                                    <div style="margin-top: 8px;">${drugHtml || '<span style="color: #999; font-size: 12px;">未匹配到相关药物</span>'}</div>
+                                </div>
+                                
+                                ${relationsHtml}
+                                
+                                <!-- v2.2新增：批判性思维评估 -->
+                                <div style="margin-bottom: 12px;">
+                                    <div class="result-section-title">🧠 批判性思维验证</div>
+                                    ${renderCredibilityAssessment(data.credibility_assessment)}
+                                </div>
+                                
+                                <!-- v2.2新增：症状共现分析 -->
+                                <div style="margin-bottom: 12px;">
+                                    <div class="result-section-title">📊 症状共现分析</div>
+                                    ${renderCooccurrenceAnalysis(data.cooccurrence_analysis)}
+                                </div>
+                                
+                                <!-- v2.2新增：副作用检测 -->
+                                <div style="margin-bottom: 12px;">
+                                    <div class="result-section-title">⚡ 副作用/不良反应检测</div>
+                                    ${renderAdverseDetection(data.adverse_detection)}
+                                </div>
+                                
+                                <!-- v2.2新增：相似患者参照 -->
+                                <div style="margin-bottom: 12px;">
+                                    <div class="result-section-title">👥 相似患者参照</div>
+                                    ${renderSimilarPatients(data.similar_patients)}
+                                </div>
+                                
+                                <!-- v2.2新增：知识缺口与入库建议 -->
+                                <div style="margin-bottom: 12px;">
+                                    <div class="result-section-title">📚 知识缺口与入库建议</div>
+                                    ${renderKnowledgeGaps(data.knowledge_gap_report, data.import_suggestions)}
+                                </div>
+                                
+                                <div style="margin-bottom: 12px;">
+                                    <div class="result-section-title">⚠️ 禁忌提醒</div>
+                                    ${contraHtml || '<p style="color: #999; font-size: 12px;">暂无禁忌提醒</p>'}
+                                </div>
+                                
+                                ${productsHtml ? `
+                                <div style="margin-bottom: 12px;">
+                                    <div class="result-section-title">🍵 推荐养生方</div>
+                                    <div class="product-recommend">${productsHtml}</div>
+                                </div>
+                                ` : ''}
+                                
+                                <div class="warning-box">
+                                    <span class="warning-icon">⚠️</span>
+                                    <span class="warning-text">${data.warning || '本结果仅供参考，不能替代专业医生诊断。如有不适，请及时就医。'}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="message-time">${time}</div>
+                    </div>
+                </div>
+            `;
+            scrollToBottom();
+        }
+        
+        // ========== v2.2 批判性思维渲染函数 ==========
+        
+        function renderCredibilityAssessment(assessments) {
+            if (!assessments || assessments.length === 0) {
+                return '<p style="color: #999; font-size: 12px;">暂无可信度评估数据</p>';
+            }
+            
+            const gradeColors = {
+                'A': '#2e7d32', 'A-': '#388e3c',
+                'B+': '#689f38', 'B': '#7cb342', 'B-': '#8bc34a',
+                'C+': '#f9a825', 'C': '#fbc02d', 'C-': '#ffeb3b',
+                'D+': '#e65100', 'D': '#f57c00', 'D-': '#ff9800',
+                'F': '#c62828'
+            };
+            
+            return assessments.map((a, i) => {
+                const grade = a.overall_grade || 'N/A';
+                const color = gradeColors[grade] || '#999';
+                const score = a.overall_score !== undefined ? a.overall_score : 0;
+                
+                return `
+                    <div style="background: #f8f9fa; border-radius: 8px; padding: 10px; margin-bottom: 8px; border-left: 3px solid ${color};">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                            <div style="font-weight: bold; font-size: 13px; color: #333;">
+                                来源 ${i+1}: ${a.source_type || '古籍'}
+                            </div>
+                            <div style="background: ${color}20; color: ${color}; padding: 2px 10px; border-radius: 10px; font-size: 12px; font-weight: bold;">
+                                ${grade} (${score}分)
+                            </div>
+                        </div>
+                        <div style="color: #666; font-size: 12px; line-height: 1.6;">
+                            <div>📚 文献质量: ${a.literature_quality?.grade || 'N/A'} | 年代: ${a.literature_quality?.era || '未知'}</div>
+                            <div>🔬 临床验证: ${a.clinical_validation?.grade || 'N/A'} | 样本量: ${a.clinical_validation?.sample_size || 'N/A'}</div>
+                            <div>🔗 交叉验证: ${a.cross_validation?.grade || 'N/A'} | 一致性: ${a.cross_validation?.consistency_score || 'N/A'}</div>
+                            ${a.red_flags && a.red_flags.length > 0 ? `
+                                <div style="color: #c62828; margin-top: 4px;">⚠️ 红旗: ${a.red_flags.join('、')}</div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function renderCooccurrenceAnalysis(analysis) {
+            if (!analysis || Object.keys(analysis).length === 0) {
+                return '<p style="color: #999; font-size: 12px;">暂无共现分析数据</p>';
+            }
+            
+            const pairs = analysis.cooccurrence_pairs || [];
+            const anomalies = analysis.anomalies || [];
+            
+            let html = '';
+            
+            // 正常共现
+            if (pairs.length > 0) {
+                html += `<div style="margin-bottom: 8px;"><div style="font-size: 12px; color: #666; font-weight: bold; margin-bottom: 4px;">✅ 正常症状共现</div>`;
+                html += pairs.slice(0, 3).map(p => `
+                    <div style="display: inline-block; background: #e8f5e9; color: #2d5016; padding: 3px 8px; border-radius: 8px; margin: 2px; font-size: 11px;">
+                        ${p.symptom_a_name} + ${p.symptom_b_name} (强度: ${p.cooccurrence_strength?.toFixed(2) || 'N/A'})
+                    </div>
+                `).join('');
+                html += '</div>';
+            }
+            
+            // 异常共现警报
+            if (anomalies.length > 0) {
+                html += `<div style="margin-bottom: 8px;"><div style="font-size: 12px; color: #c62828; font-weight: bold; margin-bottom: 4px;">🚨 异常共现警报</div>`;
+                html += anomalies.map(a => `
+                    <div style="background: #ffebee; border-radius: 6px; padding: 8px; margin-bottom: 6px; font-size: 12px;">
+                        <div style="font-weight: bold; color: #c62828;">${a.symptom_a_name} + ${a.symptom_b_name}</div>
+                        <div style="color: #666; margin-top: 2px;">预期强度: ${a.expected_cooccurrence?.toFixed(2) || 'N/A'} | 实际: ${a.actual_cooccurrence?.toFixed(2) || 'N/A'} | 偏差: ${a.deviation?.toFixed(2) || 'N/A'}</div>
+                        <div style="color: #999; font-size: 11px; margin-top: 2px;">⚠️ 可能提示：药物副作用或并发症，建议医师重点排查</div>
+                    </div>
+                `).join('');
+                html += '</div>';
+            }
+            
+            return html || '<p style="color: #999; font-size: 12px;">共现分析完成，无异常</p>';
+        }
+        
+        function renderAdverseDetection(detection) {
+            if (!detection || Object.keys(detection).length === 0) {
+                return '<p style="color: #999; font-size: 12px;">暂无副作用检测数据</p>';
+            }
+            
+            const events = detection.adverse_events || [];
+            const riskLevel = detection.risk_level || '未知';
+            const riskColors = { '低风险': '#2e7d32', '中风险': '#f9a825', '高风险': '#e65100', '极高风险': '#c62828' };
+            
+            let html = `<div style="margin-bottom: 8px;">
+                <div style="display: inline-block; background: ${riskColors[riskLevel] || '#999'}20; color: ${riskColors[riskLevel] || '#999'}; padding: 3px 12px; border-radius: 10px; font-size: 12px; font-weight: bold; margin-bottom: 8px;">
+                    综合风险等级: ${riskLevel}
+                </div>
+            </div>`;
+            
+            if (events.length > 0) {
+                html += events.map(e => `
+                    <div style="background: ${e.severity === '严重' ? '#ffebee' : e.severity === '中等' ? '#fff3e0' : '#f8f9fa'}; border-radius: 6px; padding: 8px; margin-bottom: 6px; font-size: 12px; border-left: 3px solid ${e.severity === '严重' ? '#c62828' : e.severity === '中等' ? '#e65100' : '#999'};">
+                        <div style="font-weight: bold; color: #333;">${e.adverse_type} <span style="font-size: 11px; color: #999;">[${e.severity}]</span></div>
+                        <div style="color: #666; margin-top: 2px;">涉及药物: ${e.related_drugs?.join('、') || '未知'}</div>
+                        <div style="color: #666;">时间窗口: ${e.time_window || '未知'}</div>
+                        ${e.recommendation ? `<div style="color: #2e7d32; margin-top: 4px;">💡 建议: ${e.recommendation}</div>` : ''}
+                    </div>
+                `).join('');
+            } else {
+                html += '<div style="color: #2e7d32; font-size: 12px;">✅ 未检测到明显不良反应信号</div>';
+            }
+            
+            return html;
+        }
+        
+        function renderSimilarPatients(patients) {
+            if (!patients || patients.length === 0) {
+                return '<p style="color: #999; font-size: 12px;">暂无相似患者数据</p>';
+            }
+            
+            return patients.map((p, i) => `
+                <div style="background: #f0f7f0; border-radius: 8px; padding: 10px; margin-bottom: 8px; border-left: 3px solid #4a7c59;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <div style="font-weight: bold; font-size: 13px; color: #2d5016;">
+                            👤 相似患者 ${p.patient_id || '匿名'} 
+                            <span style="font-size: 11px; color: #999;">(相似度: ${(p.similarity_score * 100).toFixed(1) || 'N/A'}%)</span>
+                        </div>
+                    </div>
+                    <div style="color: #666; font-size: 12px; line-height: 1.6;">
+                        <div>症状重叠: ${p.shared_symptoms?.join('、') || 'N/A'}</div>
+                        <div>处方: ${p.prescription || 'N/A'}</div>
+                        <div>疗效: ${p.outcome || 'N/A'}</div>
+                        ${p.adjustment_suggestion ? `<div style="color: #2e7d32; margin-top: 4px;">💡 调整建议: ${p.adjustment_suggestion}</div>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function renderKnowledgeGaps(gaps, suggestions) {
+            let html = '';
+            
+            if (gaps && gaps.length > 0) {
+                html += `<div style="margin-bottom: 8px;"><div style="font-size: 12px; color: #e65100; font-weight: bold; margin-bottom: 4px;">⚠️ 知识缺口</div>`;
+                html += gaps.map(g => `
+                    <div style="background: #fff3e0; border-radius: 6px; padding: 8px; margin-bottom: 6px; font-size: 12px;">
+                        <div style="font-weight: bold; color: #e65100;">[${g.severity || '中'}] ${g.type}</div>
+                        <div style="color: #666; margin-top: 2px;">${g.description}</div>
+                        <div style="color: #999; font-size: 11px; margin-top: 2px;">建议: ${g.suggested_action || '待补充'}</div>
+                    </div>
+                `).join('');
+                html += '</div>';
+            }
+            
+            if (suggestions && suggestions.length > 0) {
+                html += `<div style="margin-bottom: 8px;"><div style="font-size: 12px; color: #2e7d32; font-weight: bold; margin-bottom: 4px;">📥 入库建议</div>`;
+                html += suggestions.map(s => `
+                    <div style="background: #e8f5e9; border-radius: 6px; padding: 8px; margin-bottom: 6px; font-size: 12px;">
+                        <div style="font-weight: bold; color: #2d5016;">[${s.priority || '中'}] ${s.type}</div>
+                        <div style="color: #666; margin-top: 2px;">${s.description}</div>
+                        <div style="color: #999; font-size: 11px; margin-top: 2px;">来源: ${s.suggested_source || '待检索'}</div>
+                    </div>
+                `).join('');
+                html += '</div>';
+            }
+            
+            return html || '<p style="color: #999; font-size: 12px;">暂无知识缺口或入库建议</p>';
+        }
+        
+        // 根据体质推荐商品
+        function getRecommendedProducts(constitution) {
+            const productMap = {
+                '风寒': [
+                    { name: '姜枣茶', price: '¥29.9', icon: '🫚', tag: '驱寒暖身' },
+                    { name: '桂枝汤料包', price: '¥39.9', icon: '🍵', tag: '解肌发表' }
+                ],
+                '风热': [
+                    { name: '菊花茶', price: '¥29.9', icon: '🌼', tag: '清热解表' },
+                    { name: '金银花茶', price: '¥35.9', icon: '🍃', tag: '清热解毒' }
+                ],
+                '气虚': [
+                    { name: '四神汤', price: '¥39.9', icon: '🫕', tag: '健脾养胃' },
+                    { name: '黄芪党参茶', price: '¥45.9', icon: '🍵', tag: '补气升阳' }
+                ],
+                '阴虚': [
+                    { name: '酸梅汤', price: '¥39.9', icon: '🍵', tag: '清热解暑' },
+                    { name: '菊花枸杞茶', price: '¥29.9', icon: '🌼', tag: '清肝明目' }
+                ],
+                '湿热': [
+                    { name: '祛湿茶', price: '¥49.9', icon: '🍃', tag: '健脾祛湿' },
+                    { name: '清补凉', price: '¥29.9', icon: '🥣', tag: '清热润燥' }
+                ]
+            };
+            
+            let products = [];
+            for (const [key, list] of Object.entries(productMap)) {
+                if (constitution && constitution.includes(key)) {
+                    products = list;
+                    break;
+                }
+            }
+            
+            if (products.length === 0) {
+                products = [
+                    { name: '清补凉', price: '¥29.9', icon: '🥣', tag: '清热润燥' },
+                    { name: '四神汤', price: '¥39.9', icon: '🫕', tag: '健脾养胃' }
+                ];
+            }
+            
+            return products.map(p => `
+                <div class="product-mini">
+                    <div class="product-mini-icon">${p.icon}</div>
+                    <div class="product-mini-name">${p.name}</div>
+                    <div class="product-mini-price">${p.price}</div>
+                    <span class="product-mini-tag">${p.tag}</span>
+                </div>
+            `).join('');
+        }
+        
+        // 滚动到底部
+        function scrollToBottom() {
+            const container = document.getElementById('chatContainer');
+            container.scrollTop = container.scrollHeight;
+        }
+        
+        // HTML转义
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // 古籍检索
+        async function searchKnowledge() {
+            const query = document.getElementById('searchInput').value.trim();
+            if (!query) return;
+            
+            const resultsEl = document.getElementById('searchResults');
+            resultsEl.innerHTML = '<div style="text-align: center; padding: 40px;"><div class="loading-dots"><span></span><span></span><span></span></div><p>检索中...</p></div>';
+            
+            try {
+                const resp = await fetch(`${API_BASE}/api/retrieve`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query: query, top_k: 5 })
+                });
+                
+                const data = await resp.json();
+                
+                if (data.success && data.data.results.length > 0) {
+                    resultsEl.innerHTML = data.data.results.map((r, i) => `
+                        <div class="source-item" style="margin-bottom: 15px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div class="source-book">《${r.source_book}》·${r.source_section}</div>
+                                <span style="color: #4a7c59; font-size: 12px;">匹配度: ${(r.score * 100).toFixed(1)}%</span>
+                            </div>
+                            <div class="source-text">${r.text}</div>
+                            ${r.original_text ? `<div class="source-original">原文：${r.original_text}</div>` : ''}
+                        </div>
+                    `).join('');
+                } else {
+                    resultsEl.innerHTML = '<p style="text-align: center; color: #999; padding: 40px;">暂无相关古籍记载</p>';
+                }
+            } catch (e) {
+                resultsEl.innerHTML = '<p style="text-align: center; color: #999; padding: 40px;">检索失败，请检查API连接</p>';
+            }
+        }
+        
+        // 加载商品
+        function loadProducts() {
+            const products = [
+                { id: 'sour_plum_soup', name: '小神农·酸梅汤', source: '《本草纲目》·梅', price: 39.9, original: 59.9, emoji: '🍵', tag: '清热解暑' },
+                { id: 'dampness_tea', name: '小神农·祛湿茶', source: '《食疗本草》', price: 49.9, original: 69.9, emoji: '🍃', tag: '健脾祛湿' },
+                { id: 'qing_bu_liang', name: '小神农·清补凉', source: '《岭南采药录》', price: 29.9, original: 39.9, emoji: '🥣', tag: '清热润燥' },
+                { id: 'sishen_tang', name: '小神农·四神汤', source: '《本草纲目》·山药', price: 39.9, original: 49.9, emoji: '🫕', tag: '健脾养胃' },
+                { id: 'chrysanthemum_tea', name: '小神农·菊花枸杞茶', source: '《神农本草经》·菊花', price: 29.9, original: 39.9, emoji: '🌼', tag: '清肝明目' },
+                { id: 'ginger_tea', name: '小神农·姜枣茶', source: '《伤寒论》', price: 29.9, original: 39.9, emoji: '🫚', tag: '驱寒暖身' },
+            ];
+            
+            document.getElementById('productGrid').innerHTML = products.map(p => `
+                <div class="product-card">
+                    <div class="product-img">${p.emoji}</div>
+                    <div class="product-info">
+                        <div class="product-name">${p.name}</div>
+                        <div class="product-source">${p.source}</div>
+                        <div>
+                            <span class="product-price">¥${p.price}</span>
+                            <span class="product-original">¥${p.original}</span>
+                        </div>
+                        <span class="product-tag">${p.tag}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // API测试
+        async function testHealth() { await apiRequest('GET', '/api/health'); }
+        async function testDiagnosis() { await apiRequest('POST', '/api/diagnosis', { symptoms: '头痛发热，怕冷，没有汗' }); }
+        async function testRetrieve() { await apiRequest('POST', '/api/retrieve', { query: '麻黄汤', top_k: 3 }); }
+        async function testProducts() { await apiRequest('GET', '/api/products'); }
+        
+        async function apiRequest(method, path, body) {
+            const base = document.getElementById('apiBase').value || API_BASE;
+            const responseEl = document.getElementById('apiResponse');
+            responseEl.textContent = '请求中...';
+            
+            try {
+                const options = {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' }
+                };
+                if (body) options.body = JSON.stringify(body);
+                
+                const resp = await fetch(`${base}${path}`, options);
+                const data = await resp.json();
+                responseEl.innerHTML = syntaxHighlight(data);
+            } catch (e) {
+                responseEl.textContent = `错误: ${e.message}`;
+            }
+        }
+        
+        function syntaxHighlight(json) {
+            if (typeof json !== 'string') json = JSON.stringify(json, null, 2);
+            json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            return json.replace(/("(\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?)/g, function(match) {
+                let cls = 'json-number';
+                if (/^"/.test(match)) {
+                    if (/:$/.test(match)) cls = 'json-key';
+                    else cls = 'json-string';
+                }
+                return '<span class="' + cls + '">' + match + '</span>';
+            });
+        }
+    </script>
+</body>
+</html>

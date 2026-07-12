@@ -1,0 +1,147 @@
+<!-- 小神农中医AI - AI辨证页面 -->
+<view class="container">
+  <!-- 进度指示器 -->
+  <view class="progress-bar" wx:if="{{currentStep > 0}}">
+    <view class="progress-fill" style="width: {{(currentStep/totalSteps)*100}}%"></view>
+    <text class="progress-text">问题 {{currentStep}}/{{totalSteps}}</text>
+  </view>
+
+  <!-- 欢迎页 -->
+  <view class="welcome-screen" wx:if="{{currentStep === 0}}">
+    <view class="welcome-icon">🌿</view>
+    <text class="welcome-title">AI中医辨证</text>
+    <text class="welcome-desc">基于《黄帝内经》《伤寒论》等1200+部古籍，引经据典为您辨识体质</text>
+    
+    <view class="feature-list">
+      <view class="feature-item">
+        <text class="feature-check">✓</text>
+        <text>100%古籍溯源，每条结论都有出处</text>
+      </view>
+      <view class="feature-item">
+        <text class="feature-check">✓</text>
+        <text>零幻觉设计，无依据直接拒答</text>
+      </view>
+      <view class="feature-item">
+        <text class="feature-check">✓</text>
+        <text>仅供参考，不构成诊疗建议</text>
+      </view>
+    </view>
+
+    <button class="start-btn" bindtap="startDiagnosis">开始辨证</button>
+  </view>
+
+  <!-- 问诊流程 -->
+  <view class="question-screen" wx:if="{{currentStep > 0 && currentStep <= totalSteps}}">
+    <view class="question-card">
+      <text class="question-number">Q{{currentStep}}</text>
+      <text class="question-text">{{currentQuestion.text}}</text>
+      
+      <!-- 单选题 -->
+      <view class="options-list" wx:if="{{currentQuestion.type === 'single'}}">
+        <view class="option-item {{selectedAnswers[currentQuestion.id] === item.value ? 'selected' : ''}}"
+              wx:for="{{currentQuestion.options}}"
+              wx:key="value"
+              bindtap="selectOption"
+              data-value="{{item.value}}">
+          <text class="option-text">{{item.label}}</text>
+        </view>
+      </view>
+
+      <!-- 多选题 -->
+      <view class="options-list" wx:if="{{currentQuestion.type === 'multiple'}}">
+        <view class="option-item {{selectedAnswers[currentQuestion.id] && selectedAnswers[currentQuestion.id].includes(item.value) ? 'selected' : ''}}"
+              wx:for="{{currentQuestion.options}}"
+              wx:key="value"
+              bindtap="toggleOption"
+              data-value="{{item.value}}">
+          <text class="option-text">{{item.label}}</text>
+        </view>
+      </view>
+
+      <!-- 文本输入 -->
+      <view class="text-input-wrap" wx:if="{{currentQuestion.type === 'text'}}">
+        <textarea class="text-input" 
+                  placeholder="{{currentQuestion.placeholder}}"
+                  value="{{selectedAnswers[currentQuestion.id] || ''}}"
+                  bindinput="onTextInput"
+                  maxlength="200"/>
+      </view>
+    </view>
+
+    <view class="nav-buttons">
+      <button class="nav-btn prev" bindtap="prevStep" wx:if="{{currentStep > 1}}">上一步</button>
+      <button class="nav-btn next {{canProceed ? '' : 'disabled'}}" bindtap="nextStep">
+        {{currentStep === totalSteps ? '查看结果' : '下一步'}}
+      </button>
+    </view>
+  </view>
+
+  <!-- 加载中 -->
+  <view class="loading-screen" wx:if="{{isLoading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">正在检索古籍...</text>
+    <text class="loading-sub">已检索《黄帝内经》《伤寒论》等典籍</text>
+  </view>
+
+  <!-- 结果页 -->
+  <view class="result-screen" wx:if="{{result && !isLoading}}">
+    <view class="result-header">
+      <text class="result-title">辨证结果</text>
+      <view class="constitution-badge">
+        <text>{{result.constitution}}</text>
+      </view>
+    </view>
+
+    <view class="result-card">
+      <text class="card-title">证候分析</text>
+      <text class="card-content">{{result.syndrome}}</text>
+    </view>
+
+    <view class="result-card">
+      <text class="card-title">调理建议</text>
+      <text class="card-content">{{result.advice}}</text>
+    </view>
+
+    <!-- 溯源信息 -->
+    <view class="sources-section">
+      <text class="section-title">📚 古籍溯源</text>
+      <view class="source-item" wx:for="{{result.sources}}" wx:key="index">
+        <text class="source-book">《{{item.book}}》·{{item.section}}</text>
+        <text class="source-text">{{item.text}}</text>
+        <text class="source-original" wx:if="{{item.original_text}}">原文：{{item.original_text}}</text>
+      </view>
+    </view>
+
+    <!-- 推荐商品 -->
+    <view class="recommend-section" wx:if="{{recommendations.length > 0}}">
+      <text class="section-title">🍵 推荐养生方</text>
+      <text class="recommend-subtitle">根据您的体质，推荐以下养生品</text>
+      
+      <view class="recommend-list">
+        <view class="recommend-card" 
+              wx:for="{{recommendations}}"
+              wx:key="id"
+              bindtap="goToProduct"
+              data-id="{{item.id}}">
+          <image class="recommend-img" src="{{item.image}}" mode="aspectFill"/>
+          <view class="recommend-info">
+            <text class="recommend-name">{{item.name}}</text>
+            <text class="recommend-price">¥{{item.price/100}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 免责声明 -->
+    <view class="warning-box">
+      <text class="warning-icon">⚠️</text>
+      <text class="warning-text">{{result.warning}}</text>
+    </view>
+
+    <!-- 操作按钮 -->
+    <view class="action-buttons">
+      <button class="action-btn primary" bindtap="goToConsult">找医师确认</button>
+      <button class="action-btn secondary" bindtap="restart">重新辨证</button>
+    </view>
+  </view>
+</view>

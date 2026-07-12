@@ -60,3 +60,12 @@ Thumbs.db
 tmp/
 temp/
 *.tmp
+
+# Data directories (large binary files)
+backend/data/
+data/
+cache/
+agent_data/
+test_agent_data*/
+*.sqlite3
+*.bin

@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小神农中医AI v3.0 - 对话式问诊</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+            background: #f8f5f0;
+            color: #333;
+            line-height: 1.6;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* 头部 */
+        .header {
+            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+            color: white;
+            padding: 12px 20px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        .header h1 { font-size: 18px; margin-bottom: 2px; }
+        .header .subtitle { font-size: 11px; opacity: 0.9; }
+        .header .api-status {
+            display: inline-block;
+            margin-top: 6px;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            background: rgba(255,255,255,0.2);
+        }
+        .api-status.connected { background: #52c41a; }
+        .api-status.disconnected { background: #ff4d4f; }
+        
+        /* 模式切换 */
+        .mode-switch {
+            display: flex;
+            justify-content: center;
+            gap: 0;
+            padding: 8px;
+            background: white;
+            border-bottom: 1px solid #e8e8e8;
+            flex-shrink: 0;
+        }
+        .mode-btn {
+            padding: 6px 20px;
+            border: 1px solid #4a7c59;
+            background: white;
+            color: #4a7c59;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+        .mode-btn:first-child { border-radius: 20px 0 0 20px; border-right: none; }
+        .mode-btn:last-child { border-radius: 0 20px 20px 0; }
+        .mode-btn.active {
+            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+            color: white;
+        }
+        
+        /* 导航 */
+        .nav {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 8px;
+            background: white;
+            border-bottom: 1px solid #e8e8e8;
+            flex-shrink: 0;
+        }
+        .nav-btn {
+            padding: 5px 14px;
+            border: none;
+            border-radius: 16px;
+            background: #f0f0f0;
+            color: #666;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+        .nav-btn:hover { background: #e8f5e9; color: #4a7c59; }
+        .nav-btn.active {
+            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+            color: white;
+        }
+        
+        /* 内容区 */
+        .container {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .section {
+            display: none;
+            flex: 1;
+            overflow: hidden;
+            flex-direction: column;
+        }
+        .section.active { display: flex; }
+        
+        /* 聊天界面 */
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        .chat-message {
+            display: flex;
+            margin-bottom: 15px;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+            margin-right: 10px;
+        }
+        .bot-message .message-avatar { background: #e8f5e9; }
+        .user-message .message-avatar { background: #2d5016; color: white; }
+        
+        .message-content { flex: 1; max-width: calc(100% - 50px); }
+        
+        .message-bubble {
+            padding: 12px 15px;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .bot-message .message-bubble {
+            background: white;
+            border: 1px solid #e8e8e8;
+            border-top-left-radius: 4px;
+        }
+        .user-message .message-bubble {
+            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+            color: white;
+            border-top-right-radius: 4px;
+            margin-left: auto;
+            max-width: 80%;
+        }
+        .user-message { flex-direction: row-reverse; }
+        .user-message .message-avatar { margin-right: 0; margin-left: 10px; }
+        .user-message .message-content { display: flex; justify-content: flex-end; }
+        
+        .message-time {
+            font-size: 11px;
+            color: #999;
+            margin-top: 4px;
+            padding: 0 5px;
+        }
+        
+        /* 打字机效果 */
+        .typing-cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1.2em;
+            background: #4a7c59;
+            animation: blink 0.8s infinite;
+            vertical-align: text-bottom;
+            margin-left: 2px;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        
+        /* AI思考过程 - 分步展示 */
+        .thinking-process {
+            background: #f0f7f0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 10px;
+            border-left: 3px solid #4a7c59;
+        }
+        .thinking-title {
+            font-weight: bold;
+            color: #2d5016;
+            font-size: 14px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .thinking-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 8px;
+            padding: 8px;
+            background: white;
+            border-radius: 6px;
+            font-size: 13px;
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: all 0.5s ease;
+        }
+        .thinking-step.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .step-number {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #4a7c59;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        .step-content { flex: 1; }
+        .step-name { font-weight: 500; color: #333; margin-bottom: 2px; }
+        .step-desc { color: #666; font-size: 12px; }
+        .step-time { color: #999; font-size: 11px; margin-top: 2px; }
+        .step-status {
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            flex-shrink: 0;
+        }
+        .status-completed { background: #e8f5e9; color: #4a7c59; }
+        .status-running { background: #fff8e1; color: #f9a825; }
+        .status-failed { background: #ffebee; color: #c62828; }
+        
+        .thinking-summary {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #e0e0e0;
+            font-size: 12px;
+            color: #666;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        /* 输入区 */
+        .chat-input-area {
+            background: white;
+            border-top: 1px solid #e8e8e8;
+            padding: 10px 15px;
+            flex-shrink: 0;
+        }
+        .quick-symptoms {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+        .quick-symptoms::-webkit-scrollbar { display: none; }
+        .quick-tag {
+            padding: 6px 14px;
+            background: #f0f0f0;
+            border-radius: 16px;
+            font-size: 13px;
+            color: #555;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s;
+            border: none;
+        }
+        .quick-tag:hover {
+            background: #e8f5e9;
+            color: #4a7c59;
+        }
+        
+        .input-row {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+        .chat-input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            font-size: 14px;
+            resize: none;
+            outline: none;
+            transition: border-color 0.3s;
+            font-family: inherit;
+            max-height: 120px;
+        }
+        .chat-input:focus { border-color: #4a7c59; }
+        .send-btn {
+            padding: 10px 24px;
+            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+        .send-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(45,80,22,0.3); }
+        .send-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        
+        /* 加载动画 */
+        .loading-dots {
+            display: flex;
+            gap: 4px;
+            padding: 10px 0;
+        }
+        .loading-dots span {
+            width: 8px;
+            height: 8px;
+            background: #4a7c59;
+            border-radius: 50%;
+            animation: bounce 1.4s ease-in-out infinite both;
+        }
+        .loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+        
+        /* 进度条 */
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #e0e0e0;
+            border-radius: 2px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4a7c59, #2d5016);
+            border-radius: 2px;
+            transition: width 0.5s ease;
+        }
+        
+        /* 建议问题卡片 */
+        .suggested-questions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .suggested-q {
+            padding: 8px 14px;
+            background: #e8f5e9;
+            border: 1px solid #c8e6c9;
+            border-radius: 16px;
+            font-size: 13px;
+            color: #2d5016;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .suggested-q:hover {
+            background: #4a7c59;
+            color: white;
+        }
+        
+        /* 症状收集进度 */
+        .symptom-progress {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            background: #f0f7f0;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 12px;
+        }
+        .symptom-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+        .symptom-tag {
+            padding: 2px 8px;
+            background: #4a7c59;
+            color: white;
+            border-radius: 10px;
+            font-size: 11px;
+        }
+        
+        /* 结果卡片 */
+        .result-card {
+            background: #f8f5f0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        .result-constitution {
+            display: inline-block;
+            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+        .result-section-title {
+            font-weight: bold;
+            color: #4a7c59;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        .result-section-content {
+            color: #555;
+            line-height: 1.8;
+            font-size: 14px;
+        }
+        
+        /* 溯源 */
+        .source-item {
+            background: white;
+            border-left: 3px solid #4a7c59;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            border-radius: 0 6px 6px 0;
+        }
+        .source-book {
+            font-weight: bold;
+            color: #4a7c59;
+            font-size: 13px;
+        }
+        .source-text {
+            color: #666;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+        
+        /* 警告 */
+        .warning-box {
+            background: #fff8e1;
+            border: 1px solid #ffe082;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+        .warning-icon { font-size: 16px; }
+        .warning-text { color: #8b7355; font-size: 12px; line-height: 1.5; }
+        
+        /* 其他页面 */
+        .page-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .card-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2d5016;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e8f5e9;
+        }
+        
+        /* 搜索 */
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .search-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+        }
+        .search-input:focus { border-color: #4a7c59; }
+        .search-btn {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        /* JSON */
+        .json-viewer {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Consolas', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        .json-key { color: #9cdcfe; }
+        .json-string { color: #ce9178; }
+        .json-number { color: #b5cea8; }
+        
+        /* 响应式 */
+        @media (max-width: 600px) {
+            .header h1 { font-size: 16px; }
+            .nav-btn { padding: 4px 10px; font-size: 11px; }
+            .chat-input { font-size: 16px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🌿 小神农中医AI v3.0</h1>
+        <div class="subtitle">对话式问诊 · 多Agent知识库 · 批判性思维</div>
+        <div class="api-status disconnected" id="apiStatus">API连接中...</div>
+    </div>
+    
+    <!-- 模式切换 -->
+    <div class="mode-switch">
+        <button class="mode-btn active" onclick="switchMode('dialogue')" id="modeDialogue">💬 对话问诊</button>
+        <button class="mode-btn" onclick="switchMode('direct')" id="modeDirect">⚡ 快速辨证</button>
+    </div>
+    
+    <div class="nav">
+        <button class="nav-btn active" onclick="showSection('diagnosis')">AI辨证</button>
+        <button class="nav-btn" onclick="showSection('search')">古籍检索</button>
+        <button class="nav-btn" onclick="showSection('agents')">Agent系统</button>
+        <button class="nav-btn" onclick="showSection('api')">API测试</button>
+    </div>
+    
+    <div class="container">
+        <!-- AI辨证 - 对话框模式 -->
+        <div class="section active" id="section-diagnosis">
+            <div class="chat-container" id="chatContainer">
+                <!-- 欢迎消息由JS动态生成 -->
+            </div>
+            
+            <!-- 输入区 -->
+            <div class="chat-input-area">
+                <div class="quick-symptoms" id="quickSymptoms">
+                    <span class="quick-tag" onclick="sendQuickMessage('我最近头痛')">头痛</span>
+                    <span class="quick-tag" onclick="sendQuickMessage('有点发热')">发热</span>
+                    <span class="quick-tag" onclick="sendQuickMessage('怕冷')">怕冷</span>
+                    <span class="quick-tag" onclick="sendQuickMessage('没有汗')">无汗</span>
+                    <span class="quick-tag" onclick="sendQuickMessage('口干想喝水')">口干</span>
+                </div>
+                <div class="input-row">
+                    <textarea 
+                        class="chat-input" 
+                        id="chatInput" 
+                        placeholder="描述您的症状..."
+                        rows="1"
+                        oninput="autoResize(this)"
+                        onkeydown="handleKeyDown(event)"
+                    ></textarea>
+                    <button class="send-btn" onclick="sendMessage()" id="sendBtn">发送</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 古籍检索 -->
+        <div class="section" id="section-search">
+            <div class="page-content">
+                <div class="card">
+                    <div class="card-title">🔍 古籍知识检索</div>
+                    <div class="search-box">
+                        <input type="text" class="search-input" id="searchInput" placeholder="输入中医术语，如：麻黄汤、风寒感冒、气虚..." onkeypress="if(event.key==='Enter') searchKnowledge()">
+                        <button class="search-btn" onclick="searchKnowledge()">检索</button>
+                    </div>
+                    <div id="searchResults"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Agent系统 -->
+        <div class="section" id="section-agents">
+            <div class="page-content">
+                <div class="card">
+                    <div class="card-title">🤖 多Agent知识库系统</div>
+                    <div id="agentStats">加载中...</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">📊 Agent统计</div>
+                    <button class="search-btn" onclick="loadAgentStats()">刷新统计</button>
+                    <div id="agentDetails" style="margin-top: 15px;"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- API测试 -->
+        <div class="section" id="section-api">
+            <div class="page-content">
+                <div class="card">
+                    <div class="card-title">🔧 API接口测试</div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; color: #555;">API地址</label>
+                        <input type="text" class="search-input" id="apiBase" value="http://127.0.0.1:5001">
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+                        <button class="search-btn" onclick="testHealth()">测试健康</button>
+                        <button class="search-btn" onclick="testDialogueStart()">测试对话开始</button>
+                        <button class="search-btn" onclick="testAgents()">测试Agent</button>
+                    </div>
+                    <div class="json-viewer" id="apiResponse">点击上方按钮测试API...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE = 'http://127.0.0.1:5001';
+        let isProcessing = false;
+        let currentMode = 'dialogue';  // 'dialogue' or 'direct'
+        let dialogueSession = null;    // 对话会话ID
+        let collectedSymptoms = [];    // 已收集症状
+        
+        // 页面加载
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAPIStatus();
+            initDialogue();
+            loadAgentStats();
+        });
+        
+        // 检查API状态
+        async function checkAPIStatus() {
+            const statusEl = document.getElementById('apiStatus');
+            try {
+                const resp = await fetch(`${API_BASE}/api/health`, { method: 'GET' });
+                if (resp.ok) {
+                    const data = await resp.json();
+                    statusEl.textContent = `API已连接 | 知识库: ${data.rag_stats.total_documents}条`;
+                    statusEl.className = 'api-status connected';
+                } else {
+                    throw new Error('API error');
+                }
+            } catch (e) {
+                statusEl.textContent = 'API未连接 - 请启动后端服务';
+                statusEl.className = 'api-status disconnected';
+            }
+        }
+        
+        // 切换模式
+        function switchMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(mode === 'dialogue' ? 'modeDialogue' : 'modeDirect').classList.add('active');
+            
+            // 重置对话
+            if (mode === 'dialogue') {
+                initDialogue();
+            } else {
+                // 快速模式：直接显示输入提示
+                document.getElementById('chatContainer').innerHTML = `
+                    <div class="chat-message bot-message">
+                        <div class="message-avatar">🌿</div>
+                        <div class="message-content">
+                            <div class="message-bubble">
+                                <p><strong>快速辨证模式</strong></p>
+                                <p style="margin-top: 8px;">请直接描述所有症状，我将立即进行辨证分析：</p>
+                                <ul style="margin-top: 8px; padding-left: 20px; color: #666;">
+                                    <li>"头痛发热，怕冷，没有汗"</li>
+                                    <li>"失眠多梦，口干舌燥，手心发热"</li>
+                                </ul>
+                            </div>
+                            <div class="message-time">刚刚</div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        // 初始化对话
+        async function initDialogue() {
+            dialogueSession = null;
+            collectedSymptoms = [];
+            const container = document.getElementById('chatContainer');
+            container.innerHTML = '';
+            
+            // 显示欢迎消息（打字机效果）
+            const welcomeMsg = `您好！我是小神农AI助手。
+
+为了给您更准确的分析，我会先问您几个问题。请尽量详细描述您的不适，比如：
+• 哪里不舒服？（头痛、腹痛、关节痛等）
+• 持续多久了？
+• 有没有其他伴随症状？
+
+您现在最不舒服的地方是什么？`;
+            
+            await addBotMessageWithTyping(welcomeMsg);
+        }
+        
+        // 打字机效果添加消息
+        async function addBotMessageWithTyping(text, extraHtml = '') {
+            const container = document.getElementById('chatContainer');
+            const time = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+            
+            const msgId = 'msg_' + Date.now();
+            container.innerHTML += `
+                <div class="chat-message bot-message" id="${msgId}">
+                    <div class="message-avatar">🌿</div>
+                    <div class="message-content">
+                        <div class="message-bubble">
+                            <span id="text_${msgId}"></span><span class="typing-cursor"></span>
+                            ${extraHtml}
+                        </div>
+                        <div class="message-time">${time}</div>
+                    </div>
+                </div>
+            `;
+            scrollToBottom();
+            
+            // 打字机效果
+            const textEl = document.getElementById(`text_${msgId}`);
+            const lines = text.split('\n');
+            let currentLine = 0;
+            let currentChar = 0;
+            
+            return new Promise(resolve => {
+                function typeChar() {
+                    if (currentLine >= lines.length) {
+                        // 移除光标
+                        const cursor = document.querySelector(`#${msgId} .typing-cursor`);
+                        if (cursor) cursor.remove();
+                        resolve();
+                        return;
+                    }
+                    
+                    const line = lines[currentLine];
+                    if (currentChar < line.length) {
+                        textEl.innerHTML += line[currentChar];
+                        currentChar++;
+                        setTimeout(typeChar, 15);  // 每个字符15ms
+                    } else {
+                        textEl.innerHTML += '<br>';
+                        currentLine++;
+                        currentChar = 0;
+                        setTimeout(typeChar, 50);  // 换行稍停顿
+                    }
+                    scrollToBottom();
+                }
+                typeChar();
+            });
+        }
+        
+        // 切换页面
+        function showSection(name) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`section-${name}`).classList.add('active');
+            event.target.classList.add('active');
+        }
+        
+        // 自动调整输入框高度
+        function autoResize(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+        }
+        
+        // 回车发送
+        function handleKeyDown(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        }
+        
+        // 发送快捷消息
+        function sendQuickMessage(text) {
+            document.getElementById('chatInput').value = text;
+            sendMessage();
+        }
+        
+        // 发送消息
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            
+            if (!text || isProcessing) return;
+            
+            // 添加用户消息
+            addUserMessage(text);
+            input.value = '';
+            input.style.height = 'auto';
+            
+            isProcessing = true;
+            document.getElementById('sendBtn').disabled = true;
+            
+            try {
+                if (currentMode === 'dialogue') {
+                    await handleDialogueTurn(text);
+                } else {
+                    await handleDirectDiagnosis(text);
+                }
+            } catch (e) {
+                console.error('Error:', e);
+                await addBotMessageWithTyping('抱歉，连接失败。请确保后端服务已启动。');
+            } finally {
+                isProcessing = false;
+                document.getElementById('sendBtn').disabled = false;
+            }
+        }
+        
+        // 对话模式处理
+        async function handleDialogueTurn(userInput) {
+            if (!dialogueSession) {
+                // 开始新对话
+                const resp = await fetch(`${API_BASE}/api/dialogue/start`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await resp.json();
+                if (data.success) {
+                    dialogueSession = data.data.session_id;
+                }
+            }
+            
+            // 显示思考中
+            showThinkingAnimation();
+            
+            // 发送对话轮次
+            const resp = await fetch(`${API_BASE}/api/dialogue/turn`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    session_id: dialogueSession,
+                    user_input: userInput
+                })
+            });
+            
+            hideThinkingAnimation();
+            const data = await resp.json();
+            
+            if (data.success) {
+                const d = data.data;
+                
+                // 更新收集的症状
+                collectedSymptoms = d.collected_symptoms || [];
+                
+                // 构建额外HTML（进度、建议问题）
+                let extraHtml = '';
+                
+                // 症状进度
+                if (collectedSymptoms.length > 0) {
+                    extraHtml += `
+                        <div class="symptom-progress">
+                            <span>已收集症状:</span>
+                            <div class="symptom-tags">
+                                ${collectedSymptoms.map(s => `<span class="symptom-tag">${s.name}</span>`).join('')}
+                            </div>
+                            <div style="flex:1;">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${d.progress_percent}%"></div>
+                                </div>
+                            </div>
+                            <span>${d.progress_percent}%</span>
+                        </div>
+                    `;
+                }
+                
+                // 建议问题
+                if (d.suggested_questions && d.suggested_questions.length > 0 && !d.is_ready_for_diagnosis) {
+                    extraHtml += `
+                        <div class="suggested-questions">
+                            ${d.suggested_questions.map(q => `<span class="suggested-q" onclick="sendQuickMessage('${q.replace(/'/g, "\\'")}')">${q}</span>`).join('')}
+                        </div>
+                    `;
+                }
+                
+                // 如果有辨证结果
+                if (d.diagnosis_result) {
+                    extraHtml += renderDiagnosisResult(d.diagnosis_result);
+                }
+                
+                // 显示思考步骤（分步动画）
+                if (d.thinking_steps && d.thinking_steps.length > 0) {
+                    await showThinkingSteps(d.thinking_steps);
+                }
+                
+                // 显示AI回复
+                await addBotMessageWithTyping(d.bot_response, extraHtml);
+                
+                // 更新快捷标签
+                updateQuickSymptoms(d.suggested_questions);
+            } else {
+                await addBotMessageWithTyping('抱歉，处理失败：' + (data.error || '请稍后重试'));
+            }
+        }
+        
+        // 快速辨证模式
+        async function handleDirectDiagnosis(text) {
+            showThinkingAnimation();
+            
+            const resp = await fetch(`${API_BASE}/api/diagnosis`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ symptoms: text })
+            });
+            
+            hideThinkingAnimation();
+            const data = await resp.json();
+            
+            if (data.success) {
+                // 显示思考步骤
+                if (data.data.thinking_process) {
+                    await showThinkingSteps(data.data.thinking_process);
+                }
+                
+                const resultHtml = renderDiagnosisResult(data.data);
+                await addBotMessageWithTyping('辨证分析完成，以下是详细结果：', resultHtml);
+            } else {
+                await addBotMessageWithTyping('抱歉，辨证失败：' + (data.error || '请稍后重试'));
+            }
+        }
+        
+        // 显示思考步骤（分步动画）
+        async function showThinkingSteps(steps) {
+            const container = document.getElementById('chatContainer');
+            const time = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+            
+            const stepsId = 'steps_' + Date.now();
+            container.innerHTML += `
+                <div class="chat-message bot-message" id="${stepsId}">
+                    <div class="message-avatar">🧠</div>
+                    <div class="message-content">
+                        <div class="message-bubble">
+                            <div class="thinking-process">
+                                <div class="thinking-title">
+                                    <span>🧠</span> AI正在分析...
+                                </div>
+                                <div id="steps_${stepsId}"></div>
+                            </div>
+                        </div>
+                        <div class="message-time">${time}</div>
+                    </div>
+                </div>
+            `;
+            scrollToBottom();
+            
+            const stepsContainer = document.getElementById(`steps_${stepsId}`);
+            
+            for (let i = 0; i < steps.length; i++) {
+                const step = steps[i];
+                const statusClass = step.status === 'completed' ? 'status-completed' : 
+                                   step.status === 'failed' ? 'status-failed' : 'status-running';
+                const statusText = step.status === 'completed' ? '✓' : 
+                                  step.status === 'failed' ? '✗' : '●';
+                
+                const stepHtml = `
+                    <div class="thinking-step" id="step_${stepsId}_${i}">
+                        <div class="step-number">${step.step}</div>
+                        <div class="step-content">
+                            <div class="step-name">${step.name}</div>
+                            <div class="step-desc">${step.description}</div>
+                            <div class="step-time">${step.time_ms}ms</div>
+                        </div>
+                        <span class="step-status ${statusClass}">${statusText}</span>
+                    </div>
+                `;
+                
+                stepsContainer.innerHTML += stepHtml;
+                scrollToBottom();
+                
+                // 延迟显示动画
+                await new Promise(r => setTimeout(r, 300));
+                document.getElementById(`step_${stepsId}_${i}`).classList.add('visible');
+                scrollToBottom();
+            }
+            
+            // 3秒后淡出思考步骤
+            await new Promise(r => setTimeout(r, 3000));
+            const stepsEl = document.getElementById(stepsId);
+            if (stepsEl) {
+                stepsEl.style.opacity = '0.5';
+                stepsEl.style.transition = 'opacity 1s';
+            }
+        }
+        
+        // 显示思考动画
+        function showThinkingAnimation() {
+            const container = document.getElementById('chatContainer');
+            const time = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+            
+            container.innerHTML += `
+                <div class="chat-message bot-message" id="thinkingAnimation">
+                    <div class="message-avatar">🌿</div>
+                    <div class="message-content">
+                        <div class="message-bubble">
+                            <div class="loading-dots">
+                                <span></span><span></span><span></span>
+                            </div>
+                            <div style="font-size: 12px; color: #999; margin-top: 4px;">正在分析您的症状...</div>
+                        </div>
+                        <div class="message-time">${time}</div>
+                    </div>
+                </div>
+            `;
+            scrollToBottom();
+        }
+        
+        function hideThinkingAnimation() {
+            const el = document.getElementById('thinkingAnimation');
+            if (el) el.remove();
+        }
+        
+        // 添加用户消息
+        function addUserMessage(text) {
+            const container = document.getElementById('chatContainer');
+            const time = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+            
+            container.innerHTML += `
+                <div class="chat-message user-message">
+                    <div class="message-avatar">👤</div>
+                    <div class="message-content">
+                        <div class="message-bubble">${escapeHtml(text)}</div>
+                        <div class="message-time">${time}</div>
+                    </div>
+                </div>
+            `;
+            scrollToBottom();
+        }
+        
+        // 渲染辨证结果
+        function renderDiagnosisResult(data) {
+            // 症状分析
+            let symptomHtml = '';
+            if (data.symptom_analysis && data.symptom_analysis.extracted_symptoms) {
+                symptomHtml = data.symptom_analysis.extracted_symptoms.map(s => `
+                    <div style="display: inline-block; background: #e8f5e9; color: #2d5016; padding: 4px 10px; border-radius: 12px; margin: 2px; font-size: 12px;">
+                        ${s.name} <span style="color: #999; font-size: 10px;">[${s.id}]</span>
+                    </div>
+                `).join('');
+            }
+            
+            // 证型分析
+            let syndromeHtml = '';
+            if (data.syndrome_analysis && data.syndrome_analysis.length > 0) {
+                syndromeHtml = data.syndrome_analysis.map((sa, i) => {
+                    const matchPercent = Math.round((sa.match_score || 0) * 100);
+                    const severityColor = sa.severity === '危重' ? '#c62828' : 
+                                         sa.severity === '重' ? '#e65100' : 
+                                         sa.severity === '中-重' ? '#f57c00' :
+                                         sa.severity === '中' ? '#f9a825' : '#4a7c59';
+                    return `
+                        <div style="background: ${i === 0 ? '#f0f7f0' : '#fafafa'}; border-radius: 8px; padding: 12px; margin-bottom: 10px; border-left: 3px solid ${severityColor};">
+                            <div style="font-weight: bold; color: #2d5016; font-size: 15px;">
+                                ${i === 0 ? '⭐ ' : ''}${sa.name}
+                            </div>
+                            <div style="color: #666; font-size: 12px; margin-top: 4px;">
+                                匹配度: ${matchPercent}% | 辨证体系: ${sa.system}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+            
+            return `
+                <div class="result-card">
+                    <div class="result-constitution">${data.constitution || '待辨识'}</div>
+                    
+                    <div style="margin-bottom: 12px;">
+                        <div class="result-section-title">📋 症状分析</div>
+                        <div style="margin-top: 8px;">${symptomHtml || '<span style="color: #999; font-size: 12px;">未识别到标准症状</span>'}</div>
+                    </div>
+                    
+                    <div style="margin-bottom: 12px;">
+                        <div class="result-section-title">🔬 证型分析</div>
+                        ${syndromeHtml || '<p style="color: #999; font-size: 12px;">未识别到匹配证型</p>'}
+                    </div>
+                    
+                    <div style="margin-bottom: 12px;">
+                        <div class="result-section-title">💊 双源验证报告</div>
+                        <div class="result-section-content" style="white-space: pre-wrap; font-size: 13px;">${data.advice || ''}</div>
+                    </div>
+                    
+                    <div class="warning-box">
+                        <span class="warning-icon">⚠️</span>
+                        <span class="warning-text">${data.warning || '本结果仅供参考，不能替代专业医生诊断。如有不适，请及时就医。'}</span>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 更新快捷症状标签
+        function updateQuickSymptoms(questions) {
+            const container = document.getElementById('quickSymptoms');
+            if (!questions || questions.length === 0) return;
+            
+            // 从问题中提取关键词作为快捷标签
+            const keywords = ['头痛', '发热', '怕冷', '出汗', '口干', '口苦', '恶心', '失眠', '乏力'];
+            const matched = keywords.filter(kw => 
+                questions.some(q => q.includes(kw))
+            );
+            
+            if (matched.length > 0) {
+                container.innerHTML = matched.map(kw => 
+                    `<span class="quick-tag" onclick="sendQuickMessage('${kw}')">${kw}</span>`
+                ).join('');
+            }
+        }
+        
+        // 滚动到底部
+        function scrollToBottom() {
+            const container = document.getElementById('chatContainer');
+            container.scrollTop = container.scrollHeight;
+        }
+        
+        // HTML转义
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // 古籍检索
+        async function searchKnowledge() {
+            const query = document.getElementById('searchInput').value.trim();
+            if (!query) return;
+            
+            const resultsEl = document.getElementById('searchResults');
+            resultsEl.innerHTML = '<div style="text-align: center; padding: 40px;"><div class="loading-dots"><span></span><span></span><span></span></div><p>检索中...</p></div>';
+            
+            try {
+                const resp = await fetch(`${API_BASE}/api/retrieve`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query: query, top_k: 5 })
+                });
+                
+                const data = await resp.json();
+                
+                if (data.success && data.data.results.length > 0) {
+                    resultsEl.innerHTML = data.data.results.map((r, i) => `
+                        <div class="source-item" style="margin-bottom: 15px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div class="source-book">《${r.source_book}》·${r.source_section}</div>
+                                <span style="color: #4a7c59; font-size: 12px;">匹配度: ${(r.score * 100).toFixed(1)}%</span>
+                            </div>
+                            <div class="source-text">${r.text}</div>
+                            ${r.original_text ? `<div class="source-original">原文：${r.original_text}</div>` : ''}
+                        </div>
+                    `).join('');
+                } else {
+                    resultsEl.innerHTML = '<p style="text-align: center; color: #999; padding: 40px;">暂无相关古籍记载</p>';
+                }
+            } catch (e) {
+                resultsEl.innerHTML = '<p style="text-align: center; color: #999; padding: 40px;">检索失败，请检查API连接</p>';
+            }
+        }
+        
+        // Agent系统
+        async function loadAgentStats() {
+            const statsEl = document.getElementById('agentStats');
+            const detailsEl = document.getElementById('agentDetails');
+            
+            try {
+                const resp = await fetch(`${API_BASE}/api/agents/stats`);
+                const data = await resp.json();
+                
+                if (data.success) {
+                    const stats = data.data;
+                    let html = '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px;">';
+                    
+                    for (const [name, stat] of Object.entries(stats)) {
+                        html += `
+                            <div style="background: #f0f7f0; border-radius: 8px; padding: 12px;">
+                                <div style="font-weight: bold; color: #2d5016; font-size: 14px;">${name}</div>
+                                <div style="color: #666; font-size: 12px; margin-top: 4px;">
+                                    文件: ${stat.total_files} | 生成: ${stat.generated_count}
+                                </div>
+                            </div>
+                        `;
+                    }
+                    html += '</div>';
+                    statsEl.innerHTML = html;
+                    
+                    // 详细JSON
+                    detailsEl.innerHTML = `<pre class="json-viewer">${JSON.stringify(stats, null, 2)}</pre>`;
+                } else {
+                    statsEl.innerHTML = '<p style="color: #999;">加载失败</p>';
+                }
+            } catch (e) {
+                statsEl.innerHTML = '<p style="color: #999;">API连接失败</p>';
+            }
+        }
+        
+        // API测试
+        async function testHealth() { await apiRequest('GET', '/api/health'); }
+        async function testDialogueStart() { await apiRequest('POST', '/api/dialogue/start'); }
+        async function testAgents() { await apiRequest('GET', '/api/agents/stats'); }
+        
+        async function apiRequest(method, path, body) {
+            const base = document.getElementById('apiBase').value || API_BASE;
+            const responseEl = document.getElementById('apiResponse');
+            responseEl.textContent = '请求中...';
+            
+            try {
+                const options = {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' }
+                };
+                if (body) options.body = JSON.stringify(body);
+                
+                const resp = await fetch(`${base}${path}`, options);
+                const data = await resp.json();
+                responseEl.innerHTML = syntaxHighlight(data);
+            } catch (e) {
+                responseEl.textContent = `错误: ${e.message}`;
+            }
+        }
+        
+        function syntaxHighlight(json) {
+            if (typeof json !== 'string') json = JSON.stringify(json, null, 2);
+            json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            return json.replace(/("(\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?)/g, function(match) {
+                let cls = 'json-number';
+                if (/^"/.test(match)) {
+                    if (/:$/.test(match)) cls = 'json-key';
+                    else cls = 'json-string';
+                }
+                return '<span class="' + cls + '">' + match + '</span>';
+            });
+        }
+    </script>
+</body>
+</html>
