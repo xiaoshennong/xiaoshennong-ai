@@ -481,6 +481,187 @@ def _build_diagnosis_report(result):
     
     return '\n'.join(lines)
 
+# ========== 对话式问诊引擎 ==========
+
+class DialogueEngine:
+    """对话式中医问诊引擎"""
+    
+    # 症状追问模板
+    FOLLOW_UP_QUESTIONS = {
+        '失眠': ['入睡困难还是易醒？', '伴有心烦吗？', '口干吗？'],
+        '不寐': ['入睡困难还是易醒？', '伴有心烦吗？', '口干吗？'],
+        '多梦': ['梦境清晰吗？', '晨起疲劳吗？'],
+        '心烦': ['心烦加重的时间？', '伴有失眠吗？'],
+        '头痛': ['头痛部位？', '胀痛还是刺痛？', '伴有恶心吗？'],
+        '头晕': ['旋转感还是昏沉感？', '伴有耳鸣吗？'],
+        '胃痛': ['空腹痛还是饭后痛？', '喜温喜按吗？'],
+        '便秘': ['大便干结吗？', '几天一次？'],
+        '腹泻': ['大便稀溏吗？', '伴有腹痛吗？'],
+        '咳嗽': ['有痰吗？', '痰色白还是黄？'],
+        '气喘': ['活动后加重吗？', '伴有胸闷吗？'],
+        '乏力': ['乏力程度？', '伴有气短吗？'],
+        '口干': ['口渴想喝水吗？', '夜间加重吗？'],
+        '口苦': ['晨起明显吗？', '伴有胁痛吗？'],
+        '畏寒': ['怕冷还是怕风？', '四肢冰冷吗？'],
+        '发热': ['发热时间？', '伴有汗出吗？'],
+        '汗出': ['自汗还是盗汗？', '汗出部位？'],
+        '心悸': ['心悸频率？', '伴有胸闷吗？'],
+        '胸闷': ['胸闷程度？', '伴有气短吗？'],
+        '胁痛': ['胀痛还是刺痛？', '与情绪有关吗？'],
+        '腰痛': ['酸软还是刺痛？', '劳累后加重吗？'],
+        '关节痛': ['游走性还是固定？', '遇寒加重吗？'],
+        '皮肤瘙痒': ['干燥还是潮湿？', '夜间加重吗？'],
+        '月经不调': ['提前还是延后？', '经色如何？'],
+        '痛经': ['经前痛还是经中痛？', '喜温还是喜冷？'],
+    }
+    
+    def __init__(self):
+        self.sessions = {}  # 简单内存会话存储
+    
+    def start_session(self, session_id: str, initial_symptoms: list = None):
+        """开始新的问诊会话"""
+        self.sessions[session_id] = {
+            'symptoms': initial_symptoms or [],
+            'asked_questions': [],
+            'answers': {},
+            'stage': 'collecting',  # collecting -> analyzing -> complete
+            'turn': 0
+        }
+        return self._generate_next_question(session_id)
+    
+    def process_answer(self, session_id: str, answer: str):
+        """处理用户回答，生成下一个问题"""
+        if session_id not in self.sessions:
+            return self.start_session(session_id, [answer])
+        
+        session = self.sessions[session_id]
+        session['turn'] += 1
+        session['answers'][session['turn']] = answer
+        
+        # 从回答中提取症状
+        new_symptoms = self._extract_symptoms(answer)
+        session['symptoms'].extend(new_symptoms)
+        session['symptoms'] = list(set(session['symptoms']))
+        
+        # 如果收集了足够信息或达到最大轮数，进入分析阶段
+        if session['turn'] >= 5 or len(session['symptoms']) >= 4:
+            session['stage'] = 'analyzing'
+            return self._generate_diagnosis(session_id)
+        
+        return self._generate_next_question(session_id)
+    
+    def _extract_symptoms(self, text: str):
+        """从文本中提取症状"""
+        found = []
+        for name in SYMPTOM_NAME_MAP.keys():
+            if len(name) >= 2 and name in text:
+                found.append(name)
+        return found
+    
+    def _generate_next_question(self, session_id: str):
+        """生成下一个追问问题"""
+        session = self.sessions[session_id]
+        symptoms = session['symptoms']
+        asked = session['asked_questions']
+        
+        # 根据已有症状找相关追问
+        for sym in symptoms:
+            questions = self.FOLLOW_UP_QUESTIONS.get(sym, [])
+            for q in questions:
+                if q not in asked:
+                    asked.append(q)
+                    return {
+                        'type': 'question',
+                        'session_id': session_id,
+                        'turn': session['turn'] + 1,
+                        'question': q,
+                        'context': f"基于您提到的{sym}症状",
+                        'collected_symptoms': symptoms,
+                        'stage': 'collecting',
+                        'progress': min(100, int((session['turn'] / 5) * 100))
+                    }
+        
+        # 如果没有特定追问，使用通用问题
+        general_questions = [
+            '您的食欲如何？',
+            '您的大便情况正常吗？',
+            '您的睡眠除了提到的问题，还有其他不适吗？',
+            '您平时容易疲劳吗？',
+            '您的情绪状态如何？',
+            '您有口干或口苦的感觉吗？',
+        ]
+        
+        for q in general_questions:
+            if q not in asked:
+                asked.append(q)
+                return {
+                    'type': 'question',
+                    'session_id': session_id,
+                    'turn': session['turn'] + 1,
+                    'question': q,
+                    'context': '进一步了解您的身体状况',
+                    'collected_symptoms': symptoms,
+                    'stage': 'collecting',
+                    'progress': min(100, int((session['turn'] / 5) * 100))
+                }
+        
+        # 没有更多问题了，进入分析
+        session['stage'] = 'analyzing'
+        return self._generate_diagnosis(session_id)
+    
+    def _generate_diagnosis(self, session_id: str):
+        """生成诊断结果"""
+        session = self.sessions[session_id]
+        symptoms = session['symptoms']
+        
+        # 使用引擎进行诊断
+        query = ' '.join(symptoms)
+        result = engine.diagnose(query)
+        
+        report = _build_diagnosis_report(result)
+        
+        return {
+            'type': 'diagnosis',
+            'session_id': session_id,
+            'turn': session['turn'],
+            'collected_symptoms': symptoms,
+            'stage': 'complete',
+            'progress': 100,
+            'diagnosis': result,
+            'report': report
+        }
+
+# 初始化对话引擎
+dialogue_engine = DialogueEngine()
+
+@app.route('/api/dialogue/start', methods=['POST'])
+def dialogue_start():
+    """开始对话式问诊"""
+    data = request.get_json() or {}
+    session_id = data.get('session_id', f"session_{os.urandom(8).hex()}")
+    initial_symptoms = data.get('symptoms', [])
+    initial_query = data.get('query', '')
+    
+    # 提取初始症状
+    if initial_query:
+        initial_symptoms.extend(dialogue_engine._extract_symptoms(initial_query))
+    
+    result = dialogue_engine.start_session(session_id, initial_symptoms)
+    return jsonify({'success': True, 'data': result})
+
+@app.route('/api/dialogue/turn', methods=['POST'])
+def dialogue_turn():
+    """对话回合"""
+    data = request.get_json() or {}
+    session_id = data.get('session_id', '')
+    answer = data.get('answer', '')
+    
+    if not session_id:
+        return jsonify({'success': False, 'error': '缺少session_id'}), 400
+    
+    result = dialogue_engine.process_answer(session_id, answer)
+    return jsonify({'success': True, 'data': result})
+
 @app.route('/api/interactions/check', methods=['POST'])
 def check_interactions():
     """检查药物相互作用"""
