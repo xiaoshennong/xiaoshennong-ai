@@ -1,0 +1,62 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+api*.log
+server*.log
+startup*.log
+
+# Data
+data/chroma_db/
+data/chroma_db_v*/
+data/raw/
+cache/
+agent_data/
+test_agent_data*/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# API keys and secrets
+.env
+*.key
+*.pem
+
+# Temporary files
+tmp/
+temp/
+*.tmp
