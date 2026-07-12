@@ -864,6 +864,38 @@ def agents_run():
         return jsonify({"success": False, "error": str(e)}), 500
 
 
+@app.route("/api/knowledge/reset", methods=["POST"])
+def reset_knowledge():
+    """
+    重置知识库（删除所有数据）
+    警告：此操作不可恢复！
+    """
+    try:
+        collection = rag_engine._get_collection()
+        count = collection.count()
+        
+        # 获取所有ID并删除
+        if count > 0:
+            all_data = collection.get(include=[])
+            all_ids = all_data['ids']
+            # 分批删除
+            batch_size = 100
+            for i in range(0, len(all_ids), batch_size):
+                batch = all_ids[i:i+batch_size]
+                collection.delete(ids=batch)
+        
+        return jsonify({
+            "success": True,
+            "data": {
+                "deleted_count": count,
+                "message": "知识库已重置"
+            }
+        })
+    
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
 # ============ 错误处理 ============
 
 @app.errorhandler(404)

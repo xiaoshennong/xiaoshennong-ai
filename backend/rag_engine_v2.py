@@ -193,15 +193,17 @@ class XiaoShennongRAGv2:
         # 加载症状共现数据（从古籍和方剂数据中学习）
         self._load_cooccurrence_data()
         
+        self.collection_name = "tcm_knowledge_v2"  # 使用新集合名称，避免旧编码数据干扰
+        
         try:
-            _collection = self.chroma_client.get_collection("tcm_knowledge")
+            _collection = self.chroma_client.get_collection(self.collection_name)
             print(f"[RAG v2.2] 初始化完成，当前知识库文档数: {_collection.count()}")
         except Exception:
             _collection = self.chroma_client.create_collection(
-                name="tcm_knowledge",
-                metadata={"description": "中医古籍知识库"}
+                name=self.collection_name,
+                metadata={"description": "中医古籍知识库v2（中文症状名）"}
             )
-            print("[RAG v2.2] 初始化完成，新建知识库")
+            print("[RAG v2.2] 初始化完成，新建知识库v2")
     
     def _load_cooccurrence_data(self):
         """从方剂数据库加载症状共现数据"""
@@ -270,11 +272,11 @@ class XiaoShennongRAGv2:
     def _get_collection(self):
         """重新获取集合引用"""
         try:
-            return self.chroma_client.get_collection("tcm_knowledge")
+            return self.chroma_client.get_collection(self.collection_name)
         except Exception:
             return self.chroma_client.create_collection(
-                name="tcm_knowledge",
-                metadata={"description": "中医古籍知识库"}
+                name=self.collection_name,
+                metadata={"description": "中医古籍知识库v2（中文症状名）"}
             )
     
     def add_documents(self, documents: List[Dict]) -> None:
