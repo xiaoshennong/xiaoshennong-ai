@@ -160,8 +160,9 @@ class WebSearchAgent:
             return self._fallback_search(prompt, None)
     
     def _call_openai_api(self, prompt: str, max_results: int = 5) -> List[Dict]:
-        """使用OpenAI SDK调用API"""
+        """使用OpenAI SDK调用API - 增加超时"""
         try:
+            print(f"[WebSearch] 正在调用OpenAI API: {self.base_url} (模型: {self.model})")
             response = self.client.chat.completions.create(
                 model=self.model,
                 messages=[
@@ -170,18 +171,25 @@ class WebSearchAgent:
                 ],
                 temperature=0.3,
                 max_tokens=2000,
-                stream=False
+                stream=False,
+                timeout=120  # 增加超时到120秒
             )
             
             content = response.choices[0].message.content
+            
+            if not content or not content.strip():
+                print("[WebSearch] API返回空内容，使用降级搜索")
+                return self._fallback_search(prompt, None)
+            
+            print(f"[WebSearch] API调用成功，返回 {len(content)} 字符")
             return self._parse_search_results(content)
             
         except Exception as e:
             print(f"[WebSearch] OpenAI API调用失败: {e}")
-            raise
+            return self._fallback_search(prompt, None)
     
     def _call_requests_api(self, prompt: str, max_results: int = 5) -> List[Dict]:
-        """使用requests调用API"""
+        """使用requests调用API - 增加超时到120秒"""
         try:
             payload = {
                 "model": self.model,
@@ -194,20 +202,30 @@ class WebSearchAgent:
                 "stream": False
             }
             
+            print(f"[WebSearch] 正在调用API: {self.base_url} (模型: {self.model})")
             response = self.session.post(
                 f"{self.base_url}/chat/completions",
                 json=payload,
-                timeout=60
+                timeout=120  # 增加超时到120秒
             )
             response.raise_for_status()
             
             data = response.json()
             content = data['choices'][0]['message']['content']
+            
+            if not content or not content.strip():
+                print("[WebSearch] API返回空内容，使用降级搜索")
+                return self._fallback_search(prompt, None)
+            
+            print(f"[WebSearch] API调用成功，返回 {len(content)} 字符")
             return self._parse_search_results(content)
             
+        except requests.exceptions.Timeout:
+            print("[WebSearch] API调用超时(120秒)，使用降级搜索")
+            return self._fallback_search(prompt, None)
         except Exception as e:
             print(f"[WebSearch] Requests API调用失败: {e}")
-            raise
+            return self._fallback_search(prompt, None)
     
     def _parse_search_results(self, content: str) -> List[Dict]:
         """解析API返回的搜索结果"""
