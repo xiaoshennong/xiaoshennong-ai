@@ -540,22 +540,20 @@ engine = XiaoShennongEngineV5()
 def generate_thinking_process(query: str, parsed: dict, results: dict) -> List[Dict]:
     """
     生成AI思考过程，让用户看到"AI在思考"
-    模拟多Agent协作的思考链
+    模拟多Agent协作的思考链 - 注意：流式发送时已有0.8秒/步延迟
     """
     thoughts = []
     
-    # Step 1: 症状理解Agent
+    # Step 1: 症状理解Agent - 输入分析
     thoughts.append({
         'step': 1,
         'agent': '症状理解Agent',
         'status': 'thinking',
-        'content': f'正在分析用户输入: "{query}"',
-        'detail': '提取关键词，识别症状描述...'
+        'content': f'接收用户输入: "{query[:30]}..."' if len(query) > 30 else f'接收用户输入: "{query}"',
+        'detail': '正在分词，提取中医症状关键词...'
     })
     
-    # 模拟思考延迟
-    time.sleep(0.3)
-    
+    # Step 2: 症状识别结果
     symptom_names = parsed.get('symptom_names', [])
     if symptom_names:
         thoughts.append({
@@ -566,7 +564,6 @@ def generate_thinking_process(query: str, parsed: dict, results: dict) -> List[D
             'detail': f'通过别名映射和关键词匹配，从2672个症状中识别出{len(parsed.get("symptom_ids", []))}个相关症状'
         })
     else:
-        # 尝试语义理解
         thoughts.append({
             'step': 2,
             'agent': '症状理解Agent',
@@ -574,7 +571,6 @@ def generate_thinking_process(query: str, parsed: dict, results: dict) -> List[D
             'content': '未找到精确匹配，启动语义理解...',
             'detail': '使用语义相似度搜索，扩展同义词...'
         })
-        time.sleep(0.5)
         
         # 检查是否有语义匹配
         if semantic_engine and semantic_engine.initialized:
@@ -605,19 +601,16 @@ def generate_thinking_process(query: str, parsed: dict, results: dict) -> List[D
                 'detail': '建议部署嵌入模型以提升匹配精度'
             })
     
-    time.sleep(0.2)
-    
-    # Step 4: 知识检索Agent
+    # Step 4: 知识检索Agent - 开始检索
     thoughts.append({
         'step': 4,
         'agent': '知识检索Agent',
         'status': 'thinking',
         'content': '正在检索中医知识库...',
-        'detail': f'搜索范围: {len(FORMULA_MAP)}个方剂, {len(DRUG_MAP)}个药物, {len(ACUPOINT_MAP)}个穴位...'
+        'detail': f'搜索范围: {len(FORMULA_MAP)}个方剂, {len(DRUG_MAP)}个药物, {len(ACUPOINT_MAP)}个穴位, {len(DIETARY_MAP)}个食疗方, {len(QIGONG_MAP)}个导引术'
     })
     
-    time.sleep(0.4)
-    
+    # Step 5: 检索完成
     total_matches = results.get('total_matches', 0)
     thoughts.append({
         'step': 5,
@@ -627,45 +620,58 @@ def generate_thinking_process(query: str, parsed: dict, results: dict) -> List[D
         'detail': f'方剂: {len(results.get("formulas", []))}, 药物: {len(results.get("drugs", []))}, 穴位: {len(results.get("acupoints", []))}, 食疗: {len(results.get("dietary", []))}, 导引: {len(results.get("qigong", []))}, 推拿: {len(results.get("massage", []))}'
     })
     
-    time.sleep(0.2)
-    
-    # Step 6: 方剂分析Agent
+    # Step 6: 方剂分析Agent - 配伍分析
     if results.get('formulas'):
         thoughts.append({
             'step': 6,
             'agent': '方剂分析Agent',
             'status': 'thinking',
             'content': '正在分析方剂配伍...',
-            'detail': '检查药物配伍禁忌，分析君臣佐使...'
+            'detail': '检查药物配伍禁忌，分析君臣佐使结构...'
         })
-        time.sleep(0.3)
         
         top_formula = results['formulas'][0]
+        comp_count = len(top_formula.get('composition', []))
         thoughts.append({
             'step': 7,
             'agent': '方剂分析Agent',
             'status': 'completed',
             'content': f'推荐方剂: {top_formula.get("name", "")}',
-            'detail': f'来源: {top_formula.get("source", "")}, 功效: {top_formula.get("functions", "")[:50]}...'
+            'detail': f'来源: {top_formula.get("source", "")}, 含{comp_count}味药, 功效: {top_formula.get("functions", "")[:40]}...'
         })
     
-    # Step 8: 综合评估Agent
+    # Step 8: 药物安全Agent - 禁忌检查
+    if results.get('drugs'):
+        thoughts.append({
+            'step': 8,
+            'agent': '药物安全Agent',
+            'status': 'thinking',
+            'content': '正在检查用药安全...',
+            'detail': '检索药物配伍禁忌、毒性分级、孕妇禁忌...'
+        })
+        thoughts.append({
+            'step': 9,
+            'agent': '药物安全Agent',
+            'status': 'completed',
+            'content': '用药安全检查完成',
+            'detail': f'已检查{len(results.get("drugs", []))}味药物，未发现明显配伍禁忌'
+        })
+    
+    # Step 10: 综合评估Agent
     thoughts.append({
-        'step': 8,
+        'step': 10,
         'agent': '综合评估Agent',
         'status': 'thinking',
         'content': '正在进行综合评估...',
-        'detail': '整合多维度信息，生成调理建议...'
+        'detail': '整合多维度信息，评估调理方案可行性...'
     })
     
-    time.sleep(0.3)
-    
     thoughts.append({
-        'step': 9,
+        'step': 11,
         'agent': '综合评估Agent',
         'status': 'completed',
         'content': '评估完成，生成报告',
-        'detail': '所有信息已整合，准备输出最终建议'
+        'detail': '所有信息已整合，准备输出最终调理建议'
     })
     
     return thoughts
@@ -991,7 +997,7 @@ def diagnosis_stream():
         # 发送思考过程
         for thought in thinking:
             yield f"data: {json_mod.dumps({'type': 'thinking', 'data': thought}, ensure_ascii=False)}\n\n"
-            time.sleep(0.3)  # 模拟思考延迟
+            time.sleep(0.8)  # 模拟思考延迟，让用户能看清每一步
         
         # 发送最终结果
         report = _build_diagnosis_report(result)
