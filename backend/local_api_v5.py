@@ -1158,6 +1158,160 @@ def _build_diagnosis_report(result):
     
     return '\n'.join(lines)
 
+# ========== 疗效反馈收集API ==========
+FEEDBACK_FILE = os.path.join(DATA_DIR, 'user_feedback.json')
+
+def load_feedback():
+    """加载已有反馈数据"""
+    if os.path.exists(FEEDBACK_FILE):
+        try:
+            with open(FEEDBACK_FILE, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except:
+            return {"feedbacks": [], "stats": {}}
+    return {"feedbacks": [], "stats": {}}
+
+def save_feedback(data):
+    """保存反馈数据"""
+    with open(FEEDBACK_FILE, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
+@app.route('/api/feedback', methods=['POST'])
+def submit_feedback():
+    """
+    提交疗效反馈
+    请求体: {
+        "user_id": "用户ID",
+        "session_id": "会话ID",
+        "symptoms": ["症状编码列表"],
+        "diagnosis": "辨证结果",
+        "formula_id": "方剂ID",
+        "formula_name": "方剂名称",
+        "rating": 1-5,  // 疗效评分
+        "improvements": ["改善的症状"],
+        "side_effects": ["出现的副作用"],
+        "duration_days": 7,  // 服用天数
+        "notes": "用户备注",
+        "would_recommend": true/false
+    }
+    """
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "请求体为空"}), 400
+        
+        # 必填字段验证
+        required = ['user_id', 'session_id', 'rating']
+        for field in required:
+            if field not in data:
+                return jsonify({"error": f"缺少必填字段: {field}"}), 400
+        
+        # 评分验证
+        rating = int(data.get('rating', 0))
+        if rating < 1 or rating > 5:
+            return jsonify({"error": "评分必须在1-5之间"}), 400
+        
+        # 构建反馈记录
+        feedback = {
+            "feedback_id": f"FB-{datetime.now().strftime('%Y%m%d%H%M%S')}-{random.randint(1000,9999)}",
+            "timestamp": datetime.now().isoformat(),
+            "user_id": data.get('user_id'),
+            "session_id": data.get('session_id'),
+            "symptoms": data.get('symptoms', []),
+            "diagnosis": data.get('diagnosis', ''),
+            "formula_id": data.get('formula_id', ''),
+            "formula_name": data.get('formula_name', ''),
+            "rating": rating,
+            "improvements": data.get('improvements', []),
+            "side_effects": data.get('side_effects', []),
+            "duration_days": data.get('duration_days', 0),
+            "notes": data.get('notes', ''),
+            "would_recommend": data.get('would_recommend', False),
+            "status": "pending_review"  // pending_review / approved / rejected
+        }
+        
+        # 加载并保存
+        feedback_db = load_feedback()
+        feedback_db["feedbacks"].append(feedback)
+        
+        # 更新统计
+        stats = feedback_db.get("stats", {})
+        formula_id = feedback.get('formula_id', '')
+        if formula_id:
+            if formula_id not in stats:
+                stats[formula_id] = {"count": 0, "total_rating": 0, "avg_rating": 0}
+            stats[formula_id]["count"] += 1
+            stats[formula_id]["total_rating"] += rating
+            stats[formula_id]["avg_rating"] = round(
+                stats[formula_id]["total_rating"] / stats[formula_id]["count"], 2
+            )
+        feedback_db["stats"] = stats
+        
+        save_feedback(feedback_db)
+        
+        return jsonify({
+            "success": True,
+            "feedback_id": feedback["feedback_id"],
+            "message": "反馈提交成功，待审核后纳入疗效统计"
+        })
+        
+    except Exception as e:
+        return jsonify({"error": f"提交失败: {str(e)}"}), 500
+
+@app.route('/api/feedback/stats', methods=['GET'])
+def get_feedback_stats():
+    """获取疗效统计"""
+    try:
+        formula_id = request.args.get('formula_id', '')
+        feedback_db = load_feedback()
+        stats = feedback_db.get("stats", {})
+        
+        if formula_id:
+            return jsonify({
+                "formula_id": formula_id,
+                "stats": stats.get(formula_id, {"count": 0, "avg_rating": 0})
+            })
+        
+        # 返回总体统计
+        total_feedbacks = len(feedback_db.get("feedbacks", []))
+        avg_rating = 0
+        if total_feedbacks > 0:
+            total = sum(f.get("rating", 0) for f in feedback_db["feedbacks"])
+            avg_rating = round(total / total_feedbacks, 2)
+        
+        return jsonify({
+            "total_feedbacks": total_feedbacks,
+            "avg_rating": avg_rating,
+            "formula_stats": stats
+        })
+        
+    except Exception as e:
+        return jsonify({"error": f"获取统计失败: {str(e)}"}), 500
+
+@app.route('/api/feedback/list', methods=['GET'])
+def list_feedback():
+    """列出反馈（管理员用）"""
+    try:
+        status = request.args.get('status', 'all')
+        limit = int(request.args.get('limit', 50))
+        
+        feedback_db = load_feedback()
+        feedbacks = feedback_db.get("feedbacks", [])
+        
+        if status != 'all':
+            feedbacks = [f for f in feedbacks if f.get("status") == status]
+        
+        # 按时间倒序
+        feedbacks = sorted(feedbacks, key=lambda x: x.get("timestamp", ""), reverse=True)[:limit]
+        
+        return jsonify({
+            "count": len(feedbacks),
+            "feedbacks": feedbacks
+        })
+        
+    except Exception as e:
+        return jsonify({"error": f"获取列表失败: {str(e)}"}), 500
+
 if __name__ == '__main__':
     print("[LocalAPI v5.0] 启动服务，端口5005...")
     app.run(host='0.0.0.0', port=5005, debug=False, threaded=True)
