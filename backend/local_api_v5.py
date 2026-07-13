@@ -1187,10 +1187,10 @@ def submit_feedback():
         "diagnosis": "辨证结果",
         "formula_id": "方剂ID",
         "formula_name": "方剂名称",
-        "rating": 1-5,  // 疗效评分
+        "rating": 1-5,  # 疗效评分
         "improvements": ["改善的症状"],
         "side_effects": ["出现的副作用"],
-        "duration_days": 7,  // 服用天数
+        "duration_days": 7,  # 服用天数
         "notes": "用户备注",
         "would_recommend": true/false
     }
@@ -1227,7 +1227,7 @@ def submit_feedback():
             "duration_days": data.get('duration_days', 0),
             "notes": data.get('notes', ''),
             "would_recommend": data.get('would_recommend', False),
-            "status": "pending_review"  // pending_review / approved / rejected
+            "status": "pending_review"  # pending_review / approved / rejected
         }
         
         # 加载并保存
