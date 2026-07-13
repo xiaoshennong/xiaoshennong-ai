@@ -1,0 +1,7251 @@
+{
+  "formulas": [
+    {
+      "id": "FP-5001",
+      "name": "麻黄汤",
+      "source": "《伤寒论》",
+      "category": "解表剂",
+      "functions": "发汗解表，宣肺平喘",
+      "indications": [
+        "SN-001-001-002",
+        "SN-001-001-007",
+        "SN-001-001-008"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-232",
+          "name": "麻黄",
+          "dosage": "9g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-471",
+          "name": "桂枝",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-184",
+          "name": "杏仁",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "3g",
+          "role": "使"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5002",
+      "name": "桂枝汤",
+      "source": "《伤寒论》",
+      "category": "解表剂",
+      "functions": "解肌发表，调和营卫",
+      "indications": [
+        "SN-001-001-002",
+        "SN-001-001-009",
+        "SN-001-001-010"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-471",
+          "name": "桂枝",
+          "dosage": "9g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-261",
+          "name": "白芍",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-124",
+          "name": "生姜",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-959",
+          "name": "大枣",
+          "dosage": "3枚",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "6g",
+          "role": "使"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5003",
+      "name": "九味羌活汤",
+      "source": "《此事难知》",
+      "category": "解表剂",
+      "functions": "发汗祛湿，兼清里热",
+      "indications": [
+        "SN-001-001-002",
+        "SN-001-001-011",
+        "SN-001-001-012"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-524",
+          "name": "羌活",
+          "dosage": "9g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-905",
+          "name": "防风",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-005",
+          "name": "苍术",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-016",
+          "name": "细辛",
+          "dosage": "3g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-162",
+          "name": "川芎",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-481",
+          "name": "白芷",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-215",
+          "name": "生地黄",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-810",
+          "name": "黄芩",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "6g",
+          "role": "使"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5004",
+      "name": "大青龙汤",
+      "source": "《伤寒论》",
+      "category": "解表剂",
+      "functions": "发汗解表，清热除烦",
+      "indications": [
+        "SN-001-001-002",
+        "SN-001-001-007",
+        "SN-001-001-013"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-232",
+          "name": "麻黄",
+          "dosage": "12g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-471",
+          "name": "桂枝",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-184",
+          "name": "杏仁",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-102",
+          "name": "石膏",
+          "dosage": "18g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-124",
+          "name": "生姜",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-959",
+          "name": "大枣",
+          "dosage": "4枚",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "6g",
+          "role": "使"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5005",
+      "name": "小青龙汤",
+      "source": "《伤寒论》",
+      "category": "解表剂",
+      "functions": "解表散寒，温肺化饮",
+      "indications": [
+        "SN-001-001-002",
+        "SN-001-001-014",
+        "SN-001-001-015"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-232",
+          "name": "麻黄",
+          "dosage": "9g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-471",
+          "name": "桂枝",
+          "dosage": "9g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-256",
+          "name": "干姜",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-016",
+          "name": "细辛",
+          "dosage": "3g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-841",
+          "name": "五味子",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-261",
+          "name": "白芍",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-845",
+          "name": "半夏",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "6g",
+          "role": "使"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5006",
+      "name": "银翘散",
+      "source": "《温病条辨》",
+      "category": "解表剂",
+      "functions": "辛凉透表，清热解毒",
+      "indications": [
+        "SN-001-001-016",
+        "SN-001-001-017",
+        "SN-001-001-018"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-544",
+          "name": "金银花",
+          "dosage": "15g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-085",
+          "name": "连翘",
+          "dosage": "15g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-988",
+          "name": "薄荷",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-603",
+          "name": "牛蒡子",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-811",
+          "name": "荆芥穗",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-023",
+          "name": "淡豆豉",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-476",
+          "name": "桔梗",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-542",
+          "name": "竹叶",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-726",
+          "name": "芦根",
+          "dosage": "15g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "6g",
+          "role": "使"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5007",
+      "name": "桑菊饮",
+      "source": "《温病条辨》",
+      "category": "解表剂",
+      "functions": "疏风清热，宣肺止咳",
+      "indications": [
+        "SN-001-001-016",
+        "SN-001-001-019",
+        "SN-001-001-020"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-074",
+          "name": "桑叶",
+          "dosage": "9g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-376",
+          "name": "菊花",
+          "dosage": "6g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-184",
+          "name": "杏仁",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-085",
+          "name": "连翘",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-988",
+          "name": "薄荷",
+          "dosage": "3g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-476",
+          "name": "桔梗",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-726",
+          "name": "芦根",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "3g",
+          "role": "使"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5008",
+      "name": "麻黄杏仁甘草石膏汤",
+      "source": "《伤寒论》",
+      "category": "解表剂",
+      "functions": "辛凉宣泄，清肺平喘",
+      "indications": [
+        "SN-001-001-016",
+        "SN-001-001-021",
+        "SN-001-001-022"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-232",
+          "name": "麻黄",
+          "dosage": "9g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-102",
+          "name": "石膏",
+          "dosage": "18g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-184",
+          "name": "杏仁",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "6g",
+          "role": "使"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5009",
+      "name": "柴葛解肌汤",
+      "source": "《伤寒六书》",
+      "category": "解表剂",
+      "functions": "解肌清热",
+      "indications": [
+        "SN-001-001-023",
+        "SN-001-001-024",
+        "SN-001-001-025"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-398",
+          "name": "柴胡",
+          "dosage": "9g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-808",
+          "name": "葛根",
+          "dosage": "9g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-810",
+          "name": "黄芩",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-261",
+          "name": "白芍",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-476",
+          "name": "桔梗",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "6g",
+          "role": "使"
+        },
+        {
+          "drug_id": "DR-124",
+          "name": "生姜",
+          "dosage": "3g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-959",
+          "name": "大枣",
+          "dosage": "2枚",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-524",
+          "name": "羌活",
+          "dosage": "6g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5010",
+      "name": "升麻葛根汤",
+      "source": "《阎氏小儿方论》",
+      "category": "解表剂",
+      "functions": "解肌透疹",
+      "indications": [
+        "SN-001-001-026",
+        "SN-001-001-027",
+        "SN-001-001-028"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-493",
+          "name": "升麻",
+          "dosage": "6g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-808",
+          "name": "葛根",
+          "dosage": "9g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-261",
+          "name": "白芍",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "3g",
+          "role": "使"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5011",
+      "name": "大承气汤",
+      "source": "《伤寒论》",
+      "category": "泻下剂",
+      "functions": "峻下热结",
+      "indications": [
+        "SN-001-001-029",
+        "SN-001-001-030",
+        "SN-001-001-031"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-026",
+          "name": "大黄",
+          "dosage": "12g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-263",
+          "name": "厚朴",
+          "dosage": "15g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-920",
+          "name": "枳实",
+          "dosage": "12g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-259",
+          "name": "芒硝",
+          "dosage": "9g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5012",
+      "name": "小承气汤",
+      "source": "《伤寒论》",
+      "category": "泻下剂",
+      "functions": "轻下热结",
+      "indications": [
+        "SN-001-001-029",
+        "SN-001-001-032"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-026",
+          "name": "大黄",
+          "dosage": "12g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-263",
+          "name": "厚朴",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-920",
+          "name": "枳实",
+          "dosage": "9g",
+          "role": "臣"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5013",
+      "name": "调胃承气汤",
+      "source": "《伤寒论》",
+      "category": "泻下剂",
+      "functions": "缓下热结",
+      "indications": [
+        "SN-001-001-029",
+        "SN-001-001-033"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-026",
+          "name": "大黄",
+          "dosage": "12g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-259",
+          "name": "芒硝",
+          "dosage": "12g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "6g",
+          "role": "使"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5014",
+      "name": "麻子仁丸",
+      "source": "《伤寒论》",
+      "category": "泻下剂",
+      "functions": "润肠泄热，行气通便",
+      "indications": [
+        "SN-001-001-034",
+        "SN-001-001-035",
+        "SN-001-001-036"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-306",
+          "name": "麻子仁",
+          "dosage": "15g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-261",
+          "name": "白芍",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-920",
+          "name": "枳实",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-026",
+          "name": "大黄",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-263",
+          "name": "厚朴",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-184",
+          "name": "杏仁",
+          "dosage": "9g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5015",
+      "name": "济川煎",
+      "source": "《景岳全书》",
+      "category": "泻下剂",
+      "functions": "温肾益精，润肠通便",
+      "indications": [
+        "SN-001-001-034",
+        "SN-001-001-037",
+        "SN-001-001-038"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-681",
+          "name": "当归",
+          "dosage": "9g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-097",
+          "name": "牛膝",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-441",
+          "name": "肉苁蓉",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-016",
+          "name": "泽泻",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-493",
+          "name": "升麻",
+          "dosage": "3g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-710",
+          "name": "枳壳",
+          "dosage": "3g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5016",
+      "name": "小柴胡汤",
+      "source": "《伤寒论》",
+      "category": "和解剂",
+      "functions": "和解少阳",
+      "indications": [
+        "SN-001-001-039",
+        "SN-001-001-040",
+        "SN-001-001-041"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-398",
+          "name": "柴胡",
+          "dosage": "12g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-810",
+          "name": "黄芩",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-356",
+          "name": "人参",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-845",
+          "name": "半夏",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "6g",
+          "role": "使"
+        },
+        {
+          "drug_id": "DR-124",
+          "name": "生姜",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-959",
+          "name": "大枣",
+          "dosage": "4枚",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5017",
+      "name": "大柴胡汤",
+      "source": "《金匮要略》",
+      "category": "和解剂",
+      "functions": "和解少阳，内泻热结",
+      "indications": [
+        "SN-001-001-039",
+        "SN-001-001-042",
+        "SN-001-001-043"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-398",
+          "name": "柴胡",
+          "dosage": "12g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-810",
+          "name": "黄芩",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-261",
+          "name": "白芍",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-845",
+          "name": "半夏",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-124",
+          "name": "生姜",
+          "dosage": "15g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-920",
+          "name": "枳实",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-026",
+          "name": "大黄",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-959",
+          "name": "大枣",
+          "dosage": "4枚",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5018",
+      "name": "蒿芩清胆汤",
+      "source": "《重订通俗伤寒论》",
+      "category": "和解剂",
+      "functions": "清胆利湿，和胃化痰",
+      "indications": [
+        "SN-001-001-044",
+        "SN-001-001-045",
+        "SN-001-001-046"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-757",
+          "name": "青蒿",
+          "dosage": "6g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-810",
+          "name": "黄芩",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-459",
+          "name": "竹茹",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-845",
+          "name": "半夏",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-701",
+          "name": "赤茯苓",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-710",
+          "name": "枳壳",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-798",
+          "name": "陈皮",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-754",
+          "name": "碧玉散",
+          "dosage": "9g",
+          "role": "使"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5019",
+      "name": "四逆散",
+      "source": "《伤寒论》",
+      "category": "和解剂",
+      "functions": "透邪解郁，疏肝理脾",
+      "indications": [
+        "SN-001-001-047",
+        "SN-001-001-048",
+        "SN-001-001-049"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-398",
+          "name": "柴胡",
+          "dosage": "9g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-261",
+          "name": "白芍",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-920",
+          "name": "枳实",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "6g",
+          "role": "使"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5020",
+      "name": "逍遥散",
+      "source": "《太平惠民和剂局方》",
+      "category": "和解剂",
+      "functions": "疏肝解郁，养血健脾",
+      "indications": [
+        "SN-001-001-050",
+        "SN-001-001-051",
+        "SN-001-001-052"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-398",
+          "name": "柴胡",
+          "dosage": "9g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-261",
+          "name": "白芍",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-681",
+          "name": "当归",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-491",
+          "name": "白术",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-644",
+          "name": "茯苓",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "6g",
+          "role": "使"
+        },
+        {
+          "drug_id": "DR-988",
+          "name": "薄荷",
+          "dosage": "3g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-124",
+          "name": "生姜",
+          "dosage": "3g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5021",
+      "name": "加味逍遥散",
+      "source": "《内科摘要》",
+      "category": "和解剂",
+      "functions": "疏肝健脾，和血调经",
+      "indications": [
+        "SN-001-001-050",
+        "SN-001-001-053",
+        "SN-001-001-054"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-398",
+          "name": "柴胡",
+          "dosage": "9g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-261",
+          "name": "白芍",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-681",
+          "name": "当归",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-491",
+          "name": "白术",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-644",
+          "name": "茯苓",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "6g",
+          "role": "使"
+        },
+        {
+          "drug_id": "DR-988",
+          "name": "薄荷",
+          "dosage": "3g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-124",
+          "name": "生姜",
+          "dosage": "3g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-997",
+          "name": "牡丹皮",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-583",
+          "name": "栀子",
+          "dosage": "6g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5022",
+      "name": "痛泻要方",
+      "source": "《丹溪心法》",
+      "category": "和解剂",
+      "functions": "补脾柔肝，祛湿止泻",
+      "indications": [
+        "SN-001-001-055",
+        "SN-001-001-056",
+        "SN-001-001-057"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-491",
+          "name": "白术",
+          "dosage": "9g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-261",
+          "name": "白芍",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-798",
+          "name": "陈皮",
+          "dosage": "4g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-905",
+          "name": "防风",
+          "dosage": "3g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5023",
+      "name": "白虎汤",
+      "source": "《伤寒论》",
+      "category": "清热剂",
+      "functions": "清热生津",
+      "indications": [
+        "SN-001-001-058",
+        "SN-001-001-059",
+        "SN-001-001-060"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-102",
+          "name": "石膏",
+          "dosage": "30g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-351",
+          "name": "知母",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "3g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-747",
+          "name": "粳米",
+          "dosage": "9g",
+          "role": "使"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5024",
+      "name": "白虎加人参汤",
+      "source": "《伤寒论》",
+      "category": "清热剂",
+      "functions": "清热益气生津",
+      "indications": [
+        "SN-001-001-058",
+        "SN-001-001-061",
+        "SN-001-001-062"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-102",
+          "name": "石膏",
+          "dosage": "30g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-351",
+          "name": "知母",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "3g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-747",
+          "name": "粳米",
+          "dosage": "9g",
+          "role": "使"
+        },
+        {
+          "drug_id": "DR-356",
+          "name": "人参",
+          "dosage": "9g",
+          "role": "臣"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5025",
+      "name": "竹叶石膏汤",
+      "source": "《伤寒论》",
+      "category": "清热剂",
+      "functions": "清热生津，益气和胃",
+      "indications": [
+        "SN-001-001-063",
+        "SN-001-001-064",
+        "SN-001-001-065"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-542",
+          "name": "竹叶",
+          "dosage": "6g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-102",
+          "name": "石膏",
+          "dosage": "15g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-845",
+          "name": "半夏",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-860",
+          "name": "麦冬",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-356",
+          "name": "人参",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "3g",
+          "role": "使"
+        },
+        {
+          "drug_id": "DR-747",
+          "name": "粳米",
+          "dosage": "9g",
+          "role": "使"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5026",
+      "name": "清营汤",
+      "source": "《温病条辨》",
+      "category": "清热剂",
+      "functions": "清营解毒，透热养阴",
+      "indications": [
+        "SN-001-001-066",
+        "SN-001-001-067",
+        "SN-001-001-068"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-300",
+          "name": "犀角",
+          "dosage": "3g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-215",
+          "name": "生地黄",
+          "dosage": "15g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-027",
+          "name": "玄参",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-542",
+          "name": "竹叶",
+          "dosage": "3g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-860",
+          "name": "麦冬",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-572",
+          "name": "丹参",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-006",
+          "name": "黄连",
+          "dosage": "5g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-544",
+          "name": "金银花",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-085",
+          "name": "连翘",
+          "dosage": "6g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5027",
+      "name": "犀角地黄汤",
+      "source": "《备急千金要方》",
+      "category": "清热剂",
+      "functions": "清热解毒，凉血散瘀",
+      "indications": [
+        "SN-001-001-069",
+        "SN-001-001-070",
+        "SN-001-001-071"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-300",
+          "name": "犀角",
+          "dosage": "3g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-215",
+          "name": "生地黄",
+          "dosage": "30g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-261",
+          "name": "白芍",
+          "dosage": "12g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-997",
+          "name": "牡丹皮",
+          "dosage": "9g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5028",
+      "name": "黄连解毒汤",
+      "source": "《肘后备急方》",
+      "category": "清热剂",
+      "functions": "泻火解毒",
+      "indications": [
+        "SN-001-001-072",
+        "SN-001-001-073",
+        "SN-001-001-074"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-006",
+          "name": "黄连",
+          "dosage": "9g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-810",
+          "name": "黄芩",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-560",
+          "name": "黄柏",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-583",
+          "name": "栀子",
+          "dosage": "9g",
+          "role": "臣"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5029",
+      "name": "凉膈散",
+      "source": "《太平惠民和剂局方》",
+      "category": "清热剂",
+      "functions": "泻火通便，清上泄下",
+      "indications": [
+        "SN-001-001-075",
+        "SN-001-001-076",
+        "SN-001-001-077"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-085",
+          "name": "连翘",
+          "dosage": "15g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-810",
+          "name": "黄芩",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-583",
+          "name": "栀子",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-988",
+          "name": "薄荷",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-026",
+          "name": "大黄",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-259",
+          "name": "芒硝",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "6g",
+          "role": "使"
+        },
+        {
+          "drug_id": "DR-542",
+          "name": "竹叶",
+          "dosage": "6g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5030",
+      "name": "普济消毒饮",
+      "source": "《东垣试效方》",
+      "category": "清热剂",
+      "functions": "清热解毒，疏风散邪",
+      "indications": [
+        "SN-001-001-078",
+        "SN-001-001-079",
+        "SN-001-001-080"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-810",
+          "name": "黄芩",
+          "dosage": "15g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-006",
+          "name": "黄连",
+          "dosage": "15g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-798",
+          "name": "陈皮",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "6g",
+          "role": "使"
+        },
+        {
+          "drug_id": "DR-027",
+          "name": "玄参",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-398",
+          "name": "柴胡",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-476",
+          "name": "桔梗",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-085",
+          "name": "连翘",
+          "dosage": "3g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-793",
+          "name": "板蓝根",
+          "dosage": "3g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-562",
+          "name": "马勃",
+          "dosage": "3g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-603",
+          "name": "牛蒡子",
+          "dosage": "3g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-988",
+          "name": "薄荷",
+          "dosage": "3g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-325",
+          "name": "僵蚕",
+          "dosage": "3g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-493",
+          "name": "升麻",
+          "dosage": "3g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5031",
+      "name": "清瘟败毒饮",
+      "source": "《疫疹一得》",
+      "category": "清热剂",
+      "functions": "清热解毒，凉血泻火",
+      "indications": [
+        "SN-001-001-081",
+        "SN-001-001-082",
+        "SN-001-001-083"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-871",
+          "name": "生石膏",
+          "dosage": "24g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-215",
+          "name": "生地黄",
+          "dosage": "12g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-300",
+          "name": "犀角",
+          "dosage": "3g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-006",
+          "name": "黄连",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-583",
+          "name": "栀子",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-476",
+          "name": "桔梗",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-810",
+          "name": "黄芩",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-351",
+          "name": "知母",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-856",
+          "name": "赤芍",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-027",
+          "name": "玄参",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-085",
+          "name": "连翘",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "6g",
+          "role": "使"
+        },
+        {
+          "drug_id": "DR-997",
+          "name": "牡丹皮",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-542",
+          "name": "竹叶",
+          "dosage": "6g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5032",
+      "name": "香薷散",
+      "source": "《太平惠民和剂局方》",
+      "category": "祛暑剂",
+      "functions": "祛暑解表，化湿和中",
+      "indications": [
+        "SN-001-001-084",
+        "SN-001-001-085",
+        "SN-001-001-086"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-118",
+          "name": "香薷",
+          "dosage": "9g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-355",
+          "name": "白扁豆",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-263",
+          "name": "厚朴",
+          "dosage": "6g",
+          "role": "臣"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5033",
+      "name": "新加香薷饮",
+      "source": "《温病条辨》",
+      "category": "祛暑剂",
+      "functions": "祛暑解表，清热化湿",
+      "indications": [
+        "SN-001-001-084",
+        "SN-001-001-087",
+        "SN-001-001-088"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-118",
+          "name": "香薷",
+          "dosage": "6g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-544",
+          "name": "金银花",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-579",
+          "name": "鲜扁豆花",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-263",
+          "name": "厚朴",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-085",
+          "name": "连翘",
+          "dosage": "6g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5034",
+      "name": "六一散",
+      "source": "《黄帝素问宣明论方》",
+      "category": "祛暑剂",
+      "functions": "清暑利湿",
+      "indications": [
+        "SN-001-001-089",
+        "SN-001-001-090"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-023",
+          "name": "滑石",
+          "dosage": "18g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "3g",
+          "role": "使"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5035",
+      "name": "清暑益气汤",
+      "source": "《温热经纬》",
+      "category": "祛暑剂",
+      "functions": "清暑益气，养阴生津",
+      "indications": [
+        "SN-001-001-091",
+        "SN-001-001-092",
+        "SN-001-001-093"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-996",
+          "name": "西洋参",
+          "dosage": "6g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-196",
+          "name": "石斛",
+          "dosage": "15g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-860",
+          "name": "麦冬",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-006",
+          "name": "黄连",
+          "dosage": "3g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-542",
+          "name": "竹叶",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-710",
+          "name": "荷梗",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-351",
+          "name": "知母",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "3g",
+          "role": "使"
+        },
+        {
+          "drug_id": "DR-747",
+          "name": "粳米",
+          "dosage": "9g",
+          "role": "使"
+        },
+        {
+          "drug_id": "DR-823",
+          "name": "西瓜翠衣",
+          "dosage": "9g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5036",
+      "name": "理中丸",
+      "source": "《伤寒论》",
+      "category": "温里剂",
+      "functions": "温中散寒，补气健脾",
+      "indications": [
+        "SN-001-001-094",
+        "SN-001-001-095",
+        "SN-001-001-096"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-356",
+          "name": "人参",
+          "dosage": "9g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-256",
+          "name": "干姜",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-491",
+          "name": "白术",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "9g",
+          "role": "使"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5037",
+      "name": "小建中汤",
+      "source": "《伤寒论》",
+      "category": "温里剂",
+      "functions": "温中补虚，和里缓急",
+      "indications": [
+        "SN-001-001-097",
+        "SN-001-001-098",
+        "SN-001-001-099"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-075",
+          "name": "饴糖",
+          "dosage": "30g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-261",
+          "name": "白芍",
+          "dosage": "18g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-471",
+          "name": "桂枝",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-124",
+          "name": "生姜",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-959",
+          "name": "大枣",
+          "dosage": "6枚",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "6g",
+          "role": "使"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5038",
+      "name": "大建中汤",
+      "source": "《金匮要略》",
+      "category": "温里剂",
+      "functions": "温中补虚，降逆止痛",
+      "indications": [
+        "SN-001-001-100",
+        "SN-001-001-101",
+        "SN-001-001-102"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-211",
+          "name": "蜀椒",
+          "dosage": "6g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-256",
+          "name": "干姜",
+          "dosage": "12g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-356",
+          "name": "人参",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-075",
+          "name": "饴糖",
+          "dosage": "30g",
+          "role": "使"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5039",
+      "name": "四逆汤",
+      "source": "《伤寒论》",
+      "category": "温里剂",
+      "functions": "回阳救逆",
+      "indications": [
+        "SN-001-001-103",
+        "SN-001-001-104",
+        "SN-001-001-105"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-636",
+          "name": "附子",
+          "dosage": "15g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-256",
+          "name": "干姜",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "6g",
+          "role": "使"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5040",
+      "name": "回阳救急汤",
+      "source": "《伤寒六书》",
+      "category": "温里剂",
+      "functions": "回阳固脱，益气生脉",
+      "indications": [
+        "SN-001-001-106",
+        "SN-001-001-107",
+        "SN-001-001-108"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-636",
+          "name": "附子",
+          "dosage": "9g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-256",
+          "name": "干姜",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-782",
+          "name": "肉桂",
+          "dosage": "3g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-356",
+          "name": "人参",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-491",
+          "name": "白术",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-644",
+          "name": "茯苓",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-798",
+          "name": "陈皮",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "6g",
+          "role": "使"
+        },
+        {
+          "drug_id": "DR-841",
+          "name": "五味子",
+          "dosage": "3g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-845",
+          "name": "半夏",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-506",
+          "name": "麝香",
+          "dosage": "0.1g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5041",
+      "name": "当归四逆汤",
+      "source": "《伤寒论》",
+      "category": "温里剂",
+      "functions": "温经散寒，养血通脉",
+      "indications": [
+        "SN-001-001-109",
+        "SN-001-001-110",
+        "SN-001-001-111"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-681",
+          "name": "当归",
+          "dosage": "12g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-471",
+          "name": "桂枝",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-261",
+          "name": "白芍",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-016",
+          "name": "细辛",
+          "dosage": "3g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-636",
+          "name": "通草",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-959",
+          "name": "大枣",
+          "dosage": "8枚",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "6g",
+          "role": "使"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5042",
+      "name": "阳和汤",
+      "source": "《外科证治全生集》",
+      "category": "温里剂",
+      "functions": "温阳补血，散寒通滞",
+      "indications": [
+        "SN-001-001-112",
+        "SN-001-001-113",
+        "SN-001-001-114"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-840",
+          "name": "熟地黄",
+          "dosage": "30g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-827",
+          "name": "鹿角胶",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-782",
+          "name": "肉桂",
+          "dosage": "3g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-052",
+          "name": "姜炭",
+          "dosage": "3g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-918",
+          "name": "白芥子",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-232",
+          "name": "麻黄",
+          "dosage": "3g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "3g",
+          "role": "使"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5043",
+      "name": "玉屏风散",
+      "source": "《丹溪心法》",
+      "category": "补益剂",
+      "functions": "益气固表止汗",
+      "indications": [
+        "SN-001-001-115",
+        "SN-001-001-116",
+        "SN-001-001-117"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-195",
+          "name": "黄芪",
+          "dosage": "30g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-491",
+          "name": "白术",
+          "dosage": "60g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-905",
+          "name": "防风",
+          "dosage": "30g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5044",
+      "name": "完带汤",
+      "source": "《傅青主女科》",
+      "category": "补益剂",
+      "functions": "补脾疏肝，化湿止带",
+      "indications": [
+        "SN-001-001-118",
+        "SN-001-001-119",
+        "SN-001-001-120"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-491",
+          "name": "白术",
+          "dosage": "30g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-233",
+          "name": "山药",
+          "dosage": "30g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-356",
+          "name": "人参",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-261",
+          "name": "白芍",
+          "dosage": "15g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-690",
+          "name": "车前子",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-005",
+          "name": "苍术",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "3g",
+          "role": "使"
+        },
+        {
+          "drug_id": "DR-798",
+          "name": "陈皮",
+          "dosage": "2g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-941",
+          "name": "黑芥穗",
+          "dosage": "2g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-398",
+          "name": "柴胡",
+          "dosage": "2g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5045",
+      "name": "固冲汤",
+      "source": "《医学衷中参西录》",
+      "category": "补益剂",
+      "functions": "益气健脾，固冲摄血",
+      "indications": [
+        "SN-001-001-121",
+        "SN-001-001-122",
+        "SN-001-001-123"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-491",
+          "name": "白术",
+          "dosage": "30g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-195",
+          "name": "黄芪",
+          "dosage": "18g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-212",
+          "name": "龙骨",
+          "dosage": "24g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-269",
+          "name": "牡蛎",
+          "dosage": "24g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-165",
+          "name": "山茱萸",
+          "dosage": "24g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-261",
+          "name": "白芍",
+          "dosage": "12g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-535",
+          "name": "海螵蛸",
+          "dosage": "12g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-988",
+          "name": "茜草",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-502",
+          "name": "棕榈炭",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-217",
+          "name": "五倍子",
+          "dosage": "3g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5046",
+      "name": "易黄汤",
+      "source": "《傅青主女科》",
+      "category": "补益剂",
+      "functions": "固肾止带，清热祛湿",
+      "indications": [
+        "SN-001-001-124",
+        "SN-001-001-125",
+        "SN-001-001-126"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-233",
+          "name": "山药",
+          "dosage": "30g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-397",
+          "name": "芡实",
+          "dosage": "30g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-560",
+          "name": "黄柏",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-690",
+          "name": "车前子",
+          "dosage": "3g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-767",
+          "name": "白果",
+          "dosage": "10枚",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5047",
+      "name": "牡蛎散",
+      "source": "《太平惠民和剂局方》",
+      "category": "补益剂",
+      "functions": "益气固表，敛阴止汗",
+      "indications": [
+        "SN-001-001-127",
+        "SN-001-001-128",
+        "SN-001-001-129"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-195",
+          "name": "黄芪",
+          "dosage": "15g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-234",
+          "name": "麻黄根",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-269",
+          "name": "牡蛎",
+          "dosage": "30g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-535",
+          "name": "浮小麦",
+          "dosage": "15g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5048",
+      "name": "朱砂安神丸",
+      "source": "《内外伤辨惑论》",
+      "category": "安神剂",
+      "functions": "镇心安神，清热养血",
+      "indications": [
+        "SN-001-001-001",
+        "SN-001-001-130",
+        "SN-001-001-131"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-168",
+          "name": "朱砂",
+          "dosage": "15g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-006",
+          "name": "黄连",
+          "dosage": "18g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-215",
+          "name": "生地黄",
+          "dosage": "8g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-681",
+          "name": "当归",
+          "dosage": "8g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "16g",
+          "role": "使"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5049",
+      "name": "天王补心丹",
+      "source": "《摄生秘剖》",
+      "category": "安神剂",
+      "functions": "滋阴养血，补心安神",
+      "indications": [
+        "SN-001-001-001",
+        "SN-001-001-132",
+        "SN-001-001-133"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-215",
+          "name": "生地黄",
+          "dosage": "120g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-356",
+          "name": "人参",
+          "dosage": "15g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-572",
+          "name": "丹参",
+          "dosage": "15g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-027",
+          "name": "玄参",
+          "dosage": "15g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-644",
+          "name": "茯苓",
+          "dosage": "15g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-841",
+          "name": "五味子",
+          "dosage": "15g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-398",
+          "name": "远志",
+          "dosage": "15g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-476",
+          "name": "桔梗",
+          "dosage": "15g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-681",
+          "name": "当归",
+          "dosage": "30g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-835",
+          "name": "天冬",
+          "dosage": "30g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-860",
+          "name": "麦冬",
+          "dosage": "30g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-248",
+          "name": "柏子仁",
+          "dosage": "30g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-907",
+          "name": "酸枣仁",
+          "dosage": "30g",
+          "role": "臣"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5050",
+      "name": "酸枣仁汤",
+      "source": "《金匮要略》",
+      "category": "安神剂",
+      "functions": "养血安神，清热除烦",
+      "indications": [
+        "SN-001-001-001",
+        "SN-001-001-134",
+        "SN-001-001-135"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-907",
+          "name": "酸枣仁",
+          "dosage": "15g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-351",
+          "name": "知母",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-644",
+          "name": "茯苓",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-162",
+          "name": "川芎",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "3g",
+          "role": "使"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5051",
+      "name": "甘麦大枣汤",
+      "source": "《金匮要略》",
+      "category": "安神剂",
+      "functions": "养心安神，和中缓急",
+      "indications": [
+        "SN-001-001-136",
+        "SN-001-001-137",
+        "SN-001-001-138"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "9g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-637",
+          "name": "小麦",
+          "dosage": "15g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-959",
+          "name": "大枣",
+          "dosage": "5枚",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5052",
+      "name": "安宫牛黄丸",
+      "source": "《温病条辨》",
+      "category": "开窍剂",
+      "functions": "清热解毒，开窍醒神",
+      "indications": [
+        "SN-001-001-139",
+        "SN-001-001-140",
+        "SN-001-001-141"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-984",
+          "name": "牛黄",
+          "dosage": "30g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-230",
+          "name": "郁金",
+          "dosage": "30g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-300",
+          "name": "犀角",
+          "dosage": "30g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-006",
+          "name": "黄连",
+          "dosage": "30g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-168",
+          "name": "朱砂",
+          "dosage": "30g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-583",
+          "name": "栀子",
+          "dosage": "30g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-577",
+          "name": "雄黄",
+          "dosage": "30g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-810",
+          "name": "黄芩",
+          "dosage": "30g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-270",
+          "name": "珍珠",
+          "dosage": "15g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-552",
+          "name": "冰片",
+          "dosage": "7.5g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-506",
+          "name": "麝香",
+          "dosage": "7.5g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-080",
+          "name": "金箔",
+          "dosage": "适量",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5053",
+      "name": "紫雪",
+      "source": "《外台秘要》",
+      "category": "开窍剂",
+      "functions": "清热开窍，息风止痉",
+      "indications": [
+        "SN-001-001-142",
+        "SN-001-001-143",
+        "SN-001-001-144"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-102",
+          "name": "石膏",
+          "dosage": "1500g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-094",
+          "name": "寒水石",
+          "dosage": "1500g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-023",
+          "name": "滑石",
+          "dosage": "1500g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-482",
+          "name": "磁石",
+          "dosage": "1500g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-300",
+          "name": "犀角",
+          "dosage": "150g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-603",
+          "name": "羚羊角",
+          "dosage": "150g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-506",
+          "name": "麝香",
+          "dosage": "15g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-961",
+          "name": "青木香",
+          "dosage": "150g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-521",
+          "name": "沉香",
+          "dosage": "150g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5054",
+      "name": "至宝丹",
+      "source": "《太平惠民和剂局方》",
+      "category": "开窍剂",
+      "functions": "化浊开窍，清热解毒",
+      "indications": [
+        "SN-001-001-145",
+        "SN-001-001-146",
+        "SN-001-001-147"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-300",
+          "name": "犀角",
+          "dosage": "30g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-168",
+          "name": "朱砂",
+          "dosage": "30g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-577",
+          "name": "雄黄",
+          "dosage": "30g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-866",
+          "name": "玳瑁",
+          "dosage": "30g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-584",
+          "name": "琥珀",
+          "dosage": "30g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-506",
+          "name": "麝香",
+          "dosage": "3g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-552",
+          "name": "冰片",
+          "dosage": "3g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-080",
+          "name": "金箔",
+          "dosage": "50片",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-592",
+          "name": "银箔",
+          "dosage": "50片",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5055",
+      "name": "苏合香丸",
+      "source": "《太平惠民和剂局方》",
+      "category": "开窍剂",
+      "functions": "芳香开窍，行气止痛",
+      "indications": [
+        "SN-001-001-148",
+        "SN-001-001-149",
+        "SN-001-001-150"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-041",
+          "name": "苏合香",
+          "dosage": "30g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-506",
+          "name": "麝香",
+          "dosage": "30g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-552",
+          "name": "冰片",
+          "dosage": "30g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-099",
+          "name": "安息香",
+          "dosage": "30g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-961",
+          "name": "青木香",
+          "dosage": "30g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-183",
+          "name": "香附",
+          "dosage": "30g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-332",
+          "name": "白檀香",
+          "dosage": "30g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-973",
+          "name": "丁香",
+          "dosage": "30g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-521",
+          "name": "沉香",
+          "dosage": "30g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-010",
+          "name": "乳香",
+          "dosage": "30g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-491",
+          "name": "白术",
+          "dosage": "30g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-721",
+          "name": "诃子",
+          "dosage": "30g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-168",
+          "name": "朱砂",
+          "dosage": "30g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5056",
+      "name": "越鞠丸",
+      "source": "《丹溪心法》",
+      "category": "理气剂",
+      "functions": "行气解郁",
+      "indications": [
+        "SN-001-001-151",
+        "SN-001-001-152",
+        "SN-001-001-153"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-183",
+          "name": "香附",
+          "dosage": "9g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-162",
+          "name": "川芎",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-005",
+          "name": "苍术",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-448",
+          "name": "神曲",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-583",
+          "name": "栀子",
+          "dosage": "9g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5057",
+      "name": "柴胡疏肝散",
+      "source": "《景岳全书》",
+      "category": "理气剂",
+      "functions": "疏肝行气，活血止痛",
+      "indications": [
+        "SN-001-001-154",
+        "SN-001-001-155",
+        "SN-001-001-156"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-398",
+          "name": "柴胡",
+          "dosage": "6g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-798",
+          "name": "陈皮",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-162",
+          "name": "川芎",
+          "dosage": "5g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-183",
+          "name": "香附",
+          "dosage": "5g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-710",
+          "name": "枳壳",
+          "dosage": "5g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-261",
+          "name": "白芍",
+          "dosage": "5g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "3g",
+          "role": "使"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5058",
+      "name": "瓜蒌薤白白酒汤",
+      "source": "《金匮要略》",
+      "category": "理气剂",
+      "functions": "通阳散结，行气祛痰",
+      "indications": [
+        "SN-001-001-157",
+        "SN-001-001-158",
+        "SN-001-001-159"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-940",
+          "name": "瓜蒌",
+          "dosage": "15g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-208",
+          "name": "薤白",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-489",
+          "name": "白酒",
+          "dosage": "适量",
+          "role": "使"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5059",
+      "name": "半夏厚朴汤",
+      "source": "《金匮要略》",
+      "category": "理气剂",
+      "functions": "行气散结，降逆化痰",
+      "indications": [
+        "SN-001-001-160",
+        "SN-001-001-161",
+        "SN-001-001-162"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-845",
+          "name": "半夏",
+          "dosage": "12g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-263",
+          "name": "厚朴",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-644",
+          "name": "茯苓",
+          "dosage": "12g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-124",
+          "name": "生姜",
+          "dosage": "15g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-258",
+          "name": "苏叶",
+          "dosage": "6g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5060",
+      "name": "枳实消痞丸",
+      "source": "《兰室秘藏》",
+      "category": "理气剂",
+      "functions": "消痞除满，健脾和胃",
+      "indications": [
+        "SN-001-001-163",
+        "SN-001-001-164",
+        "SN-001-001-165"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-920",
+          "name": "枳实",
+          "dosage": "15g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-006",
+          "name": "黄连",
+          "dosage": "15g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-263",
+          "name": "厚朴",
+          "dosage": "12g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-356",
+          "name": "人参",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-491",
+          "name": "白术",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-644",
+          "name": "茯苓",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-221",
+          "name": "麦芽",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-816",
+          "name": "半夏曲",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-256",
+          "name": "干姜",
+          "dosage": "6g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5061",
+      "name": "厚朴温中汤",
+      "source": "《内外伤辨惑论》",
+      "category": "理气剂",
+      "functions": "行气除满，温中燥湿",
+      "indications": [
+        "SN-001-001-166",
+        "SN-001-001-167",
+        "SN-001-001-168"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-263",
+          "name": "厚朴",
+          "dosage": "9g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-798",
+          "name": "陈皮",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "3g",
+          "role": "使"
+        },
+        {
+          "drug_id": "DR-644",
+          "name": "茯苓",
+          "dosage": "5g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-1000",
+          "name": "草豆蔻",
+          "dosage": "5g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-092",
+          "name": "木香",
+          "dosage": "5g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-256",
+          "name": "干姜",
+          "dosage": "2g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5062",
+      "name": "天台乌药散",
+      "source": "《医学发明》",
+      "category": "理气剂",
+      "functions": "行气疏肝，散寒止痛",
+      "indications": [
+        "SN-001-001-169",
+        "SN-001-001-170",
+        "SN-001-001-171"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-302",
+          "name": "乌药",
+          "dosage": "9g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-092",
+          "name": "木香",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-494",
+          "name": "小茴香",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-427",
+          "name": "青皮",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-970",
+          "name": "高良姜",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-447",
+          "name": "槟榔",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-298",
+          "name": "川楝子",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-896",
+          "name": "巴豆",
+          "dosage": "70粒",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5063",
+      "name": "暖肝煎",
+      "source": "《景岳全书》",
+      "category": "理气剂",
+      "functions": "温补肝肾，行气止痛",
+      "indications": [
+        "SN-001-001-172",
+        "SN-001-001-173",
+        "SN-001-001-174"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-681",
+          "name": "当归",
+          "dosage": "6g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-520",
+          "name": "枸杞子",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-494",
+          "name": "小茴香",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-782",
+          "name": "肉桂",
+          "dosage": "3g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-302",
+          "name": "乌药",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-521",
+          "name": "沉香",
+          "dosage": "3g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-644",
+          "name": "茯苓",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-124",
+          "name": "生姜",
+          "dosage": "3g",
+          "role": "使"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5064",
+      "name": "加味乌药汤",
+      "source": "《济阴纲目》",
+      "category": "理气剂",
+      "functions": "行气活血，调经止痛",
+      "indications": [
+        "SN-001-001-175",
+        "SN-001-001-176",
+        "SN-001-001-177"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-302",
+          "name": "乌药",
+          "dosage": "9g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-059",
+          "name": "缩砂仁",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-092",
+          "name": "木香",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-407",
+          "name": "延胡索",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-183",
+          "name": "香附",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "6g",
+          "role": "使"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5065",
+      "name": "桃核承气汤",
+      "source": "《伤寒论》",
+      "category": "理血剂",
+      "functions": "逐瘀泻热",
+      "indications": [
+        "SN-001-001-178",
+        "SN-001-001-179",
+        "SN-001-001-180"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-925",
+          "name": "桃仁",
+          "dosage": "12g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-026",
+          "name": "大黄",
+          "dosage": "12g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-471",
+          "name": "桂枝",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-259",
+          "name": "芒硝",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "6g",
+          "role": "使"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5066",
+      "name": "血府逐瘀汤",
+      "source": "《医林改错》",
+      "category": "理血剂",
+      "functions": "活血化瘀，行气止痛",
+      "indications": [
+        "SN-001-001-181",
+        "SN-001-001-182",
+        "SN-001-001-183"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-925",
+          "name": "桃仁",
+          "dosage": "12g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-935",
+          "name": "红花",
+          "dosage": "9g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-681",
+          "name": "当归",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-215",
+          "name": "生地黄",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-162",
+          "name": "川芎",
+          "dosage": "5g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-856",
+          "name": "赤芍",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-097",
+          "name": "牛膝",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-476",
+          "name": "桔梗",
+          "dosage": "5g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-398",
+          "name": "柴胡",
+          "dosage": "3g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-710",
+          "name": "枳壳",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "3g",
+          "role": "使"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5067",
+      "name": "补阳还五汤",
+      "source": "《医林改错》",
+      "category": "理血剂",
+      "functions": "补气活血通络",
+      "indications": [
+        "SN-001-001-184",
+        "SN-001-001-185",
+        "SN-001-001-186"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-195",
+          "name": "黄芪",
+          "dosage": "120g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-681",
+          "name": "当归",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-856",
+          "name": "赤芍",
+          "dosage": "5g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-322",
+          "name": "地龙",
+          "dosage": "3g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-162",
+          "name": "川芎",
+          "dosage": "3g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-935",
+          "name": "红花",
+          "dosage": "3g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-925",
+          "name": "桃仁",
+          "dosage": "3g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5068",
+      "name": "复元活血汤",
+      "source": "《医学发明》",
+      "category": "理血剂",
+      "functions": "活血祛瘀，疏肝通络",
+      "indications": [
+        "SN-001-001-187",
+        "SN-001-001-188",
+        "SN-001-001-189"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-398",
+          "name": "柴胡",
+          "dosage": "15g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-793",
+          "name": "瓜蒌根",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-681",
+          "name": "当归",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-935",
+          "name": "红花",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "6g",
+          "role": "使"
+        },
+        {
+          "drug_id": "DR-057",
+          "name": "穿山甲",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-026",
+          "name": "大黄",
+          "dosage": "30g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-925",
+          "name": "桃仁",
+          "dosage": "9g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5069",
+      "name": "七厘散",
+      "source": "《良方集腋》",
+      "category": "理血剂",
+      "functions": "散瘀消肿，定痛止血",
+      "indications": [
+        "SN-001-001-190",
+        "SN-001-001-191",
+        "SN-001-001-192"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-842",
+          "name": "血竭",
+          "dosage": "30g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-506",
+          "name": "麝香",
+          "dosage": "0.4g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-552",
+          "name": "冰片",
+          "dosage": "0.4g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-010",
+          "name": "乳香",
+          "dosage": "5g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-240",
+          "name": "没药",
+          "dosage": "5g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-935",
+          "name": "红花",
+          "dosage": "5g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-168",
+          "name": "朱砂",
+          "dosage": "4g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-719",
+          "name": "儿茶",
+          "dosage": "7.5g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5070",
+      "name": "温经汤",
+      "source": "《金匮要略》",
+      "category": "理血剂",
+      "functions": "温经散寒，养血祛瘀",
+      "indications": [
+        "SN-001-001-193",
+        "SN-001-001-194",
+        "SN-001-001-195"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-731",
+          "name": "吴茱萸",
+          "dosage": "9g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-681",
+          "name": "当归",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-261",
+          "name": "白芍",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-162",
+          "name": "川芎",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-356",
+          "name": "人参",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-471",
+          "name": "桂枝",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-682",
+          "name": "阿胶",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-997",
+          "name": "牡丹皮",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-124",
+          "name": "生姜",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "6g",
+          "role": "使"
+        },
+        {
+          "drug_id": "DR-845",
+          "name": "半夏",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-860",
+          "name": "麦冬",
+          "dosage": "9g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5071",
+      "name": "生化汤",
+      "source": "《傅青主女科》",
+      "category": "理血剂",
+      "functions": "养血祛瘀，温经止痛",
+      "indications": [
+        "SN-001-001-196",
+        "SN-001-001-197",
+        "SN-001-001-198"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-681",
+          "name": "当归",
+          "dosage": "24g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-162",
+          "name": "川芎",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-925",
+          "name": "桃仁",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-250",
+          "name": "炮姜",
+          "dosage": "2g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "2g",
+          "role": "使"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5072",
+      "name": "失笑散",
+      "source": "《太平惠民和剂局方》",
+      "category": "理血剂",
+      "functions": "活血祛瘀，散结止痛",
+      "indications": [
+        "SN-001-001-199",
+        "SN-001-001-200",
+        "SN-001-001-201"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-027",
+          "name": "五灵脂",
+          "dosage": "6g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-582",
+          "name": "蒲黄",
+          "dosage": "6g",
+          "role": "臣"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5073",
+      "name": "桂枝茯苓丸",
+      "source": "《金匮要略》",
+      "category": "理血剂",
+      "functions": "活血化瘀，缓消癥块",
+      "indications": [
+        "SN-001-001-202",
+        "SN-001-001-203",
+        "SN-001-001-204"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-471",
+          "name": "桂枝",
+          "dosage": "9g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-644",
+          "name": "茯苓",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-997",
+          "name": "牡丹皮",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-925",
+          "name": "桃仁",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-261",
+          "name": "白芍",
+          "dosage": "9g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5074",
+      "name": "活络效灵丹",
+      "source": "《医学衷中参西录》",
+      "category": "理血剂",
+      "functions": "活血祛瘀，通络止痛",
+      "indications": [
+        "SN-001-001-205",
+        "SN-001-001-206",
+        "SN-001-001-207"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-681",
+          "name": "当归",
+          "dosage": "15g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-572",
+          "name": "丹参",
+          "dosage": "15g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-010",
+          "name": "乳香",
+          "dosage": "15g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-240",
+          "name": "没药",
+          "dosage": "15g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5075",
+      "name": "十灰散",
+      "source": "《十药神书》",
+      "category": "理血剂",
+      "functions": "凉血止血",
+      "indications": [
+        "SN-001-001-208",
+        "SN-001-001-209",
+        "SN-001-001-210"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-780",
+          "name": "大蓟",
+          "dosage": "9g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-069",
+          "name": "小蓟",
+          "dosage": "9g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-308",
+          "name": "荷叶",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-950",
+          "name": "侧柏叶",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-432",
+          "name": "白茅根",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-988",
+          "name": "茜草",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-583",
+          "name": "栀子",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-026",
+          "name": "大黄",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-997",
+          "name": "牡丹皮",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-336",
+          "name": "棕榈皮",
+          "dosage": "9g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5076",
+      "name": "咳血方",
+      "source": "《丹溪心法》",
+      "category": "理血剂",
+      "functions": "清肝宁肺，凉血止血",
+      "indications": [
+        "SN-001-001-211",
+        "SN-001-001-212",
+        "SN-001-001-213"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-639",
+          "name": "青黛",
+          "dosage": "6g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-327",
+          "name": "瓜蒌仁",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-896",
+          "name": "海粉",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-583",
+          "name": "栀子",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-721",
+          "name": "诃子",
+          "dosage": "6g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5077",
+      "name": "小蓟饮子",
+      "source": "《济生方》",
+      "category": "理血剂",
+      "functions": "凉血止血，利水通淋",
+      "indications": [
+        "SN-001-001-214",
+        "SN-001-001-215",
+        "SN-001-001-216"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-215",
+          "name": "生地黄",
+          "dosage": "30g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-069",
+          "name": "小蓟",
+          "dosage": "15g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-023",
+          "name": "滑石",
+          "dosage": "15g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-110",
+          "name": "木通",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-582",
+          "name": "蒲黄",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-370",
+          "name": "藕节",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-734",
+          "name": "淡竹叶",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-681",
+          "name": "当归",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-583",
+          "name": "栀子",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "6g",
+          "role": "使"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5078",
+      "name": "槐花散",
+      "source": "《本事方》",
+      "category": "理血剂",
+      "functions": "清肠止血，疏风行气",
+      "indications": [
+        "SN-001-001-217",
+        "SN-001-001-218",
+        "SN-001-001-219"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-192",
+          "name": "槐花",
+          "dosage": "12g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-220",
+          "name": "柏叶",
+          "dosage": "12g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-811",
+          "name": "荆芥穗",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-710",
+          "name": "枳壳",
+          "dosage": "6g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5079",
+      "name": "黄土汤",
+      "source": "《金匮要略》",
+      "category": "理血剂",
+      "functions": "温阳健脾，养血止血",
+      "indications": [
+        "SN-001-001-220",
+        "SN-001-001-221",
+        "SN-001-001-222"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-565",
+          "name": "灶心黄土",
+          "dosage": "30g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "9g",
+          "role": "使"
+        },
+        {
+          "drug_id": "DR-215",
+          "name": "生地黄",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-491",
+          "name": "白术",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-636",
+          "name": "附子",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-682",
+          "name": "阿胶",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-810",
+          "name": "黄芩",
+          "dosage": "9g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5080",
+      "name": "川芎茶调散",
+      "source": "《太平惠民和剂局方》",
+      "category": "治风剂",
+      "functions": "疏风止痛",
+      "indications": [
+        "SN-001-001-223",
+        "SN-001-001-224",
+        "SN-001-001-225"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-162",
+          "name": "川芎",
+          "dosage": "12g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-542",
+          "name": "荆芥",
+          "dosage": "12g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-481",
+          "name": "白芷",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-524",
+          "name": "羌活",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "6g",
+          "role": "使"
+        },
+        {
+          "drug_id": "DR-016",
+          "name": "细辛",
+          "dosage": "3g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-905",
+          "name": "防风",
+          "dosage": "4.5g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-988",
+          "name": "薄荷",
+          "dosage": "24g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5081",
+      "name": "大秦艽汤",
+      "source": "《素问病机气宜保命集》",
+      "category": "治风剂",
+      "functions": "祛风清热，养血活血",
+      "indications": [
+        "SN-001-001-226",
+        "SN-001-001-227",
+        "SN-001-001-228"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-307",
+          "name": "秦艽",
+          "dosage": "9g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "6g",
+          "role": "使"
+        },
+        {
+          "drug_id": "DR-162",
+          "name": "川芎",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-681",
+          "name": "当归",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-261",
+          "name": "白芍",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-016",
+          "name": "细辛",
+          "dosage": "3g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-524",
+          "name": "羌活",
+          "dosage": "3g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-905",
+          "name": "防风",
+          "dosage": "3g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-810",
+          "name": "黄芩",
+          "dosage": "3g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-102",
+          "name": "石膏",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-481",
+          "name": "白芷",
+          "dosage": "3g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-491",
+          "name": "白术",
+          "dosage": "3g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-215",
+          "name": "生地黄",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-840",
+          "name": "熟地黄",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-234",
+          "name": "白茯苓",
+          "dosage": "3g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-084",
+          "name": "独活",
+          "dosage": "3g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5082",
+      "name": "小活络丹",
+      "source": "《太平惠民和剂局方》",
+      "category": "治风剂",
+      "functions": "祛风除湿，化痰通络，活血止痛",
+      "indications": [
+        "SN-001-001-229",
+        "SN-001-001-230",
+        "SN-001-001-231"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-367",
+          "name": "川乌",
+          "dosage": "6g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-577",
+          "name": "草乌",
+          "dosage": "6g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-322",
+          "name": "地龙",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-902",
+          "name": "天南星",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-010",
+          "name": "乳香",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-240",
+          "name": "没药",
+          "dosage": "6g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5083",
+      "name": "牵正散",
+      "source": "《杨氏家藏方》",
+      "category": "治风剂",
+      "functions": "祛风化痰，通络止痉",
+      "indications": [
+        "SN-001-001-232",
+        "SN-001-001-233",
+        "SN-001-001-234"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-858",
+          "name": "白附子",
+          "dosage": "6g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-449",
+          "name": "白僵蚕",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-544",
+          "name": "全蝎",
+          "dosage": "6g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5084",
+      "name": "玉真散",
+      "source": "《外科正宗》",
+      "category": "治风剂",
+      "functions": "祛风化痰，定搐止痉",
+      "indications": [
+        "SN-001-001-235",
+        "SN-001-001-236",
+        "SN-001-001-237"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-902",
+          "name": "天南星",
+          "dosage": "6g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-905",
+          "name": "防风",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-481",
+          "name": "白芷",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-918",
+          "name": "天麻",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-524",
+          "name": "羌活",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-858",
+          "name": "白附子",
+          "dosage": "6g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5085",
+      "name": "消风散",
+      "source": "《外科正宗》",
+      "category": "治风剂",
+      "functions": "疏风养血，清热除湿",
+      "indications": [
+        "SN-001-001-238",
+        "SN-001-001-239",
+        "SN-001-001-240"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-681",
+          "name": "当归",
+          "dosage": "6g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-215",
+          "name": "生地黄",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-905",
+          "name": "防风",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-777",
+          "name": "蝉蜕",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-351",
+          "name": "知母",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-418",
+          "name": "苦参",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-660",
+          "name": "胡麻",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-542",
+          "name": "荆芥",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-005",
+          "name": "苍术",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-603",
+          "name": "牛蒡子",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-102",
+          "name": "石膏",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "3g",
+          "role": "使"
+        },
+        {
+          "drug_id": "DR-110",
+          "name": "木通",
+          "dosage": "3g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5086",
+      "name": "天麻钩藤饮",
+      "source": "《中医内科杂病证治新义》",
+      "category": "治风剂",
+      "functions": "平肝熄风，清热活血，补益肝肾",
+      "indications": [
+        "SN-001-001-241",
+        "SN-001-001-242",
+        "SN-001-001-243"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-918",
+          "name": "天麻",
+          "dosage": "9g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-495",
+          "name": "钩藤",
+          "dosage": "12g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-175",
+          "name": "石决明",
+          "dosage": "18g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-583",
+          "name": "栀子",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-810",
+          "name": "黄芩",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-212",
+          "name": "川牛膝",
+          "dosage": "12g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-849",
+          "name": "杜仲",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-547",
+          "name": "益母草",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-251",
+          "name": "桑寄生",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-105",
+          "name": "夜交藤",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-023",
+          "name": "朱茯神",
+          "dosage": "9g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5087",
+      "name": "大定风珠",
+      "source": "《温病条辨》",
+      "category": "治风剂",
+      "functions": "滋阴熄风",
+      "indications": [
+        "SN-001-001-244",
+        "SN-001-001-245",
+        "SN-001-001-246"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-964",
+          "name": "生白芍",
+          "dosage": "18g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-682",
+          "name": "阿胶",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-584",
+          "name": "生龟板",
+          "dosage": "12g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-215",
+          "name": "生地黄",
+          "dosage": "18g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-834",
+          "name": "火麻仁",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-841",
+          "name": "五味子",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-808",
+          "name": "生牡蛎",
+          "dosage": "12g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-860",
+          "name": "麦冬",
+          "dosage": "18g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-051",
+          "name": "炙甘草",
+          "dosage": "12g",
+          "role": "使"
+        },
+        {
+          "drug_id": "DR-433",
+          "name": "鸡子黄",
+          "dosage": "2枚",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-883",
+          "name": "生鳖甲",
+          "dosage": "12g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5088",
+      "name": "阿胶鸡子黄汤",
+      "source": "《重订通俗伤寒论》",
+      "category": "治风剂",
+      "functions": "滋阴养血，柔肝熄风",
+      "indications": [
+        "SN-001-001-247",
+        "SN-001-001-248",
+        "SN-001-001-249"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-682",
+          "name": "阿胶",
+          "dosage": "6g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-433",
+          "name": "鸡子黄",
+          "dosage": "2枚",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-215",
+          "name": "生地黄",
+          "dosage": "12g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-261",
+          "name": "白芍",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "3g",
+          "role": "使"
+        },
+        {
+          "drug_id": "DR-495",
+          "name": "钩藤",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-175",
+          "name": "石决明",
+          "dosage": "15g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-269",
+          "name": "牡蛎",
+          "dosage": "15g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-730",
+          "name": "茯神木",
+          "dosage": "12g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-617",
+          "name": "络石藤",
+          "dosage": "9g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5089",
+      "name": "平胃散",
+      "source": "《太平惠民和剂局方》",
+      "category": "祛湿剂",
+      "functions": "燥湿运脾，行气和胃",
+      "indications": [
+        "SN-001-001-250",
+        "SN-001-001-251",
+        "SN-001-001-252"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-005",
+          "name": "苍术",
+          "dosage": "12g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-263",
+          "name": "厚朴",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-798",
+          "name": "陈皮",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "3g",
+          "role": "使"
+        },
+        {
+          "drug_id": "DR-124",
+          "name": "生姜",
+          "dosage": "3g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-959",
+          "name": "大枣",
+          "dosage": "2枚",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5090",
+      "name": "藿香正气散",
+      "source": "《太平惠民和剂局方》",
+      "category": "祛湿剂",
+      "functions": "解表化湿，理气和中",
+      "indications": [
+        "SN-001-001-253",
+        "SN-001-001-254",
+        "SN-001-001-255"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-587",
+          "name": "大腹皮",
+          "dosage": "30g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-481",
+          "name": "白芷",
+          "dosage": "30g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-294",
+          "name": "紫苏",
+          "dosage": "30g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-644",
+          "name": "茯苓",
+          "dosage": "30g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-816",
+          "name": "半夏曲",
+          "dosage": "60g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-491",
+          "name": "白术",
+          "dosage": "60g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-798",
+          "name": "陈皮",
+          "dosage": "60g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-263",
+          "name": "厚朴",
+          "dosage": "60g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-485",
+          "name": "苦桔梗",
+          "dosage": "60g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-591",
+          "name": "藿香",
+          "dosage": "90g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "75g",
+          "role": "使"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5091",
+      "name": "三仁汤",
+      "source": "《温病条辨》",
+      "category": "祛湿剂",
+      "functions": "宣畅气机，清利湿热",
+      "indications": [
+        "SN-001-001-256",
+        "SN-001-001-257",
+        "SN-001-001-258"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-184",
+          "name": "杏仁",
+          "dosage": "15g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-845",
+          "name": "半夏",
+          "dosage": "15g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-383",
+          "name": "飞滑石",
+          "dosage": "18g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-316",
+          "name": "生薏苡仁",
+          "dosage": "18g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-474",
+          "name": "白通草",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-200",
+          "name": "白蔻仁",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-542",
+          "name": "竹叶",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-263",
+          "name": "厚朴",
+          "dosage": "6g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5092",
+      "name": "茵陈蒿汤",
+      "source": "《伤寒论》",
+      "category": "祛湿剂",
+      "functions": "清热，利湿，退黄",
+      "indications": [
+        "SN-001-001-259",
+        "SN-001-001-260",
+        "SN-001-001-261"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-487",
+          "name": "茵陈",
+          "dosage": "18g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-583",
+          "name": "栀子",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-026",
+          "name": "大黄",
+          "dosage": "6g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5093",
+      "name": "八正散",
+      "source": "《太平惠民和剂局方》",
+      "category": "祛湿剂",
+      "functions": "清热泻火，利水通淋",
+      "indications": [
+        "SN-001-001-262",
+        "SN-001-001-263",
+        "SN-001-001-264"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-690",
+          "name": "车前子",
+          "dosage": "9g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-617",
+          "name": "瞿麦",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-674",
+          "name": "萹蓄",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-023",
+          "name": "滑石",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-286",
+          "name": "山栀子",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "9g",
+          "role": "使"
+        },
+        {
+          "drug_id": "DR-110",
+          "name": "木通",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-026",
+          "name": "大黄",
+          "dosage": "9g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5094",
+      "name": "五苓散",
+      "source": "《伤寒论》",
+      "category": "祛湿剂",
+      "functions": "利水渗湿，温阳化气",
+      "indications": [
+        "SN-001-001-265",
+        "SN-001-001-266",
+        "SN-001-001-267"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-641",
+          "name": "猪苓",
+          "dosage": "9g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-016",
+          "name": "泽泻",
+          "dosage": "15g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-491",
+          "name": "白术",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-644",
+          "name": "茯苓",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-471",
+          "name": "桂枝",
+          "dosage": "6g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5095",
+      "name": "猪苓汤",
+      "source": "《伤寒论》",
+      "category": "祛湿剂",
+      "functions": "利水渗湿，清热养阴",
+      "indications": [
+        "SN-001-001-268",
+        "SN-001-001-269",
+        "SN-001-001-270"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-641",
+          "name": "猪苓",
+          "dosage": "9g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-644",
+          "name": "茯苓",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-016",
+          "name": "泽泻",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-682",
+          "name": "阿胶",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-023",
+          "name": "滑石",
+          "dosage": "9g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5096",
+      "name": "防己黄芪汤",
+      "source": "《金匮要略》",
+      "category": "祛湿剂",
+      "functions": "益气祛风，健脾利水",
+      "indications": [
+        "SN-001-001-271",
+        "SN-001-001-272",
+        "SN-001-001-273"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-696",
+          "name": "防己",
+          "dosage": "12g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-195",
+          "name": "黄芪",
+          "dosage": "15g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-491",
+          "name": "白术",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "6g",
+          "role": "使"
+        },
+        {
+          "drug_id": "DR-124",
+          "name": "生姜",
+          "dosage": "4g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-959",
+          "name": "大枣",
+          "dosage": "1枚",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5097",
+      "name": "五皮散",
+      "source": "《华氏中藏经》",
+      "category": "祛湿剂",
+      "functions": "利水消肿，理气健脾",
+      "indications": [
+        "SN-001-001-274",
+        "SN-001-001-275",
+        "SN-001-001-276"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-510",
+          "name": "生姜皮",
+          "dosage": "9g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-519",
+          "name": "桑白皮",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-340",
+          "name": "陈橘皮",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-587",
+          "name": "大腹皮",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-636",
+          "name": "茯苓皮",
+          "dosage": "9g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5098",
+      "name": "苓桂术甘汤",
+      "source": "《金匮要略》",
+      "category": "祛湿剂",
+      "functions": "温阳化饮，健脾利湿",
+      "indications": [
+        "SN-001-001-277",
+        "SN-001-001-278",
+        "SN-001-001-279"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-644",
+          "name": "茯苓",
+          "dosage": "12g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-471",
+          "name": "桂枝",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-491",
+          "name": "白术",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "6g",
+          "role": "使"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5099",
+      "name": "真武汤",
+      "source": "《伤寒论》",
+      "category": "祛湿剂",
+      "functions": "温阳利水",
+      "indications": [
+        "SN-001-001-280",
+        "SN-001-001-281",
+        "SN-001-001-282"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-644",
+          "name": "茯苓",
+          "dosage": "9g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-513",
+          "name": "芍药",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-491",
+          "name": "白术",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-124",
+          "name": "生姜",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-636",
+          "name": "附子",
+          "dosage": "9g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5100",
+      "name": "实脾散",
+      "source": "《重订严氏济生方》",
+      "category": "祛湿剂",
+      "functions": "温阳健脾，行气利水",
+      "indications": [
+        "SN-001-001-283",
+        "SN-001-001-284",
+        "SN-001-001-285"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-263",
+          "name": "厚朴",
+          "dosage": "6g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-491",
+          "name": "白术",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-261",
+          "name": "木瓜",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-092",
+          "name": "木香",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-866",
+          "name": "草果仁",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-656",
+          "name": "大腹子",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-636",
+          "name": "附子",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-234",
+          "name": "白茯苓",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-256",
+          "name": "干姜",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "3g",
+          "role": "使"
+        },
+        {
+          "drug_id": "DR-124",
+          "name": "生姜",
+          "dosage": "5片",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-959",
+          "name": "大枣",
+          "dosage": "1枚",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5101",
+      "name": "萆薢分清饮",
+      "source": "《医学心悟》",
+      "category": "祛湿剂",
+      "functions": "温肾利湿，分清化浊",
+      "indications": [
+        "SN-001-001-286",
+        "SN-001-001-287",
+        "SN-001-001-288"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-299",
+          "name": "川萆薢",
+          "dosage": "12g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-991",
+          "name": "石菖蒲",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-302",
+          "name": "乌药",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-870",
+          "name": "益智仁",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-010",
+          "name": "甘草梢",
+          "dosage": "6g",
+          "role": "使"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5102",
+      "name": "羌活胜湿汤",
+      "source": "《内外伤辨惑论》",
+      "category": "祛湿剂",
+      "functions": "祛风，胜湿，止痛",
+      "indications": [
+        "SN-001-001-289",
+        "SN-001-001-290",
+        "SN-001-001-291"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-524",
+          "name": "羌活",
+          "dosage": "6g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-084",
+          "name": "独活",
+          "dosage": "6g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-971",
+          "name": "藁本",
+          "dosage": "3g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-905",
+          "name": "防风",
+          "dosage": "3g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "3g",
+          "role": "使"
+        },
+        {
+          "drug_id": "DR-162",
+          "name": "川芎",
+          "dosage": "3g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-155",
+          "name": "蔓荆子",
+          "dosage": "3g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5103",
+      "name": "独活寄生汤",
+      "source": "《备急千金要方》",
+      "category": "祛湿剂",
+      "functions": "祛风湿，止痹痛，益肝肾，补气血",
+      "indications": [
+        "SN-001-001-292",
+        "SN-001-001-293",
+        "SN-001-001-294"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-084",
+          "name": "独活",
+          "dosage": "9g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-251",
+          "name": "桑寄生",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-849",
+          "name": "杜仲",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-097",
+          "name": "牛膝",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-016",
+          "name": "细辛",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-307",
+          "name": "秦艽",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-644",
+          "name": "茯苓",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-782",
+          "name": "肉桂",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-905",
+          "name": "防风",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-162",
+          "name": "川芎",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-356",
+          "name": "人参",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "6g",
+          "role": "使"
+        },
+        {
+          "drug_id": "DR-681",
+          "name": "当归",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-261",
+          "name": "白芍",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-417",
+          "name": "干地黄",
+          "dosage": "6g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5104",
+      "name": "二陈汤",
+      "source": "《太平惠民和剂局方》",
+      "category": "祛痰剂",
+      "functions": "燥湿化痰，理气和中",
+      "indications": [
+        "SN-001-001-295",
+        "SN-001-001-296",
+        "SN-001-001-297"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-845",
+          "name": "半夏",
+          "dosage": "15g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-165",
+          "name": "橘红",
+          "dosage": "15g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-234",
+          "name": "白茯苓",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "5g",
+          "role": "使"
+        },
+        {
+          "drug_id": "DR-124",
+          "name": "生姜",
+          "dosage": "7片",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5105",
+      "name": "温胆汤",
+      "source": "《三因极一病证方论》",
+      "category": "祛痰剂",
+      "functions": "理气化痰，和胃利胆",
+      "indications": [
+        "SN-001-001-298",
+        "SN-001-001-299",
+        "SN-001-001-300"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-845",
+          "name": "半夏",
+          "dosage": "6g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-459",
+          "name": "竹茹",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-920",
+          "name": "枳实",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-798",
+          "name": "陈皮",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "3g",
+          "role": "使"
+        },
+        {
+          "drug_id": "DR-644",
+          "name": "茯苓",
+          "dosage": "5g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-124",
+          "name": "生姜",
+          "dosage": "5片",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-959",
+          "name": "大枣",
+          "dosage": "1枚",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5106",
+      "name": "清气化痰丸",
+      "source": "《医方考》",
+      "category": "祛痰剂",
+      "functions": "清热化痰，理气止咳",
+      "indications": [
+        "SN-001-001-301",
+        "SN-001-001-302",
+        "SN-001-001-303"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-327",
+          "name": "瓜蒌仁",
+          "dosage": "9g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-798",
+          "name": "陈皮",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-810",
+          "name": "黄芩",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-184",
+          "name": "杏仁",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-920",
+          "name": "枳实",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-644",
+          "name": "茯苓",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-649",
+          "name": "胆南星",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-042",
+          "name": "制半夏",
+          "dosage": "9g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5107",
+      "name": "小陷胸汤",
+      "source": "《伤寒论》",
+      "category": "祛痰剂",
+      "functions": "清热化痰，宽胸散结",
+      "indications": [
+        "SN-001-001-304",
+        "SN-001-001-305",
+        "SN-001-001-306"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-006",
+          "name": "黄连",
+          "dosage": "6g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-845",
+          "name": "半夏",
+          "dosage": "12g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-940",
+          "name": "瓜蒌",
+          "dosage": "20g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5108",
+      "name": "滚痰丸",
+      "source": "《泰定养生主论》",
+      "category": "祛痰剂",
+      "functions": "泻火逐痰",
+      "indications": [
+        "SN-001-001-307",
+        "SN-001-001-308",
+        "SN-001-001-309"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-026",
+          "name": "大黄",
+          "dosage": "8g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-810",
+          "name": "黄芩",
+          "dosage": "8g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-379",
+          "name": "礞石",
+          "dosage": "1g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-521",
+          "name": "沉香",
+          "dosage": "1g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5109",
+      "name": "贝母瓜蒌散",
+      "source": "《医学心悟》",
+      "category": "祛痰剂",
+      "functions": "润肺清热，理气化痰",
+      "indications": [
+        "SN-001-001-310",
+        "SN-001-001-311",
+        "SN-001-001-312"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-290",
+          "name": "贝母",
+          "dosage": "5g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-940",
+          "name": "瓜蒌",
+          "dosage": "3g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-369",
+          "name": "花粉",
+          "dosage": "3g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-644",
+          "name": "茯苓",
+          "dosage": "3g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-165",
+          "name": "橘红",
+          "dosage": "3g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-476",
+          "name": "桔梗",
+          "dosage": "3g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5110",
+      "name": "苓甘五味姜辛汤",
+      "source": "《金匮要略》",
+      "category": "祛痰剂",
+      "functions": "温肺化饮",
+      "indications": [
+        "SN-001-001-313",
+        "SN-001-001-314",
+        "SN-001-001-315"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-644",
+          "name": "茯苓",
+          "dosage": "12g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "9g",
+          "role": "使"
+        },
+        {
+          "drug_id": "DR-256",
+          "name": "干姜",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-016",
+          "name": "细辛",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-841",
+          "name": "五味子",
+          "dosage": "9g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5111",
+      "name": "三子养亲汤",
+      "source": "《皆效方》",
+      "category": "祛痰剂",
+      "functions": "温肺化痰，降气消食",
+      "indications": [
+        "SN-001-001-316",
+        "SN-001-001-317",
+        "SN-001-001-318"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-918",
+          "name": "白芥子",
+          "dosage": "6g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-692",
+          "name": "紫苏子",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-790",
+          "name": "莱菔子",
+          "dosage": "9g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5112",
+      "name": "保和丸",
+      "source": "《丹溪心法》",
+      "category": "消食剂",
+      "functions": "消食和胃",
+      "indications": [
+        "SN-001-001-319",
+        "SN-001-001-320",
+        "SN-001-001-321"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-981",
+          "name": "山楂",
+          "dosage": "18g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-448",
+          "name": "神曲",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-845",
+          "name": "半夏",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-644",
+          "name": "茯苓",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-798",
+          "name": "陈皮",
+          "dosage": "3g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-085",
+          "name": "连翘",
+          "dosage": "3g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-790",
+          "name": "莱菔子",
+          "dosage": "3g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5113",
+      "name": "枳实导滞丸",
+      "source": "《内外伤辨惑论》",
+      "category": "消食剂",
+      "functions": "消食导滞，清热祛湿",
+      "indications": [
+        "SN-001-001-322",
+        "SN-001-001-323",
+        "SN-001-001-324"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-026",
+          "name": "大黄",
+          "dosage": "30g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-920",
+          "name": "枳实",
+          "dosage": "15g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-448",
+          "name": "神曲",
+          "dosage": "15g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-644",
+          "name": "茯苓",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-810",
+          "name": "黄芩",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-006",
+          "name": "黄连",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-491",
+          "name": "白术",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-016",
+          "name": "泽泻",
+          "dosage": "6g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5114",
+      "name": "健脾丸",
+      "source": "《证治准绳》",
+      "category": "消食剂",
+      "functions": "健脾和胃，消食止泻",
+      "indications": [
+        "SN-001-001-325",
+        "SN-001-001-326",
+        "SN-001-001-327"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-491",
+          "name": "白术",
+          "dosage": "75g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-092",
+          "name": "木香",
+          "dosage": "22g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-006",
+          "name": "黄连",
+          "dosage": "22g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "22g",
+          "role": "使"
+        },
+        {
+          "drug_id": "DR-234",
+          "name": "白茯苓",
+          "dosage": "60g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-356",
+          "name": "人参",
+          "dosage": "45g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-448",
+          "name": "神曲",
+          "dosage": "30g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-798",
+          "name": "陈皮",
+          "dosage": "30g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-140",
+          "name": "砂仁",
+          "dosage": "30g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-221",
+          "name": "麦芽",
+          "dosage": "30g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-981",
+          "name": "山楂",
+          "dosage": "30g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-233",
+          "name": "山药",
+          "dosage": "30g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-454",
+          "name": "肉豆蔻",
+          "dosage": "30g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5115",
+      "name": "木香槟榔丸",
+      "source": "《儒门事亲》",
+      "category": "消食剂",
+      "functions": "行气导滞，攻积泄热",
+      "indications": [
+        "SN-001-001-328",
+        "SN-001-001-329",
+        "SN-001-001-330"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-092",
+          "name": "木香",
+          "dosage": "30g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-447",
+          "name": "槟榔",
+          "dosage": "30g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-427",
+          "name": "青皮",
+          "dosage": "30g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-798",
+          "name": "陈皮",
+          "dosage": "30g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-578",
+          "name": "莪术",
+          "dosage": "30g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-006",
+          "name": "黄连",
+          "dosage": "30g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-560",
+          "name": "黄柏",
+          "dosage": "30g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-026",
+          "name": "大黄",
+          "dosage": "15g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-970",
+          "name": "香附子",
+          "dosage": "30g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-766",
+          "name": "牵牛",
+          "dosage": "60g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5116",
+      "name": "葛花解酲汤",
+      "source": "《兰室秘藏》",
+      "category": "消食剂",
+      "functions": "分消酒湿，理气健脾",
+      "indications": [
+        "SN-001-001-331",
+        "SN-001-001-332",
+        "SN-001-001-333"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-092",
+          "name": "木香",
+          "dosage": "1.5g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-356",
+          "name": "人参",
+          "dosage": "4.5g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-641",
+          "name": "猪苓",
+          "dosage": "4.5g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-644",
+          "name": "茯苓",
+          "dosage": "4.5g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-381",
+          "name": "橘皮",
+          "dosage": "4.5g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-491",
+          "name": "白术",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-124",
+          "name": "生姜",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-448",
+          "name": "神曲",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-016",
+          "name": "泽泻",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-427",
+          "name": "青皮",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-140",
+          "name": "砂仁",
+          "dosage": "15g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-927",
+          "name": "白豆蔻",
+          "dosage": "15g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-967",
+          "name": "葛花",
+          "dosage": "15g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5117",
+      "name": "乌梅丸",
+      "source": "《伤寒论》",
+      "category": "驱虫剂",
+      "functions": "温脏安蛔",
+      "indications": [
+        "SN-001-001-334",
+        "SN-001-001-335",
+        "SN-001-001-336"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-676",
+          "name": "乌梅",
+          "dosage": "30g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-016",
+          "name": "细辛",
+          "dosage": "3g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-256",
+          "name": "干姜",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-006",
+          "name": "黄连",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-681",
+          "name": "当归",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-636",
+          "name": "附子",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-211",
+          "name": "蜀椒",
+          "dosage": "4g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-471",
+          "name": "桂枝",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-356",
+          "name": "人参",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-560",
+          "name": "黄柏",
+          "dosage": "6g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5118",
+      "name": "肥儿丸",
+      "source": "《太平惠民和剂局方》",
+      "category": "驱虫剂",
+      "functions": "杀虫消积，健脾清热",
+      "indications": [
+        "SN-001-001-337",
+        "SN-001-001-338",
+        "SN-001-001-339"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-448",
+          "name": "神曲",
+          "dosage": "10g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-006",
+          "name": "黄连",
+          "dosage": "10g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-454",
+          "name": "肉豆蔻",
+          "dosage": "5g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-081",
+          "name": "使君子",
+          "dosage": "5g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-221",
+          "name": "麦芽",
+          "dosage": "5g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-447",
+          "name": "槟榔",
+          "dosage": "20g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-092",
+          "name": "木香",
+          "dosage": "2g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5119",
+      "name": "仙方活命饮",
+      "source": "《校注妇人良方》",
+      "category": "治痈疡剂",
+      "functions": "清热解毒，消肿溃坚，活血止痛",
+      "indications": [
+        "SN-001-001-340",
+        "SN-001-001-341",
+        "SN-001-001-342"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-544",
+          "name": "金银花",
+          "dosage": "9g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-681",
+          "name": "当归",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-856",
+          "name": "赤芍",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-010",
+          "name": "乳香",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-240",
+          "name": "没药",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-798",
+          "name": "陈皮",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-905",
+          "name": "防风",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-481",
+          "name": "白芷",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-290",
+          "name": "贝母",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-555",
+          "name": "天花粉",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-057",
+          "name": "穿山甲",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-997",
+          "name": "皂角刺",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "6g",
+          "role": "使"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5120",
+      "name": "五味消毒饮",
+      "source": "《医宗金鉴》",
+      "category": "治痈疡剂",
+      "functions": "清热解毒，消散疔疮",
+      "indications": [
+        "SN-001-001-343",
+        "SN-001-001-344",
+        "SN-001-001-345"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-544",
+          "name": "金银花",
+          "dosage": "20g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-440",
+          "name": "野菊花",
+          "dosage": "15g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-045",
+          "name": "蒲公英",
+          "dosage": "15g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-888",
+          "name": "紫花地丁",
+          "dosage": "15g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-901",
+          "name": "紫背天葵",
+          "dosage": "15g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5121",
+      "name": "四妙勇安汤",
+      "source": "《验方新编》",
+      "category": "治痈疡剂",
+      "functions": "清热解毒，活血止痛",
+      "indications": [
+        "SN-001-001-346",
+        "SN-001-001-347",
+        "SN-001-001-348"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-544",
+          "name": "金银花",
+          "dosage": "90g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-027",
+          "name": "玄参",
+          "dosage": "90g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-681",
+          "name": "当归",
+          "dosage": "60g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-012",
+          "name": "甘草",
+          "dosage": "30g",
+          "role": "使"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5122",
+      "name": "阳和汤",
+      "source": "《外科证治全生集》",
+      "category": "治痈疡剂",
+      "functions": "温阳补血，散寒通滞",
+      "indications": [
+        "SN-001-001-349",
+        "SN-001-001-350",
+        "SN-001-001-351"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-840",
+          "name": "熟地黄",
+          "dosage": "30g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-827",
+          "name": "鹿角胶",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-782",
+          "name": "肉桂",
+          "dosage": "3g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-052",
+          "name": "姜炭",
+          "dosage": "2g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-918",
+          "name": "白芥子",
+          "dosage": "6g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-232",
+          "name": "麻黄",
+          "dosage": "2g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-336",
+          "name": "生甘草",
+          "dosage": "3g",
+          "role": "使"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5123",
+      "name": "大黄牡丹汤",
+      "source": "《金匮要略》",
+      "category": "治痈疡剂",
+      "functions": "泻热破瘀，散结消肿",
+      "indications": [
+        "SN-001-001-352",
+        "SN-001-001-353",
+        "SN-001-001-354"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-026",
+          "name": "大黄",
+          "dosage": "12g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-997",
+          "name": "牡丹皮",
+          "dosage": "3g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-925",
+          "name": "桃仁",
+          "dosage": "9g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-347",
+          "name": "冬瓜仁",
+          "dosage": "30g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-259",
+          "name": "芒硝",
+          "dosage": "9g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5124",
+      "name": "苇茎汤",
+      "source": "《备急千金要方》",
+      "category": "治痈疡剂",
+      "functions": "清肺化痰，逐瘀排脓",
+      "indications": [
+        "SN-001-001-355",
+        "SN-001-001-356",
+        "SN-001-001-357"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-822",
+          "name": "苇茎",
+          "dosage": "60g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-940",
+          "name": "瓜蒌",
+          "dosage": "24g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-925",
+          "name": "桃仁",
+          "dosage": "9g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-676",
+          "name": "薏苡仁",
+          "dosage": "30g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    },
+    {
+      "id": "FP-5125",
+      "name": "透脓散",
+      "source": "《外科正宗》",
+      "category": "治痈疡剂",
+      "functions": "补气养血，托毒溃坚",
+      "indications": [
+        "SN-001-001-358",
+        "SN-001-001-359",
+        "SN-001-001-360"
+      ],
+      "composition": [
+        {
+          "drug_id": "DR-870",
+          "name": "生黄芪",
+          "dosage": "12g",
+          "role": "君"
+        },
+        {
+          "drug_id": "DR-681",
+          "name": "当归",
+          "dosage": "6g",
+          "role": "臣"
+        },
+        {
+          "drug_id": "DR-057",
+          "name": "穿山甲",
+          "dosage": "3g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-997",
+          "name": "皂角刺",
+          "dosage": "5g",
+          "role": "佐"
+        },
+        {
+          "drug_id": "DR-162",
+          "name": "川芎",
+          "dosage": "9g",
+          "role": "佐"
+        }
+      ],
+      "contraindications": [],
+      "modifications": []
+    }
+  ]
+}
