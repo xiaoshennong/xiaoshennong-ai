@@ -30,9 +30,15 @@ def _load_embedding_model():
     
     _model_loading = True
     try:
+        # 先检查是否能导入（不触发网络）
+        import importlib.util
+        if importlib.util.find_spec('sentence_transformers') is None:
+            print("[SemanticEngine] sentence_transformers未安装，使用关键词fallback模式")
+            return False
+        
         from sentence_transformers import SentenceTransformer
-        # 使用本地缓存路径
-        embedding_model = SentenceTransformer('shibing624/text2vec-base-chinese')
+        # 使用本地缓存路径，不连接网络
+        embedding_model = SentenceTransformer('shibing624/text2vec-base-chinese', device='cpu')
         HAS_EMBEDDING = True
         print(f"[SemanticEngine] 嵌入模型加载成功: text2vec-base-chinese")
         return True
