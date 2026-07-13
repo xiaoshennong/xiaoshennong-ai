@@ -1,0 +1,82 @@
+name: Deploy v5 to Server
+
+on:
+  workflow_dispatch:
+    inputs:
+      server_host:
+        description: 'Server IP or hostname'
+        required: true
+        default: '43.247.135.91'
+      server_user:
+        description: 'SSH username'
+        required: true
+        default: 'root'
+      deploy_branch:
+        description: 'Branch to deploy'
+        required: true
+        default: 'main'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.inputs.deploy_branch }}
+    
+    - name: Setup SSH
+      uses: webfactory/ssh-agent@v0.8.0
+      with:
+        ssh-private-key: ${{ secrets.SERVER_SSH_KEY }}
+      continue-on-error: true
+    
+    - name: Deploy via SSH (with key)
+      if: success()
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ github.event.inputs.server_host }}
+        username: ${{ github.event.inputs.server_user }}
+        key: ${{ secrets.SERVER_SSH_KEY }}
+        script: |
+          cd /opt/xiaoshennong
+          git fetch origin
+          git reset --hard origin/${{ github.event.inputs.deploy_branch }}
+          
+          # Check if v5 exists
+          if [ -f backend/local_api_v5.py ]; then
+            pkill -f local_api_v4 || true
+            sleep 2
+            cd backend
+            nohup /opt/xiaoshennong/venv/bin/python local_api_v5.py > ../logs/v5.log 2>&1 &
+            echo "v5 API deployed"
+          else
+            echo "v5 not found, keeping v4"
+          fi
+          
+          echo "Deployment completed at $(date)"
+      continue-on-error: true
+    
+    - name: Deploy via SSH (with password fallback)
+      if: failure()
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ github.event.inputs.server_host }}
+        username: ${{ github.event.inputs.server_user }}
+        password: ${{ secrets.SERVER_PASSWORD }}
+        script: |
+          cd /opt/xiaoshennong
+          git fetch origin
+          git reset --hard origin/main
+          
+          if [ -f backend/local_api_v5.py ]; then
+            pkill -f local_api_v4 || true
+            sleep 2
+            cd backend
+            nohup /opt/xiaoshennong/venv/bin/python local_api_v5.py > ../logs/v5.log 2>&1 &
+            echo "v5 API deployed (password auth)"
+          fi
+          
+          echo "Deployment completed at $(date)"
+      continue-on-error: true

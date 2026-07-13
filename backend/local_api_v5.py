@@ -12,6 +12,7 @@ import re
 import time
 import random
 from datetime import datetime
+from typing import List, Dict
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
@@ -194,16 +195,20 @@ semantic_engine = None
 if HAS_SEMANTIC:
     try:
         semantic_engine = get_semantic_engine()
+        # 使用globals()检查变量是否存在
+        _g = globals()
         semantic_engine.initialize(
-            symptom_data=symptom_data if 'symptom_data' in dir() else None,
-            drug_data=drug_data if 'drug_data' in dir() else None,
-            formula_data=formula_data if 'formula_data' in dir() else None,
-            acupoint_data=acu_data if 'acu_data' in dir() else None,
-            dietary_data=diet_data if 'diet_data' in dir() else None
+            symptom_data=_g.get('symptom_data'),
+            drug_data=_g.get('drug_data'),
+            formula_data=_g.get('formula_data'),
+            acupoint_data=_g.get('acu_data'),
+            dietary_data=_g.get('diet_data')
         )
         print("[LocalAPI v5.0] 语义引擎初始化完成")
     except Exception as e:
         print(f"[LocalAPI v5.0] 语义引擎初始化失败: {e}")
+        import traceback
+        traceback.print_exc()
         semantic_engine = None
 
 # ========== 初始化Agent协调器 ==========
@@ -924,15 +929,35 @@ def retrieve():
 @app.route('/api/diagnosis', methods=['POST'])
 def diagnosis():
     """综合诊断API - 带思考过程"""
-    data = request.get_json() or {}
+    try:
+        data = request.get_json(force=True, silent=True) or {}
+    except Exception:
+        data = {}
+    
+    # 也尝试从表单数据获取
+    if not data:
+        data = {
+            'symptoms': request.form.get('symptoms', []),
+            'query': request.form.get('query', '') or request.form.get('symptoms', '')
+        }
+    
     symptoms = data.get('symptoms', [])
     query = data.get('query', '')
-    show_thinking = data.get('show_thinking', True)  # 默认展示思考过程
+    show_thinking = data.get('show_thinking', True)
+    
+    if not symptoms and not query:
+        # 尝试从args获取
+        query = request.args.get('query', '') or request.args.get('symptoms', '')
     
     if isinstance(symptoms, list):
         query = ' '.join(str(s) for s in symptoms) + ' ' + query
     else:
         query = str(symptoms) + ' ' + query
+    
+    query = query.strip()
+    
+    if not query:
+        return jsonify({'success': False, 'error': '请提供症状描述'}), 400
     
     result = engine.diagnose(query)
     report = _build_diagnosis_report(result)
@@ -949,7 +974,7 @@ def diagnosis():
     if show_thinking:
         thinking = generate_thinking_process(query, result['parsed'], result)
         response_data['data']['thinking_process'] = thinking
-        response_data['data']['thinking_duration'] = sum(0.3 for _ in thinking)  # 估算思考时间
+        response_data['data']['thinking_duration'] = sum(0.3 for _ in thinking)
     
     return jsonify(response_data)
 

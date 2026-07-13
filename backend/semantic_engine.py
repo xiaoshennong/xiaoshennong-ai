@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-小神农语义匹配引擎 v1.0
+小神农语义匹配引擎 v1.1
 基于Sentence-BERT的中文语义相似度搜索
 支持：症状语义匹配、方剂语义匹配、跨模态检索
 """
@@ -12,19 +12,33 @@ import re
 import numpy as np
 from typing import List, Dict, Tuple, Optional
 
-# 尝试加载sentence-transformers，如果不可用则使用fallback
+# 嵌入模型状态（完全懒加载，导入时不连接网络）
 HAS_EMBEDDING = False
 embedding_model = None
+_model_loading = False
 
-# 尝试加载嵌入模型
-try:
-    from sentence_transformers import SentenceTransformer
-    embedding_model = SentenceTransformer('shibing624/text2vec-base-chinese')
-    HAS_EMBEDDING = True
-    print(f"[SemanticEngine] 嵌入模型加载成功: text2vec-base-chinese")
-except Exception as e:
-    print(f"[SemanticEngine] 嵌入模型加载失败: {e}")
-    print(f"[SemanticEngine] 将使用关键词fallback模式")
+def _load_embedding_model():
+    """懒加载嵌入模型 - 只在显式调用时加载，避免导入时连接网络"""
+    global embedding_model, HAS_EMBEDDING, _model_loading
+    if _model_loading or HAS_EMBEDDING:
+        return HAS_EMBEDDING
+    
+    _model_loading = True
+    try:
+        # 设置环境变量禁用symlinks警告和下载提示
+        os.environ['HF_HUB_DISABLE_SYMLINKS_WARNING'] = '1'
+        os.environ['TRANSFORMERS_OFFLINE'] = '1'  # 强制离线模式
+        from sentence_transformers import SentenceTransformer
+        embedding_model = SentenceTransformer('shibing624/text2vec-base-chinese')
+        HAS_EMBEDDING = True
+        print(f"[SemanticEngine] 嵌入模型加载成功: text2vec-base-chinese")
+        return True
+    except Exception as e:
+        print(f"[SemanticEngine] 嵌入模型加载失败: {e}")
+        print(f"[SemanticEngine] 将使用关键词fallback模式")
+        return False
+    finally:
+        _model_loading = False
 
 
 class SemanticMatcher:
@@ -86,7 +100,7 @@ class SemanticMatcher:
         text_fields: 用于生成嵌入的文本字段
         metadata_fields: 需要保留的元数据字段
         """
-        if not HAS_EMBEDDING:
+        if not _load_embedding_model():
             # 无嵌入模型时，只构建关键词索引
             for item in items:
                 item_id = item.get(id_field, '')
@@ -170,7 +184,7 @@ class SemanticMatcher:
         
         results = []
         
-        if HAS_EMBEDDING and self.embeddings:
+        if _load_embedding_model() and self.embeddings:
             # 向量搜索
             query_vec = embedding_model.encode([query])[0]
             
