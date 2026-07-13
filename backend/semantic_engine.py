@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-小神农语义匹配引擎 v1.1
+小神农语义匹配引擎 v1.2
 基于Sentence-BERT的中文语义相似度搜索
 支持：症状语义匹配、方剂语义匹配、跨模态检索
 """
@@ -11,6 +11,11 @@ import os
 import re
 import numpy as np
 from typing import List, Dict, Tuple, Optional
+
+# 预先设置环境变量，防止任何网络连接尝试
+os.environ['HF_HUB_DISABLE_SYMLINKS_WARNING'] = '1'
+os.environ['TRANSFORMERS_OFFLINE'] = '1'
+os.environ['HF_HUB_OFFLINE'] = '1'
 
 # 嵌入模型状态（完全懒加载，导入时不连接网络）
 HAS_EMBEDDING = False
@@ -25,10 +30,8 @@ def _load_embedding_model():
     
     _model_loading = True
     try:
-        # 设置环境变量禁用symlinks警告和下载提示
-        os.environ['HF_HUB_DISABLE_SYMLINKS_WARNING'] = '1'
-        os.environ['TRANSFORMERS_OFFLINE'] = '1'  # 强制离线模式
         from sentence_transformers import SentenceTransformer
+        # 使用本地缓存路径
         embedding_model = SentenceTransformer('shibing624/text2vec-base-chinese')
         HAS_EMBEDDING = True
         print(f"[SemanticEngine] 嵌入模型加载成功: text2vec-base-chinese")
