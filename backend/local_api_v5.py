@@ -190,25 +190,16 @@ print(f"  语义引擎: {'已加载' if HAS_SEMANTIC else '未加载'}")
 print(f"  Agent系统: {'已加载' if HAS_AGENTS else '未加载'}")
 
 
-# ========== 初始化语义引擎 ==========
+# ========== 初始化语义引擎（延迟加载） ==========
 semantic_engine = None
 if HAS_SEMANTIC:
     try:
         semantic_engine = get_semantic_engine()
-        # 使用globals()检查变量是否存在
-        _g = globals()
-        semantic_engine.initialize(
-            symptom_data=_g.get('symptom_data'),
-            drug_data=_g.get('drug_data'),
-            formula_data=_g.get('formula_data'),
-            acupoint_data=_g.get('acu_data'),
-            dietary_data=_g.get('diet_data')
-        )
-        print("[LocalAPI v5.0] 语义引擎初始化完成")
+        # 不立即构建索引，改为按需构建
+        # 穴位数据太多（361个），构建索引很慢
+        print("[LocalAPI v5.0] 语义引擎已创建（索引按需构建）")
     except Exception as e:
-        print(f"[LocalAPI v5.0] 语义引擎初始化失败: {e}")
-        import traceback
-        traceback.print_exc()
+        print(f"[LocalAPI v5.0] 语义引擎创建失败: {e}")
         semantic_engine = None
 
 # ========== 初始化Agent协调器 ==========
