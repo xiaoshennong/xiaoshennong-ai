@@ -73,7 +73,7 @@ FORMULA_MAP = {}
 FORMULA_NAME_MAP = {}
 
 try:
-    with open(os.path.join(DATA_DIR, 'formula_codes_v3_5k.json'), 'r', encoding='utf-8') as f:
+    with open(os.path.join(DATA_DIR, 'formula_codes_v3_10k.json'), 'r', encoding='utf-8') as f:
         formula_data = json.load(f)
         FORMULA_MAP = {f['id']: f for f in formula_data.get('formulas', [])}
         FORMULA_NAME_MAP = {f['name']: f for f in formula_data.get('formulas', [])}
