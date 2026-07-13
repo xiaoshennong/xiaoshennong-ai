@@ -31,6 +31,27 @@ except ImportError:
     HAS_AGENTS = False
     print("[LocalAPI v5.0] Agent系统未加载")
 
+# 导入联网搜索模块
+try:
+    from web_search_agent import init_web_search, get_web_search_agent
+    HAS_WEBSEARCH = True
+    
+    # 初始化联网搜索（使用环境变量或默认配置）
+    web_search_agent = init_web_search(
+        api_key=os.environ.get('WEBSEARCH_API_KEY', 'sk-kGZ5PiMxdpT91QzvvcGPMNk8Sp6Uzkmdmmaq20aE2kEEpzvl'),
+        base_url=os.environ.get('WEBSEARCH_BASE_URL', 'https://yunwu.ai/v1'),
+        model=os.environ.get('WEBSEARCH_MODEL', 'gpt-5.5-pro')
+    )
+    
+    if web_search_agent.is_available():
+        print("[LocalAPI v5.0] 联网搜索已启用")
+    else:
+        print("[LocalAPI v5.0] 联网搜索未启用（API密钥无效）")
+        
+except ImportError:
+    HAS_WEBSEARCH = False
+    print("[LocalAPI v5.0] 联网搜索模块未加载")
+
 app = Flask(__name__)
 CORS(app)
 
@@ -1317,6 +1338,90 @@ def list_feedback():
         
     except Exception as e:
         return jsonify({"error": f"获取列表失败: {str(e)}"}), 500
+
+# ========== 联网搜索API ==========
+@app.route('/api/search', methods=['POST'])
+def web_search():
+    """
+    联网搜索API - 让Agent具备联网搜索能力
+    请求体: {
+        "query": "搜索关键词",
+        "context": "搜索上下文（可选）",
+        "max_results": 5
+    }
+    """
+    try:
+        if not HAS_WEBSEARCH:
+            return jsonify({"error": "联网搜索模块未加载"}), 503
+        
+        web_agent = get_web_search_agent()
+        if not web_agent.is_available():
+            return jsonify({"error": "联网搜索未配置API密钥"}), 503
+        
+        data = request.get_json(force=True, silent=True) or {}
+        query = data.get('query', '')
+        context = data.get('context', '中医研究')
+        max_results = int(data.get('max_results', 5))
+        
+        if not query:
+            return jsonify({"error": "请提供搜索关键词"}), 400
+        
+        results = web_agent.search(query, context=context, max_results=max_results)
+        
+        return jsonify({
+            "success": True,
+            "query": query,
+            "context": context,
+            "count": len(results),
+            "results": results
+        })
+        
+    except Exception as e:
+        return jsonify({"error": f"搜索失败: {str(e)}"}), 500
+
+@app.route('/api/search/verify', methods=['POST'])
+def verify_fact():
+    """
+    事实验证API - 验证中医论断的真实性
+    请求体: {
+        "claim": "需要验证的论断",
+        "evidence": "已有证据（可选）"
+    }
+    """
+    try:
+        if not HAS_WEBSEARCH:
+            return jsonify({"error": "联网搜索模块未加载"}), 503
+        
+        web_agent = get_web_search_agent()
+        if not web_agent.is_available():
+            return jsonify({"error": "联网搜索未配置API密钥"}), 503
+        
+        data = request.get_json(force=True, silent=True) or {}
+        claim = data.get('claim', '')
+        evidence = data.get('evidence', '')
+        
+        if not claim:
+            return jsonify({"error": "请提供需要验证的论断"}), 400
+        
+        result = web_agent.verify_fact(claim, evidence)
+        
+        return jsonify({
+            "success": True,
+            "claim": claim,
+            "verification": result
+        })
+        
+    except Exception as e:
+        return jsonify({"error": f"验证失败: {str(e)}"}), 500
+
+@app.route('/api/search/status', methods=['GET'])
+def web_search_status():
+    """获取联网搜索状态"""
+    return jsonify({
+        "enabled": HAS_WEBSEARCH,
+        "configured": HAS_WEBSEARCH and get_web_search_agent().is_available() if HAS_WEBSEARCH else False,
+        "api_base": os.environ.get('WEBSEARCH_BASE_URL', 'https://yunwu.ai/v1') if HAS_WEBSEARCH else None
+    })
 
 if __name__ == '__main__':
     print("[LocalAPI v5.0] 启动服务，端口5005...")

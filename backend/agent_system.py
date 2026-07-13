@@ -13,11 +13,19 @@ import random
 from datetime import datetime
 from typing import List, Dict, Optional, Tuple
 
+# 导入联网搜索模块
+try:
+    from web_search_agent import get_web_search_agent, WebSearchAgent
+    HAS_WEBSEARCH = True
+except ImportError:
+    HAS_WEBSEARCH = False
+    print("[AgentSystem] 联网搜索模块未加载")
+
 
 # ========== 基础Agent类 ==========
 
 class BaseAgent:
-    """所有Agent的基类"""
+    """所有Agent的基类 - 具备联网搜索能力"""
     
     def __init__(self, name: str, agent_id: str, data_dir: str = None):
         self.name = name
@@ -25,6 +33,19 @@ class BaseAgent:
         self.data_dir = data_dir or os.path.join(os.path.dirname(__file__), '..', 'data')
         self.thought_log = []  # 思考日志
         self.knowledge_cache = {}  # 知识缓存
+        self.web_search = None  # 联网搜索实例
+        self._init_web_search()
+    
+    def _init_web_search(self):
+        """初始化联网搜索能力"""
+        if HAS_WEBSEARCH:
+            self.web_search = get_web_search_agent()
+            if self.web_search.is_available():
+                self.think('初始化', '联网搜索能力已启用', ['WebSearchAgent已配置'])
+            else:
+                self.think('初始化', '联网搜索能力未启用（未配置API密钥）', ['请设置WEBSEARCH_API_KEY环境变量'])
+        else:
+            self.think('初始化', '联网搜索模块未加载', ['web_search_agent.py未找到'])
     
     def think(self, step: str, reasoning: str, evidence: List[str] = None):
         """记录思考过程"""
@@ -46,17 +67,51 @@ class BaseAgent:
         """清空思考日志"""
         self.thought_log = []
     
-    def search_web(self, query: str) -> List[Dict]:
+    def search_web(self, query: str, context: str = None) -> List[Dict]:
         """
-        联网搜索接口（模拟/占位）
-        实际部署时接入搜索引擎API或学术数据库
+        联网搜索接口 - 调用WebSearchAgent进行真实搜索
+        
+        Args:
+            query: 搜索查询词
+            context: 搜索上下文（如"中医临床"、"中药研究"等）
+        
+        Returns:
+            搜索结果列表
         """
-        # 模拟搜索结果 - 实际部署时替换为真实API调用
-        return self._mock_web_search(query)
+        if self.web_search and self.web_search.is_available():
+            self.think('联网搜索', f'执行搜索: {query}', [f'上下文: {context or "通用"}'])
+            results = self.web_search.search(query, context=context)
+            self.think('搜索完成', f'获得 {len(results)} 条结果', [r.get('title', '') for r in results[:3]])
+            return results
+        else:
+            self.think('联网搜索', '搜索不可用，使用本地知识库', ['API未配置'])
+            return self._mock_web_search(query)
+    
+    def verify_with_web(self, claim: str) -> Dict:
+        """
+        联网验证 - 验证某个论断的真实性
+        
+        Args:
+            claim: 需要验证的论断
+        
+        Returns:
+            验证结果
+        """
+        if self.web_search and self.web_search.is_available():
+            self.think('联网验证', f'验证论断: {claim}')
+            result = self.web_search.verify_fact(claim)
+            self.think('验证完成', f"结果: {result['status']}, 置信度: {result['confidence']}")
+            return result
+        else:
+            return {
+                'claim': claim,
+                'status': 'unverified',
+                'confidence': 0.0,
+                'reason': '联网搜索未启用'
+            }
     
     def _mock_web_search(self, query: str) -> List[Dict]:
-        """模拟联网搜索 - 用于测试"""
-        # 实际部署时删除此mock，接入真实搜索API
+        """模拟联网搜索 - 当真实搜索不可用时使用"""
         return []
     
     def validate_data(self, data: Dict, schema: Dict) -> Tuple[bool, List[str]]:
@@ -195,6 +250,7 @@ class SymptomAgent(BaseAgent):
         Step 1: 症状标准化
         输入: 用户原始描述
         输出: 标准化症状编码 + 元数据
+        新增: 本地未匹配时，联网搜索相关临床数据
         """
         self.think("症状标准化", f"开始标准化症状: '{raw_symptom}'")
         
@@ -221,16 +277,30 @@ class SymptomAgent(BaseAgent):
                     self.think("模糊匹配", f"找到模糊匹配: {sid} {s['name']}")
                     break
         
-        # 4. 如果仍未匹配，标记为新症状
+        # 4. 如果仍未匹配，尝试联网搜索
         if not matched:
-            self.think("新症状", f"'{raw_symptom}' 未在数据库中找到，标记为待录入")
-            return {
-                'status': 'new',
-                'raw_input': raw_symptom,
-                'suggested_id': self._generate_temp_id(raw_symptom),
-                'confidence': 0.0,
-                'needs_verification': True
-            }
+            self.think("联网搜索", f"本地数据库未找到 '{raw_symptom}'，尝试联网搜索相关临床数据")
+            web_results = self.search_web(f"{raw_symptom} 症状 中医 辨证", context="中医症状研究")
+            
+            if web_results and web_results[0].get('credibility_score', 0) > 0.3:
+                self.think("联网搜索完成", f"找到 {len(web_results)} 条网络数据", [r.get('title', '') for r in web_results[:2]])
+                return {
+                    'status': 'web_verified',
+                    'raw_input': raw_symptom,
+                    'suggested_id': self._generate_temp_id(raw_symptom),
+                    'confidence': 0.5,
+                    'needs_verification': True,
+                    'web_sources': web_results[:3]  # 包含网络来源
+                }
+            else:
+                self.think("新症状", f"'{raw_symptom}' 未在数据库中找到，标记为待录入")
+                return {
+                    'status': 'new',
+                    'raw_input': raw_symptom,
+                    'suggested_id': self._generate_temp_id(raw_symptom),
+                    'confidence': 0.0,
+                    'needs_verification': True
+                }
         
         # 5. 返回标准化结果
         result = {
@@ -311,16 +381,40 @@ class DrugAgent(BaseAgent):
         """
         获取药物完整档案
         按DR编码生成药物完整档案
+        新增: 本地未找到时，联网搜索补充信息
         """
         self.think("药物档案查询", f"查询药物: {drug_id}")
         
         drug = self.drug_db.get(drug_id)
         if not drug:
-            self.think("未找到", f"药物 {drug_id} 不在数据库中")
+            self.think("未找到", f"药物 {drug_id} 不在本地数据库中")
+            
+            # 尝试联网搜索补充信息
+            web_results = self.search_web(f"{drug_id} 中药 功效 性味归经", context="中药研究")
+            
+            if web_results and web_results[0].get('credibility_score', 0) > 0.3:
+                self.think("联网补充", f"从网络获取到 {len(web_results)} 条补充信息")
+                return {
+                    'status': 'web_supplemented',
+                    'id': drug_id,
+                    'name': drug_id,
+                    'web_sources': web_results[:3],
+                    'note': '本地数据库未找到，信息来自网络搜索，需谨慎验证'
+                }
+            
             return {'status': 'not_found', 'id': drug_id}
         
         # 获取效果统计
         stats = self.drug_effect_stats.get(drug_id, {})
+        
+        # 联网搜索最新研究数据补充
+        web_research = []
+        if self.web_search and self.web_search.is_available():
+            drug_name = drug.get('name', '')
+            if drug_name:
+                web_research = self.search_web(f"{drug_name} 中药 现代研究 药理", context="中药现代研究")
+                if web_research:
+                    self.think("研究补充", f"获取到 {len(web_research)} 条最新研究数据")
         
         profile = {
             'status': 'found',
@@ -332,7 +426,8 @@ class DrugAgent(BaseAgent):
             'indications': drug.get('indications', []),
             'effect_statistics': stats,
             'contraindications': drug.get('contraindications', []),
-            'source': drug.get('source', '未知')
+            'source': drug.get('source', '未知'),
+            'latest_research': web_research[:2] if web_research else []  # 最新研究补充
         }
         
         self.think("档案生成", f"药物 {drug['name']} 档案生成完成")
@@ -444,11 +539,26 @@ class FormulaAgent(BaseAgent):
         """
         获取方剂完整档案
         按FP编码生成方剂（引用药物ID）
+        新增: 联网搜索方剂临床证据
         """
         self.think("方剂档案查询", f"查询方剂: {formula_id}")
         
         formula = self.formula_db.get(formula_id)
         if not formula:
+            self.think("未找到", f"方剂 {formula_id} 不在本地数据库中")
+            
+            # 尝试联网搜索
+            web_results = self.search_web(f"{formula_id} 方剂 组成 功效 临床应用", context="方剂临床研究")
+            
+            if web_results and web_results[0].get('credibility_score', 0) > 0.3:
+                self.think("联网补充", f"从网络获取到 {len(web_results)} 条补充信息")
+                return {
+                    'status': 'web_supplemented',
+                    'id': formula_id,
+                    'web_sources': web_results[:3],
+                    'note': '本地数据库未找到，信息来自网络搜索，需谨慎验证'
+                }
+            
             return {'status': 'not_found', 'id': formula_id}
         
         # 解析组成药物
@@ -461,6 +571,18 @@ class FormulaAgent(BaseAgent):
                 'dosage': comp.get('dosage', '')
             })
         
+        # 联网搜索方剂临床证据
+        clinical_evidence = []
+        if self.web_search and self.web_search.is_available():
+            formula_name = formula.get('name', '')
+            if formula_name:
+                clinical_evidence = self.search_web(
+                    f"{formula_name} 方剂 临床研究 疗效 有效率", 
+                    context="方剂临床研究"
+                )
+                if clinical_evidence:
+                    self.think("证据补充", f"获取到 {len(clinical_evidence)} 条临床证据")
+        
         profile = {
             'status': 'found',
             'id': formula_id,
@@ -471,7 +593,8 @@ class FormulaAgent(BaseAgent):
             'indications': formula.get('indications', []),
             'composition': drug_refs,
             'modifications': formula.get('modifications', []),
-            'contraindications': formula.get('contraindications', [])
+            'contraindications': formula.get('contraindications', []),
+            'clinical_evidence': clinical_evidence[:2] if clinical_evidence else []  # 临床证据
         }
         
         self.think("档案生成", f"方剂 {formula['name']} 档案生成完成，含{len(drug_refs)}味药")
