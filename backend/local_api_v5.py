@@ -40,7 +40,7 @@ try:
     web_search_agent = init_web_search(
         api_key=os.environ.get('WEBSEARCH_API_KEY', 'sk-kGZ5PiMxdpT91QzvvcGPMNk8Sp6Uzkmdmmaq20aE2kEEpzvl'),
         base_url=os.environ.get('WEBSEARCH_BASE_URL', 'https://yunwu.ai/v1'),
-        model=os.environ.get('WEBSEARCH_MODEL', 'gpt-5.5-pro')
+        model=os.environ.get('WEBSEARCH_MODEL', 'gpt-5.4-pro')  # 使用yunwu.ai可用模型
     )
     
     if web_search_agent.is_available():

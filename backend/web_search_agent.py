@@ -42,7 +42,7 @@ class WebSearchAgent:
         """
         self.api_key = api_key or os.environ.get('WEBSEARCH_API_KEY', '')
         self.base_url = base_url or os.environ.get('WEBSEARCH_BASE_URL', 'https://yunwu.ai/v1')
-        self.model = model or os.environ.get('WEBSEARCH_MODEL', 'gpt-5.5-pro')
+        self.model = model or os.environ.get('WEBSEARCH_MODEL', 'gpt-5.4-pro')  # yunwu.ai可用模型
         
         self.client = None
         self.session = None
