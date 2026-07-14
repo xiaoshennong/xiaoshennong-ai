@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小神农中医AI - 知识图谱可视化</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+            background: #f8f5f0;
+            color: #333;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 56px;
+            flex-shrink: 0;
+        }
+        .header h1 { font-size: 18px; }
+        .header .subtitle { font-size: 12px; opacity: 0.9; }
+        .header .back-link {
+            color: white;
+            text-decoration: none;
+            font-size: 13px;
+            padding: 6px 14px;
+            border: 1px solid rgba(255,255,255,0.4);
+            border-radius: 16px;
+        }
+        .header .back-link:hover { background: rgba(255,255,255,0.15); }
+
+        .main {
+            display: flex;
+            height: calc(100vh - 56px);
+        }
+
+        /* 左侧面板 */
+        .left-panel {
+            width: 280px;
+            background: white;
+            border-right: 1px solid #e8e8e8;
+            padding: 15px;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+        .panel-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #2d5016;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e8f5e9;
+        }
+        .search-box {
+            margin-bottom: 15px;
+        }
+        .search-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 13px;
+            outline: none;
+        }
+        .search-input:focus { border-color: #4a7c59; }
+
+        .filter-group { margin-bottom: 15px; }
+        .filter-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 0;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .filter-item input { cursor: pointer; }
+        .type-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .stats-card {
+            background: #f8f5f0;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            padding: 4px 0;
+            border-bottom: 1px dashed #e0e0e0;
+        }
+        .stat-row:last-child { border-bottom: none; }
+
+        .btn {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+            color: white;
+            font-size: 13px;
+            cursor: pointer;
+            margin-bottom: 8px;
+        }
+        .btn:hover { opacity: 0.9; }
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        /* 中间图谱 */
+        .graph-container {
+            flex: 1;
+            position: relative;
+            background: #fafafa;
+            overflow: hidden;
+        }
+        #kg-graph { width: 100%; height: 100%; }
+
+        .legend {
+            position: absolute;
+            bottom: 15px;
+            left: 15px;
+            background: rgba(255,255,255,0.95);
+            padding: 12px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            font-size: 12px;
+        }
+        .legend-item { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+        .legend-item:last-child { margin-bottom: 0; }
+
+        .tooltip {
+            position: absolute;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            max-width: 250px;
+            z-index: 1000;
+        }
+
+        /* 右侧面板 */
+        .right-panel {
+            width: 320px;
+            background: white;
+            border-left: 1px solid #e8e8e8;
+            padding: 15px;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+        .empty-state {
+            text-align: center;
+            color: #999;
+            padding: 40px 20px;
+            font-size: 13px;
+        }
+        .detail-card {
+            background: #f8f5f0;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+        .detail-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: #2d5016;
+            margin-bottom: 8px;
+        }
+        .detail-row {
+            font-size: 12px;
+            padding: 4px 0;
+            color: #555;
+        }
+        .detail-label { color: #999; margin-right: 6px; }
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            margin-right: 4px;
+            margin-bottom: 4px;
+        }
+        .tag-drug { background: #e8f5e9; color: #2d5016; }
+        .tag-symptom { background: #ffebee; color: #c62828; }
+        .tag-formula { background: #f3e5f5; color: #6a1b9a; }
+        .tag-syndrome { background: #e3f2fd; color: #1565c0; }
+
+        .related-list {
+            list-style: none;
+        }
+        .related-list li {
+            padding: 6px 0;
+            border-bottom: 1px dashed #e0e0e0;
+            font-size: 12px;
+            cursor: pointer;
+            color: #4a7c59;
+        }
+        .related-list li:hover { color: #2d5016; }
+        .related-list li:last-child { border-bottom: none; }
+
+        .severity-high { color: #c62828; font-weight: bold; }
+        .severity-medium { color: #f9a825; }
+        .severity-low { color: #4a7c59; }
+
+        /* 响应式 */
+        @media (max-width: 900px) {
+            .left-panel, .right-panel { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <h1>🌿 小神农中医AI · 知识图谱可视化</h1>
+            <div class="subtitle">症状 · 药物 · 方剂 · 证型 · 患者 · 副作用 · 共现关系</div>
+        </div>
+        <a href="index.html" class="back-link">← 返回主界面</a>
+    </div>
+
+    <div class="main">
+        <div class="left-panel">
+            <div class="panel-title">🔍 搜索与筛选</div>
+            <div class="search-box">
+                <input type="text" class="search-input" id="searchInput" placeholder="搜索症状、药物、方剂..." oninput="handleSearch()">
+            </div>
+
+            <div class="filter-group">
+                <div class="filter-label">节点类型</div>
+                <div id="typeFilters"></div>
+            </div>
+
+            <div class="filter-group">
+                <div class="filter-label">关系类型</div>
+                <div id="relationFilters"></div>
+            </div>
+
+            <button class="btn" onclick="resetView()">重置视图</button>
+            <button class="btn btn-secondary" onclick="runSideEffectDemo()">🧪 副作用辨别演示</button>
+
+            <div class="panel-title" style="margin-top: 20px;">📊 图谱统计</div>
+            <div class="stats-card" id="statsCard">
+                <div class="stat-row"><span>节点总数</span><span id="statNodes">-</span></div>
+                <div class="stat-row"><span>关系总数</span><span id="statLinks">-</span></div>
+                <div class="stat-row"><span>药物</span><span id="statDrugs">-</span></div>
+                <div class="stat-row"><span>症状</span><span id="statSymptoms">-</span></div>
+                <div class="stat-row"><span>方剂</span><span id="statFormulas">-</span></div>
+                <div class="stat-row"><span>患者</span><span id="statPatients">-</span></div>
+            </div>
+        </div>
+
+        <div class="graph-container">
+            <svg id="kg-graph"></svg>
+            <div class="legend" id="legend"></div>
+            <div class="tooltip" id="tooltip"></div>
+        </div>
+
+        <div class="right-panel" id="rightPanel">
+            <div class="panel-title">📋 节点详情</div>
+            <div class="empty-state" id="emptyState">
+                点击图谱中的节点<br>查看详细信息
+            </div>
+            <div id="detailContent" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        // 配置
+        const TYPE_COLORS = {
+            drug: '#4a7c59',
+            symptom: '#e57373',
+            syndrome: '#64b5f6',
+            formula: '#ba68c8',
+            patient: '#ffb74d',
+            adverse: '#ef5350',
+            cluster: '#9575cd'
+        };
+        const TYPE_LABELS = {
+            drug: '药物',
+            symptom: '症状',
+            syndrome: '证型',
+            formula: '方剂',
+            patient: '患者',
+            adverse: '副作用',
+            cluster: '聚类'
+        };
+        const RELATION_COLORS = {
+            '组成': '#4a7c59',
+            '治疗': '#2d5016',
+            '治疗证型': '#1565c0',
+            '主治症状': '#c62828',
+            '主治证型': '#1565c0',
+            '副作用': '#ef5350',
+            '共现': '#f9a825',
+            '患者症状': '#ff8a65',
+            '患者用药': '#8d6e63',
+            '相似患者': '#9575cd',
+            '十八反': '#b71c1c',
+            '十九畏': '#d32f2f',
+            '七情配伍': '#7cb342'
+        };
+
+        let graphData = { nodes: [], links: [] };
+        let simulation;
+        let svg, g;
+        let activeFilters = new Set(['drug', 'symptom', 'syndrome', 'formula', 'patient']);
+        let activeRelations = new Set();
+        let selectedNode = null;
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadData();
+            initFilters();
+            initGraph();
+            updateStats();
+        });
+
+        async function loadData() {
+            try {
+                const resp = await fetch('../data/kg_graph.json');
+                if (!resp.ok) throw new Error('Failed to load kg_graph.json');
+                graphData = await resp.json();
+                // 预处理：计算度数
+                const degreeMap = {};
+                graphData.nodes.forEach(n => degreeMap[n.id] = 0);
+                graphData.links.forEach(l => {
+                    degreeMap[l.source] = (degreeMap[l.source] || 0) + 1;
+                    degreeMap[l.target] = (degreeMap[l.target] || 0) + 1;
+                });
+                graphData.nodes.forEach(n => n.degree = degreeMap[n.id] || 0);
+                // 关系筛选默认全选
+                const relTypes = new Set(graphData.links.map(l => l.relation));
+                activeRelations = relTypes;
+            } catch (e) {
+                console.error(e);
+                document.getElementById('kg-graph').innerHTML = '<text x="50%" y="50%" text-anchor="middle" fill="#999">加载数据失败，请确认 data/kg_graph.json 存在</text>';
+            }
+        }
+
+        function initFilters() {
+            const typeContainer = document.getElementById('typeFilters');
+            Object.keys(TYPE_COLORS).forEach(type => {
+                if (!graphData.nodes.some(n => n.type === type)) return;
+                const item = document.createElement('div');
+                item.className = 'filter-item';
+                item.innerHTML = `
+                    <input type="checkbox" id="filter-${type}" checked onchange="toggleType('${type}')">
+                    <span class="type-dot" style="background: ${TYPE_COLORS[type]}"></span>
+                    <label for="filter-${type}">${TYPE_LABELS[type]}</label>
+                `;
+                typeContainer.appendChild(item);
+            });
+
+            const relContainer = document.getElementById('relationFilters');
+            const relTypes = [...new Set(graphData.links.map(l => l.relation))];
+            relTypes.forEach(rel => {
+                const item = document.createElement('div');
+                item.className = 'filter-item';
+                item.innerHTML = `
+                    <input type="checkbox" id="rel-${rel}" checked onchange="toggleRelation('${rel}')">
+                    <span class="type-dot" style="background: ${RELATION_COLORS[rel] || '#999'}"></span>
+                    <label for="rel-${rel}">${rel}</label>
+                `;
+                relContainer.appendChild(item);
+            });
+
+            // 图例
+            const legend = document.getElementById('legend');
+            Object.keys(TYPE_COLORS).forEach(type => {
+                if (!graphData.nodes.some(n => n.type === type)) return;
+                const item = document.createElement('div');
+                item.className = 'legend-item';
+                item.innerHTML = `<span class="type-dot" style="background: ${TYPE_COLORS[type]}"></span><span>${TYPE_LABELS[type]}</span>`;
+                legend.appendChild(item);
+            });
+        }
+
+        function initGraph() {
+            const container = document.querySelector('.graph-container');
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+
+            svg = d3.select('#kg-graph')
+                .attr('width', width)
+                .attr('height', height);
+
+            // 清空
+            svg.selectAll('*').remove();
+
+            // 缩放
+            const zoom = d3.zoom()
+                .scaleExtent([0.1, 4])
+                .on('zoom', (event) => {
+                    g.attr('transform', event.transform);
+                });
+            svg.call(zoom);
+
+            g = svg.append('g');
+
+            // 过滤数据
+            const filtered = getFilteredData();
+
+            // 力导向模拟
+            simulation = d3.forceSimulation(filtered.nodes)
+                .force('link', d3.forceLink(filtered.links).id(d => d.id).distance(d => {
+                    if (d.relation === '组成') return 50;
+                    if (d.relation === '副作用') return 80;
+                    if (d.relation === '共现') return 100;
+                    return 120;
+                }))
+                .force('charge', d3.forceManyBody().strength(-150))
+                .force('center', d3.forceCenter(width / 2, height / 2))
+                .force('collision', d3.forceCollide().radius(d => getNodeRadius(d) + 5));
+
+            // 绘制连线
+            const link = g.append('g')
+                .attr('class', 'links')
+                .selectAll('line')
+                .data(filtered.links)
+                .enter().append('line')
+                .attr('stroke', d => RELATION_COLORS[d.relation] || '#ccc')
+                .attr('stroke-width', d => d.relation === '十八反' || d.relation === '十九畏' ? 3 : 1.5)
+                .attr('stroke-opacity', 0.6)
+                .attr('stroke-dasharray', d => d.relation === '副作用' ? '5,3' : null);
+
+            // 绘制节点
+            const node = g.append('g')
+                .attr('class', 'nodes')
+                .selectAll('g')
+                .data(filtered.nodes)
+                .enter().append('g')
+                .attr('class', 'node')
+                .call(d3.drag()
+                    .on('start', dragstarted)
+                    .on('drag', dragged)
+                    .on('end', dragended))
+                .on('click', (event, d) => selectNode(d))
+                .on('mouseover', (event, d) => showTooltip(event, d))
+                .on('mouseout', hideTooltip);
+
+            node.append('circle')
+                .attr('r', d => getNodeRadius(d))
+                .attr('fill', d => TYPE_COLORS[d.type])
+                .attr('stroke', '#fff')
+                .attr('stroke-width', 2)
+                .attr('opacity', 0.9);
+
+            node.append('text')
+                .attr('dy', d => getNodeRadius(d) + 14)
+                .attr('text-anchor', 'middle')
+                .text(d => d.label)
+                .attr('font-size', '11px')
+                .attr('fill', '#333')
+                .attr('pointer-events', 'none');
+
+            simulation.on('tick', () => {
+                link
+                    .attr('x1', d => d.source.x)
+                    .attr('y1', d => d.source.y)
+                    .attr('x2', d => d.target.x)
+                    .attr('y2', d => d.target.y);
+
+                node.attr('transform', d => `translate(${d.x},${d.y})`);
+            });
+        }
+
+        function getFilteredData() {
+            const nodeMap = {};
+            const nodes = graphData.nodes.filter(n => activeFilters.has(n.type));
+            nodes.forEach(n => nodeMap[n.id] = n);
+
+            const links = graphData.links.filter(l => {
+                return activeRelations.has(l.relation) && nodeMap[l.source] && nodeMap[l.target];
+            }).map(l => ({
+                ...l,
+                source: nodeMap[l.source],
+                target: nodeMap[l.target]
+            }));
+
+            return { nodes, links };
+        }
+
+        function getNodeRadius(d) {
+            if (d.type === 'formula') return 10 + Math.sqrt(d.degree || 1) * 1.5;
+            if (d.type === 'drug') return 8 + Math.sqrt(d.degree || 1);
+            return 6 + Math.sqrt(d.degree || 1) * 0.8;
+        }
+
+        function dragstarted(event, d) {
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }
+
+        function dragged(event, d) {
+            d.fx = event.x;
+            d.fy = event.y;
+        }
+
+        function dragended(event, d) {
+            if (!event.active) simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
+        }
+
+        function showTooltip(event, d) {
+            const tooltip = document.getElementById('tooltip');
+            tooltip.innerHTML = `<strong>${d.label}</strong><br>${TYPE_LABELS[d.type]}<br>连接数: ${d.degree}`;
+            tooltip.style.left = (event.pageX + 10) + 'px';
+            tooltip.style.top = (event.pageY + 10) + 'px';
+            tooltip.style.opacity = 1;
+        }
+
+        function hideTooltip() {
+            document.getElementById('tooltip').style.opacity = 0;
+        }
+
+        function selectNode(d) {
+            selectedNode = d;
+            const panel = document.getElementById('rightPanel');
+            document.getElementById('emptyState').style.display = 'none';
+            const content = document.getElementById('detailContent');
+            content.style.display = 'block';
+
+            let html = '';
+
+            // 基本信息
+            html += `<div class="detail-card">
+                <div class="detail-title">${TYPE_LABELS[d.type]} · ${d.label}</div>
+                <div class="detail-row"><span class="detail-label">ID</span>${d.id}</div>
+                <div class="detail-row"><span class="detail-label">连接数</span>${d.degree}</div>`;
+
+            if (d.type === 'drug') {
+                html += `<div class="detail-row"><span class="detail-label">类别</span>${d.category || '-'}</div>`;
+                html += `<div class="detail-row"><span class="detail-label">性味</span>${(d.properties && d.properties.nature) || '-'} ${(d.properties && d.properties.taste) || '-'}</div>`;
+                html += `<div class="detail-row"><span class="detail-label">归经</span>${(d.properties && d.properties.meridian && d.properties.meridian.join('、')) || '-'}</div>`;
+                html += `<div class="detail-row"><span class="detail-label">可信度</span>${d.confidence || '-'}</div>`;
+                html += `<div class="detail-row"><span class="detail-label">审核状态</span>${d.review_status || '-'}</div>`;
+                if (d.clinical_stats) {
+                    html += `<div class="detail-row"><span class="detail-label">有效率</span>${d.clinical_stats.effective_rate || '-'}</div>`;
+                    html += `<div class="detail-row"><span class="detail-label">样本量</span>${d.clinical_stats.total_cases || 0}例</div>`;
+                }
+            } else if (d.type === 'symptom') {
+                html += `<div class="detail-row"><span class="detail-label">部位</span>${d.location || '-'}</div>`;
+                html += `<div class="detail-row"><span class="detail-label">类型</span>${d.symptom_type || '-'}</div>`;
+            } else if (d.type === 'formula') {
+                html += `<div class="detail-row"><span class="detail-label">来源</span>${d.source || '-'}</div>`;
+                html += `<div class="detail-row"><span class="detail-label">分类</span>${(d.classification && d.classification.main) || '-'}</div>`;
+            } else if (d.type === 'syndrome') {
+                html += `<div class="detail-row"><span class="detail-label">体系</span>${d.system || '-'}</div>`;
+                html += `<div class="detail-row"><span class="detail-label">治则</span>${d.treatment_principle || '-'}</div>`;
+            } else if (d.type === 'patient') {
+                html += `<div class="detail-row"><span class="detail-label">主诉</span>${d.chief_complaint || '-'}</div>`;
+            }
+            html += '</div>';
+
+            // 关联节点
+            const related = graphData.links
+                .filter(l => l.source === d.id || l.target === d.id)
+                .map(l => {
+                    const isSource = l.source === d.id;
+                    const otherId = isSource ? l.target : l.source;
+                    const other = graphData.nodes.find(n => n.id === otherId);
+                    return {
+                        relation: l.relation,
+                        otherId,
+                        otherLabel: other ? other.label : otherId,
+                        otherType: other ? other.type : 'unknown',
+                        isSource,
+                        details: l
+                    };
+                });
+
+            // 按关系分组
+            const grouped = {};
+            related.forEach(r => {
+                if (!grouped[r.relation]) grouped[r.relation] = [];
+                grouped[r.relation].push(r);
+            });
+
+            Object.keys(grouped).forEach(rel => {
+                html += `<div class="detail-card">
+                    <div class="detail-title">${rel} (${grouped[rel].length})</div>
+                    <ul class="related-list">`;
+                grouped[rel].forEach(r => {
+                    const arrow = r.isSource ? '→' : '←';
+                    const tagClass = `tag-${r.otherType}`;
+                    let extra = '';
+                    if (rel === '副作用') extra = ` (${r.details.incidence || ''} ${r.details.severity || ''})`;
+                    if (rel === '共现') extra = ` (强度 ${r.details.strength || '-'})`;
+                    if (rel === '组成') extra = ` [${r.details.role || ''}]`;
+                    html += `<li onclick="focusNode('${r.otherId}')">${arrow} <span class="tag ${tagClass}">${TYPE_LABELS[r.otherType] || r.otherType}</span> ${r.otherLabel}${extra}</li>`;
+                });
+                html += '</ul></div>';
+            });
+
+            content.innerHTML = html;
+
+            // 高亮节点和邻居
+            highlightNeighbors(d.id);
+        }
+
+        function highlightNeighbors(nodeId) {
+            const neighborIds = new Set([nodeId]);
+            graphData.links.forEach(l => {
+                if (l.source === nodeId) neighborIds.add(l.target);
+                if (l.target === nodeId) neighborIds.add(l.source);
+            });
+
+            d3.selectAll('.nodes g')
+                .attr('opacity', d => neighborIds.has(d.id) ? 1 : 0.2);
+            d3.selectAll('.links line')
+                .attr('stroke-opacity', d =>
+                    (d.source.id === nodeId || d.target.id === nodeId) ? 1 : 0.05);
+        }
+
+        function focusNode(nodeId) {
+            const node = graphData.nodes.find(n => n.id === nodeId);
+            if (node) {
+                selectNode(node);
+                // 居中
+                const container = document.querySelector('.graph-container');
+                const transform = d3.zoomIdentity
+                    .translate(container.clientWidth / 2, container.clientHeight / 2)
+                    .scale(1.5)
+                    .translate(-node.x, -node.y);
+                svg.transition().duration(750).call(d3.zoom().transform, transform);
+            }
+        }
+
+        function toggleType(type) {
+            if (activeFilters.has(type)) {
+                activeFilters.delete(type);
+            } else {
+                activeFilters.add(type);
+            }
+            refreshGraph();
+        }
+
+        function toggleRelation(rel) {
+            if (activeRelations.has(rel)) {
+                activeRelations.delete(rel);
+            } else {
+                activeRelations.add(rel);
+            }
+            refreshGraph();
+        }
+
+        function refreshGraph() {
+            initGraph();
+            if (selectedNode) {
+                // 如果选中节点仍在过滤后的数据中，保持详情
+                const stillVisible = graphData.nodes.some(n => n.id === selectedNode.id && activeFilters.has(n.type));
+                if (!stillVisible) {
+                    document.getElementById('emptyState').style.display = 'block';
+                    document.getElementById('detailContent').style.display = 'none';
+                    selectedNode = null;
+                    d3.selectAll('.nodes g').attr('opacity', 1);
+                    d3.selectAll('.links line').attr('stroke-opacity', 0.6);
+                }
+            }
+            updateStats();
+        }
+
+        function handleSearch() {
+            const query = document.getElementById('searchInput').value.trim().toLowerCase();
+            if (!query) {
+                d3.selectAll('.nodes g circle').attr('stroke', '#fff').attr('stroke-width', 2);
+                return;
+            }
+
+            const matched = graphData.nodes.filter(n =>
+                n.label.toLowerCase().includes(query) ||
+                n.id.toLowerCase().includes(query)
+            );
+
+            d3.selectAll('.nodes g circle')
+                .attr('stroke', d => matched.some(m => m.id === d.id) ? '#ffeb3b' : '#fff')
+                .attr('stroke-width', d => matched.some(m => m.id === d.id) ? 4 : 2);
+
+            if (matched.length === 1) {
+                focusNode(matched[0].id);
+            }
+        }
+
+        function resetView() {
+            activeFilters = new Set(['drug', 'symptom', 'syndrome', 'formula', 'patient']);
+            activeRelations = new Set(graphData.links.map(l => l.relation));
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
+            document.getElementById('searchInput').value = '';
+            selectedNode = null;
+            refreshGraph();
+        }
+
+        function updateStats() {
+            const filtered = getFilteredData();
+            document.getElementById('statNodes').textContent = filtered.nodes.length;
+            document.getElementById('statLinks').textContent = filtered.links.length;
+            document.getElementById('statDrugs').textContent = filtered.nodes.filter(n => n.type === 'drug').length;
+            document.getElementById('statSymptoms').textContent = filtered.nodes.filter(n => n.type === 'symptom').length;
+            document.getElementById('statFormulas').textContent = filtered.nodes.filter(n => n.type === 'formula').length;
+            document.getElementById('statPatients').textContent = filtered.nodes.filter(n => n.type === 'patient').length;
+        }
+
+        function runSideEffectDemo() {
+            // 演示：酸枣仁汤后腹泻
+            const patient = graphData.nodes.find(n => n.id === 'PT-20250801-001');
+            if (patient) {
+                selectNode(patient);
+                focusNode(patient.id);
+            } else {
+                alert('未找到演示患者数据');
+            }
+        }
+
+        // 窗口大小变化时重绘
+        window.addEventListener('resize', () => {
+            initGraph();
+        });
+    </script>
+</body>
+</html>
