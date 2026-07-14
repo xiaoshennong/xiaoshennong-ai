@@ -572,7 +572,7 @@
     
     <script>
         // API配置
-        const API_BASE = 'http://43.247.135.91:5005';
+        const API_BASE = '';  // 空字符串表示同源，走 nginx 代理
         let isProcessing = false;
         
         // 页面加载
@@ -869,7 +869,7 @@
                     await showThinkingSteps(data.data.thinking_process);
                 }
                 // 显示结果
-                await showDiagnosisResult(data.data.diagnosis);
+                await showDiagnosisResult(data.data.diagnosis || data.data);
             } else {
                 await addBotMessage('抱歉，分析失败：' + (data.error || '请稍后重试'));
             }
@@ -937,14 +937,38 @@
             }
         }
         
+        // 统一诊断结果结构（兼容旧版/精简版后端）
+        function normalizeDiagnosis(result) {
+            if (!result) result = {};
+            if (result.diagnosis) result = result.diagnosis;
+
+            const formulas = result.formulas || (result.matched_formulas || []).map(name =>
+                typeof name === 'string' ? { name, id: '', functions: '', composition: [] } : name
+            );
+
+            return {
+                symptoms: result.symptoms || result.matched_symptoms || [],
+                formulas: formulas,
+                acupoints: result.acupoints || [],
+                dietary: result.dietary || [],
+                qigong: result.qigong || [],
+                massage: result.massage || [],
+                constitution: result.constitution || '辨证分析结果',
+                syndrome: result.syndrome || '',
+                advice: result.advice || ''
+            };
+        }
+
         // 显示诊断结果
-        async function showDiagnosisResult(result) {
+        async function showDiagnosisResult(rawResult) {
             const container = document.getElementById('chatContainer');
             const time = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
-            
+
+            const result = normalizeDiagnosis(rawResult);
+
             // 构建结果HTML
             let resultHtml = '';
-            
+
             // 症状分析
             if (result.symptoms && result.symptoms.length > 0) {
                 resultHtml += `<div style="margin-bottom: 12px;">
@@ -1041,7 +1065,7 @@
                     <div class="message-content">
                         <div class="message-bubble">
                             <div class="result-card">
-                                <div class="result-constitution">辨证分析结果</div>
+                                <div class="result-constitution">辨证分析结果：${result.constitution}</div>
                                 ${resultHtml}
                             </div>
                         </div>

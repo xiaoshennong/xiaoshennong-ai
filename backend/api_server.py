@@ -14,7 +14,7 @@ from functools import wraps
 # 强制禁用字节码缓存，确保加载最新代码
 sys.dont_write_bytecode = True
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response
 from flask_cors import CORS
 
 from rag_engine_v2 import XiaoShennongRAGv2, DiagnosisResult
@@ -374,6 +374,109 @@ def diagnose():
             "success": False,
             "error": f"系统处理失败: {str(e)}"
         }), 500
+
+
+@app.route("/api/diagnosis/stream", methods=["POST"])
+def diagnose_stream():
+    """
+    流式 AI 辨证接口（SSE）
+    返回结构兼容前端 showDiagnosisResult：
+      data.diagnosis = { symptoms, formulas, acupoints, dietary, qigong, massage }
+    """
+    def _err_stream(msg):
+        payload = json.dumps({'type': 'error', 'data': msg}, ensure_ascii=False)
+        yield f"data: {payload}\n\n"
+
+    try:
+        data = request.get_json(force=True, silent=True) or {}
+        if not data or "symptoms" not in data:
+            return Response(_err_stream("缺少症状描述（symptoms字段）"), mimetype='text/event-stream')
+
+        symptoms_text = data["symptoms"]
+        history = data.get("history", "")
+        age = data.get("age", "")
+        gender = data.get("gender", "")
+
+        query = f"症状：{symptoms_text}"
+        if history:
+            query += f"，病史：{history}"
+        if age:
+            query += f"，年龄：{age}岁"
+        if gender:
+            query += f"，性别：{'男' if gender == 'male' else '女'}"
+
+        def generate():
+            # 调用 RAG 引擎
+            result = rag_engine.diagnose(query, llm_client)
+            formatted = format_diagnosis_result(result)
+            if knowledge_base:
+                formatted = enhance_diagnosis_with_kb(symptoms_text, formatted)
+
+            # 发送思考步骤
+            for step in formatted.get('thinking_process', []):
+                payload = json.dumps({'type': 'thinking', 'data': step}, ensure_ascii=False)
+                yield f"data: {payload}\n\n"
+
+            # 用知识库把输入症状映射为结构化症状节点
+            kb = get_kb()
+            matched_symptoms = []
+            if kb:
+                try:
+                    matched_symptoms = kb.find_symptoms_by_text(symptoms_text) or []
+                except Exception as e:
+                    print(f"[API] 流式症状映射失败: {e}")
+
+            # 构建前端需要的结构化 diagnosis
+            diagnosis = {
+                'symptoms': [
+                    {'id': s.get('id', ''), 'name': s.get('name', '')}
+                    for s in matched_symptoms[:10]
+                ],
+                'formulas': [
+                    {
+                        'id': f.get('id', ''),
+                        'name': f.get('name', ''),
+                        'functions': f.get('syndrome', '') or f.get('source', ''),
+                        'composition': []
+                    }
+                    for f in formatted.get('matched_formulas', [])[:5]
+                ],
+                'acupoints': [],
+                'dietary': [],
+                'qigong': [],
+                'massage': []
+            }
+
+            # 精简文本，避免 SSE JSON 被浏览器插件截断
+            def _strip_emojis(text):
+                if not isinstance(text, str):
+                    return text
+                import re
+                return re.sub(r'[\U00010000-\U0010ffff]', '', text)
+
+            stream_result = {
+                'diagnosis': diagnosis,
+                'constitution': formatted.get('constitution', ''),
+                'syndrome': formatted.get('syndrome', ''),
+                'advice': _strip_emojis(formatted.get('advice', ''))[:800],
+                'warning': formatted.get('warning', ''),
+                'matched_formulas': [f.get('name', '') for f in formatted.get('matched_formulas', [])[:3]],
+                'matched_drugs': [d.get('name', '') for d in formatted.get('matched_drugs', [])[:3]],
+                'contraindications': formatted.get('contraindications', [])[:3]
+            }
+            payload = json.dumps({'type': 'result', 'data': stream_result}, ensure_ascii=False)
+            yield f"data: {payload}\n\n"
+
+            payload = json.dumps({'type': 'done'}, ensure_ascii=False)
+            yield f"data: {payload}\n\n"
+
+        return Response(generate(), mimetype='text/event-stream')
+
+    except Exception as e:
+        import traceback
+        print(f"[API] 流式辨证错误: {e}")
+        traceback.print_exc()
+        return Response(_err_stream(f"系统处理失败: {str(e)}"), mimetype='text/event-stream')
 
 
 @app.route("/api/retrieve", methods=["POST"])
