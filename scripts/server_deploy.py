@@ -9,7 +9,6 @@
 
 import argparse
 import os
-import sys
 import tarfile
 import tempfile
 import paramiko
@@ -30,26 +29,12 @@ DEPLOY_ITEMS = [
     "scripts/kg_enrich_agent.py",
     "scripts/multi_agent_kg_workflow.md",
     "scripts/server_deploy.py",
+    "scripts/import_extended_kg.py",
+    "scripts/batch_enrich_agents.py",
     "data/kg_graph.json",
     "data/knowledge_graph",
     "backend/requirements.txt",
 ]
-
-
-def run_remote(client, cmd, timeout=60):
-    """在远程执行命令并返回输出"""
-    print(f"\n[REMOTE] {cmd}")
-    stdin, stdout, stderr = client.exec_command(cmd, timeout=timeout, get_pty=True)
-    out = stdout.read().decode('utf-8', errors='replace')
-    err = stderr.read().decode('utf-8', errors='replace')
-    if out.strip():
-        print(out[:2000])
-    if err.strip():
-        print("STDERR:", err[:1000])
-    rc = stdout.channel.recv_exit_status()
-    if rc != 0:
-        print(f"Command failed with rc={rc}")
-    return rc, out, err
 
 
 def create_deploy_archive():
@@ -75,68 +60,97 @@ def deploy(host, user, password):
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     print(f"[INFO] 连接服务器 {host} ...")
-    client.connect(host, username=user, password=password, timeout=20, look_for_keys=False, allow_agent=False)
+    client.connect(host, username=user, password=password, timeout=45, look_for_keys=False, allow_agent=False)
     print("[INFO] SSH 连接成功")
 
-    # 1. 备份
-    backup_name = datetime.now().strftime("%Y%m%d_%H%M%S")
-    backup_dir = f"{REMOTE_PROJECT}/backups/{backup_name}"
-    rc, _, _ = run_remote(client, f"mkdir -p {backup_dir} && cp -a {REMOTE_PROJECT}/. {backup_dir}/ 2>/dev/null || true", timeout=120)
-    if rc == 0:
-        print(f"[INFO] 已备份到 {backup_dir}")
-
-    # 2. 停止服务
-    run_remote(client, f"systemctl stop {SERVICE_NAME}", timeout=30)
-
-    # 3. 上传并解压
+    # 上传压缩包
     archive = create_deploy_archive()
     remote_archive = f"/tmp/{archive.name}"
-    print(f"[INFO] 上传 {archive.name} 到 {remote_archive} ...")
+    print(f"[INFO] 上传 {archive.name} ({archive.stat().st_size / 1024 / 1024:.2f} MB) ...")
     sftp = client.open_sftp()
     sftp.put(str(archive), remote_archive)
     sftp.close()
     print("[INFO] 上传完成")
 
-    # 解压到项目目录
-    run_remote(client, f"cd {REMOTE_PROJECT} && tar -xzf {remote_archive} --overwrite", timeout=120)
-    run_remote(client, f"rm -f {remote_archive}")
+    # 单次执行所有部署命令
+    backup_name = datetime.now().strftime("%Y%m%d_%H%M%S")
+    backup_dir = f"{REMOTE_PROJECT}/backups/{backup_name}"
 
-    # 4. 安装依赖
-    venv_pip = f"{REMOTE_PROJECT}/venv/bin/pip"
-    req_file = f"{REMOTE_PROJECT}/backend/requirements.txt"
-    run_remote(client, f"{venv_pip} install -r {req_file} --upgrade", timeout=180)
+    deploy_script = f"""
+set -e
+BACKUP_DIR="{backup_dir}"
+REMOTE_PROJECT="{REMOTE_PROJECT}"
+SERVICE_NAME="{SERVICE_NAME}"
+REMOTE_ARCHIVE="{remote_archive}"
 
-    # 5. 重新生成 kg_graph.json（确保服务器上数据一致）
-    venv_python = f"{REMOTE_PROJECT}/venv/bin/python"
-    run_remote(client, f"cd {REMOTE_PROJECT} && {venv_python} scripts/export_kg_for_viz.py", timeout=120)
+echo "[1/7] 备份代码..."
+mkdir -p "$BACKUP_DIR"
+cd "$REMOTE_PROJECT"
+cp -a backend frontend scripts nginx docker deploy.sh start.sh docker-compose.yml .env* README.md DEPLOY.md "$BACKUP_DIR/" 2>/dev/null || true
+echo "备份完成: $BACKUP_DIR"
 
-    # 6. 启动服务
-    run_remote(client, f"systemctl daemon-reload && systemctl start {SERVICE_NAME}", timeout=30)
-    run_remote(client, f"systemctl status {SERVICE_NAME} --no-pager | head -20", timeout=10)
+echo "[2/7] 停止服务..."
+systemctl stop "$SERVICE_NAME" || true
 
-    # 7. 重载 nginx
-    run_remote(client, "nginx -t && systemctl reload nginx", timeout=30)
+echo "[3/7] 解压部署包..."
+cd "$REMOTE_PROJECT"
+tar -xzf "$REMOTE_ARCHIVE" --overwrite
+rm -f "$REMOTE_ARCHIVE"
 
-    # 8. 健康检查
-    print("\n[INFO] 等待服务启动 ...")
-    import time
-    time.sleep(5)
-    rc, out, err = run_remote(client, f"curl -s -o /dev/null -w '%{{http_code}}' http://127.0.0.1:5005/api/health", timeout=15)
-    if rc == 0 and out.strip() == "200":
-        print("[SUCCESS] 后端健康检查通过")
-    else:
-        print(f"[WARN] 后端健康检查异常: {out}")
+echo "[4/7] 安装依赖..."
+"$REMOTE_PROJECT/venv/bin/pip" install -r "$REMOTE_PROJECT/backend/requirements.txt" --upgrade
 
-    rc, out, err = run_remote(client, f"curl -s -o /dev/null -w '%{{http_code}}' http://127.0.0.1/frontend/kg_visual.html", timeout=15)
-    if rc == 0 and out.strip() == "200":
-        print("[SUCCESS] 前端知识图谱页面可访问")
-    else:
-        print(f"[WARN] 前端页面检查异常: {out}")
+echo "[5/7] 重新导出知识图谱..."
+cd "$REMOTE_PROJECT"
+"$REMOTE_PROJECT/venv/bin/python" scripts/export_kg_for_viz.py
+
+echo "[6/7] 启动服务..."
+systemctl daemon-reload
+systemctl start "$SERVICE_NAME"
+systemctl status "$SERVICE_NAME" --no-pager | head -15
+
+echo "[7/7] 重载 nginx..."
+nginx -t && systemctl reload nginx
+
+echo "[CHECK] 等待服务就绪..."
+sleep 8
+API_CODE=$(curl -s -o /dev/null -w '%{{http_code}}' http://127.0.0.1:5005/api/health || echo "000")
+KG_CODE=$(curl -s -o /dev/null -w '%{{http_code}}' http://127.0.0.1/kg_visual.html || echo "000")
+ROOT_CODE=$(curl -s -o /dev/null -w '%{{http_code}}' http://127.0.0.1/ || echo "000")
+echo "API health: $API_CODE"
+echo "KG page: $KG_CODE"
+echo "Root page: $ROOT_CODE"
+
+if [ "$API_CODE" = "200" ] && [ "$KG_CODE" = "200" ]; then
+    echo "[SUCCESS] 部署验证通过"
+    exit 0
+else
+    echo "[WARN] 部署验证未完全通过"
+    exit 1
+fi
+"""
+
+    print("\n[INFO] 在服务器上执行部署脚本（单会话）...")
+    stdin, stdout, stderr = client.exec_command(deploy_script, timeout=600, get_pty=True)
+    out = stdout.read().decode('utf-8', errors='replace')
+    err = stderr.read().decode('utf-8', errors='replace')
+    rc = stdout.channel.recv_exit_status()
+
+    if out.strip():
+        print(out[-4000:])
+    if err.strip():
+        print("STDERR:", err[-2000:])
 
     client.close()
-    print("\n[SUCCESS] 部署完成")
-    print(f"  访问地址: http://{host}/frontend/kg_visual.html")
-    print(f"  API 地址: http://{host}/api/health")
+
+    if rc == 0:
+        print("\n[SUCCESS] 部署完成")
+        print(f"  主页面: http://{host}/")
+        print(f"  知识图谱: http://{host}/kg_visual.html")
+        print(f"  API 地址: http://{host}:5005/api/health")
+    else:
+        print(f"\n[FAILED] 部署脚本退出码: {rc}")
+        raise SystemExit(rc)
 
 
 def main():

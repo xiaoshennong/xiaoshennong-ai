@@ -23,7 +23,22 @@ requests>=2.31.0
 beautifulsoup4>=4.12.0
 lxml>=4.9.0
 
-# === 其他工具 ===
-# pandas>=2.0.0      # 数据分析（可选）
-# pydantic>=2.0.0    # 数据校验（可选）
-# gunicorn>=21.0.0   # 生产WSGI服务器（可选，Docker内直接用Flask）
+# === 数据 processing ===
+pandas>=2.0.0
+openpyxl>=3.1.0
+python-dotenv>=1.0.0
+
+# === 中文 NLP / 图分析 ===
+jieba>=0.42.1
+networkx>=3.0
+pyvis>=0.3.2
+
+# === 数据校验 / 现代 HTTP / 测试 ===
+pydantic>=2.0.0
+httpx>=0.25.0
+tenacity>=8.2.0
+tqdm>=4.66.0
+pytest>=7.4.0
+
+# === 生产部署 ===
+gunicorn>=21.0.0
