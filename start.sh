@@ -56,25 +56,33 @@ else
     echo "  模型已存在"
 fi
 
-# 设置环境变量
-export LLM_PROVIDER=${LLM_PROVIDER:-mock}
-export FLASK_DEBUG=${FLASK_DEBUG:-false}
-export PORT=${PORT:-5000}
+# 环境变量由项目根目录 .env 控制（YUNWU_API_KEY、PORT、ADMIN_TOKEN 等）
+# 不再默认覆盖为 mock/5000，确保使用 .env 中的 yunwu.ai 配置
 
 echo ""
 echo "========================================"
 echo "  启动完成！"
 echo "========================================"
-echo "  API地址: http://localhost:$PORT"
-echo "  健康检查: http://localhost:$PORT/api/health"
-echo "  LLM模式: $LLM_PROVIDER"
+echo "  后端API: http://localhost:5001"
+echo "  前端页面: http://localhost:8080"
+echo "  健康检查: http://localhost:5001/api/health"
+echo "  LLM模式: yunwu.ai（由 .env 决定）"
 echo ""
 echo "  常用命令:"
-echo "    启动服务: python backend/api_server.py"
+echo "    启动后端: python backend/api_server.py"
+echo "    启动前端: cd frontend && python -m http.server 8080"
 echo "    导入数据: python backend/data_pipeline.py --import-all"
-echo "    测试辨证: curl -X POST http://localhost:$PORT/api/diagnosis -H 'Content-Type: application/json' -d '{\"symptoms\":\"头痛发热，怕冷\"}'"
+echo "    测试辨证: curl -X POST http://localhost:5001/api/diagnosis -H 'Content-Type: application/json' -d '{\"symptoms\":\"头痛发热，怕冷\"}'"
 echo ""
 
-# 启动服务
+# 启动前端（后台）
+echo "[启动] 前端服务 http://localhost:8080"
+mkdir -p logs
+cd frontend
+python3 -m http.server 8080 > ../logs/frontend.log 2>&1 &
+cd ..
+
+# 启动后端（前台）
+echo "[启动] 后端服务 http://localhost:5001"
 cd backend
-python api_server.py
+python3 api_server.py

@@ -5,18 +5,75 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>小神农中医AI - 知识图谱可视化</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
-    <style>
+    <style>:root {
+    --paper: #f7f3e9;
+    --paper-dark: #efe8d8;
+    --ink: #2b2b2b;
+    --ink-light: #5a5a5a;
+    --cinnabar: #a53232;
+    --cinnabar-light: #c45c48;
+        --jade: #4a7c59;
+    --jade-dark: #2d4a35;
+    --gold: #b8860b;
+    --gold-light: #d4a84b;
+    --border: #d4c4b0;
+    --shadow: rgba(43, 27, 18, 0.12);
+}
+
+
+/* 卷轴/卡片的回纹角饰 */
+.card, .result-card {
+    position: relative;
+}
+.card::before, .card::after,
+.result-card::before, .result-card::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #a53232;
+    pointer-events: none;
+}
+.card::before, .result-card::before {
+    top: 10px;
+    left: 10px;
+    border-right: none;
+    border-bottom: none;
+}
+.card::after, .result-card::after {
+    bottom: 10px;
+    right: 10px;
+    border-left: none;
+    border-top: none;
+}
+
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
-            background: #f8f5f0;
-            color: #333;
+            font-family: 'Noto Serif SC', 'Source Han Serif SC', 'SimSun', 'STSong', serif;
+            background: #f7f3e9;
+            color: #2b2b2b;
             height: 100vh;
             overflow: hidden;
         }
+/* 宣纸纹理背景 */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+        radial-gradient(circle at 20% 30%, rgba(180, 160, 130, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(160, 140, 110, 0.04) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: -1;
+}
+
         .header {
-            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
-            color: white;
+            background: linear-gradient(180deg, #2b2b2b 0%, #1f1f1f 100%);
+            color: #e8dcc8;
             padding: 10px 20px;
             display: flex;
             justify-content: space-between;
@@ -32,7 +89,7 @@
             font-size: 13px;
             padding: 6px 14px;
             border: 1px solid rgba(255,255,255,0.4);
-            border-radius: 16px;
+            border-radius: 4px;
         }
         .header .back-link:hover { background: rgba(255,255,255,0.15); }
 
@@ -44,8 +101,8 @@
         /* 左侧面板 */
         .left-panel {
             width: 280px;
-            background: white;
-            border-right: 1px solid #e8e8e8;
+            background: #fffdf8;
+            border-right: 1px solid #d4c4b0;
             padding: 15px;
             overflow-y: auto;
             flex-shrink: 0;
@@ -53,10 +110,10 @@
         .panel-title {
             font-size: 14px;
             font-weight: bold;
-            color: #2d5016;
+            color: #8a2525;
             margin-bottom: 12px;
             padding-bottom: 8px;
-            border-bottom: 2px solid #e8f5e9;
+            border-bottom: 2px solid #f0e8d8;
         }
         .search-box {
             margin-bottom: 15px;
@@ -64,17 +121,17 @@
         .search-input {
             width: 100%;
             padding: 10px 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
+            border: 1px solid #d4c4b0;
+            border-radius: 2px;
             font-size: 13px;
             outline: none;
         }
-        .search-input:focus { border-color: #4a7c59; }
+        .search-input:focus { border-color: #a53232; }
 
         .filter-group { margin-bottom: 15px; }
         .filter-label {
             font-size: 12px;
-            color: #666;
+            color: #5a5a5a;
             margin-bottom: 8px;
         }
         .filter-item {
@@ -94,8 +151,8 @@
         }
 
         .stats-card {
-            background: #f8f5f0;
-            border-radius: 8px;
+            background: #f7f3e9;
+            border-radius: 2px;
             padding: 12px;
             margin-bottom: 15px;
         }
@@ -104,7 +161,7 @@
             justify-content: space-between;
             font-size: 12px;
             padding: 4px 0;
-            border-bottom: 1px dashed #e0e0e0;
+            border-bottom: 1px dashed #d4c4b0;
         }
         .stat-row:last-child { border-bottom: none; }
 
@@ -112,8 +169,8 @@
             width: 100%;
             padding: 10px;
             border: none;
-            border-radius: 8px;
-            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+            border-radius: 2px;
+            background: linear-gradient(135deg, #a53232 0%, #8a2525 100%);
             color: white;
             font-size: 13px;
             cursor: pointer;
@@ -121,15 +178,15 @@
         }
         .btn:hover { opacity: 0.9; }
         .btn-secondary {
-            background: #f0f0f0;
-            color: #333;
+            background: #efe8d8;
+            color: #2b2b2b;
         }
 
         /* 中间图谱 */
         .graph-container {
             flex: 1;
             position: relative;
-            background: #fafafa;
+            background: #f7f3e9;
             overflow: hidden;
         }
         #kg-graph { width: 100%; height: 100%; }
@@ -140,8 +197,8 @@
             left: 15px;
             background: rgba(255,255,255,0.95);
             padding: 12px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 2px;
+            box-shadow: 0 2px 8px rgba(43, 27, 18, 0.16);
             font-size: 12px;
         }
         .legend-item { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
@@ -152,7 +209,7 @@
             background: rgba(0,0,0,0.8);
             color: white;
             padding: 8px 12px;
-            border-radius: 6px;
+            border-radius: 2px;
             font-size: 12px;
             pointer-events: none;
             opacity: 0;
@@ -164,65 +221,65 @@
         /* 右侧面板 */
         .right-panel {
             width: 320px;
-            background: white;
-            border-left: 1px solid #e8e8e8;
+            background: #fffdf8;
+            border-left: 1px solid #d4c4b0;
             padding: 15px;
             overflow-y: auto;
             flex-shrink: 0;
         }
         .empty-state {
             text-align: center;
-            color: #999;
+            color: #8b7355;
             padding: 40px 20px;
             font-size: 13px;
         }
         .detail-card {
-            background: #f8f5f0;
-            border-radius: 8px;
+            background: #f7f3e9;
+            border-radius: 2px;
             padding: 12px;
             margin-bottom: 12px;
         }
         .detail-title {
             font-size: 13px;
             font-weight: bold;
-            color: #2d5016;
+            color: #8a2525;
             margin-bottom: 8px;
         }
         .detail-row {
             font-size: 12px;
             padding: 4px 0;
-            color: #555;
+            color: #5a5a5a;
         }
-        .detail-label { color: #999; margin-right: 6px; }
+        .detail-label { color: #8b7355; margin-right: 6px; }
         .tag {
             display: inline-block;
             padding: 2px 8px;
-            border-radius: 10px;
+            border-radius: 2px;
             font-size: 11px;
             margin-right: 4px;
             margin-bottom: 4px;
         }
-        .tag-drug { background: #e8f5e9; color: #2d5016; }
-        .tag-symptom { background: #ffebee; color: #c62828; }
-        .tag-formula { background: #f3e5f5; color: #6a1b9a; }
-        .tag-syndrome { background: #e3f2fd; color: #1565c0; }
+        .tag-drug { background: #f0e8d8; color: #8a2525; }
+        .tag-symptom { background: #f7f3e9; color: #a53232; }
+        .tag-formula { background: #f7f3e9; color: #8a2525; }
+        .tag-syndrome { background: #f7f3e9; color: #4a7c59; }
 
         .related-list {
             list-style: none;
         }
         .related-list li {
             padding: 6px 0;
-            border-bottom: 1px dashed #e0e0e0;
+            border-bottom: 1px dashed #d4c4b0;
             font-size: 12px;
             cursor: pointer;
-            color: #4a7c59;
+            color: #a53232;
         }
-        .related-list li:hover { color: #2d5016; }
+        .related-list li:hover { color: #8a2525; }
         .related-list li:last-child { border-bottom: none; }
 
-        .severity-high { color: #c62828; font-weight: bold; }
-        .severity-medium { color: #f9a825; }
-        .severity-low { color: #4a7c59; }
+        .severity-high { color: #a53232; font-weight: bold; }
+        .severity-medium { color: #b8860b; }
+        .severity-low { color: #a53232; }
 
         /* 响应式 */
         @media (max-width: 900px) {
@@ -288,13 +345,13 @@
     <script>
         // 配置
         const TYPE_COLORS = {
-            drug: '#4a7c59',
-            symptom: '#e57373',
-            syndrome: '#64b5f6',
-            formula: '#ba68c8',
-            patient: '#ffb74d',
-            adverse: '#ef5350',
-            cluster: '#9575cd'
+            drug: '#a53232',
+            symptom: '#4a7c59',
+            syndrome: '#b8860b',
+            formula: '#8b7355',
+            patient: '#c45c48',
+            adverse: '#a53232',
+            cluster: '#5a5a5a'
         };
         const TYPE_LABELS = {
             drug: '药物',
@@ -306,19 +363,19 @@
             cluster: '聚类'
         };
         const RELATION_COLORS = {
-            '组成': '#4a7c59',
-            '治疗': '#2d5016',
-            '治疗证型': '#1565c0',
-            '主治症状': '#c62828',
-            '主治证型': '#1565c0',
-            '副作用': '#ef5350',
-            '共现': '#f9a825',
-            '患者症状': '#ff8a65',
-            '患者用药': '#8d6e63',
-            '相似患者': '#9575cd',
-            '十八反': '#b71c1c',
-            '十九畏': '#d32f2f',
-            '七情配伍': '#7cb342'
+            '组成': '#8b7355',
+            '治疗': '#4a7c59',
+            '治疗证型': '#b8860b',
+            '主治症状': '#a53232',
+            '主治证型': '#b8860b',
+            '副作用': '#a53232',
+            '共现': '#b8860b',
+            '患者症状': '#4a7c59',
+            '患者用药': '#8b7355',
+            '相似患者': '#5a5a5a',
+            '十八反': '#a53232',
+            '十九畏': '#a53232',
+            '七情配伍': '#4a7c59'
         };
 
         let graphData = { nodes: [], links: [] };
@@ -337,25 +394,74 @@
         });
 
         async function loadData() {
-            try {
-                const resp = await fetch('../data/kg_graph.json');
-                if (!resp.ok) throw new Error('Failed to load kg_graph.json');
-                graphData = await resp.json();
-                // 预处理：计算度数
-                const degreeMap = {};
-                graphData.nodes.forEach(n => degreeMap[n.id] = 0);
-                graphData.links.forEach(l => {
-                    degreeMap[l.source] = (degreeMap[l.source] || 0) + 1;
-                    degreeMap[l.target] = (degreeMap[l.target] || 0) + 1;
-                });
-                graphData.nodes.forEach(n => n.degree = degreeMap[n.id] || 0);
-                // 关系筛选默认全选
-                const relTypes = new Set(graphData.links.map(l => l.relation));
-                activeRelations = relTypes;
-            } catch (e) {
-                console.error(e);
-                document.getElementById('kg-graph').innerHTML = '<text x="50%" y="50%" text-anchor="middle" fill="#999">加载数据失败，请确认 data/kg_graph.json 存在</text>';
+            // 优先从 API 加载真实图谱数据，其次尝试本地静态路径
+            const candidates = [
+                'http://localhost:5001/api/kg/graph',
+                './data/kg_graph.json',
+                '../data/kg_graph.json',
+                '/data/kg_graph.json'
+            ];
+
+            let lastError = null;
+            for (const url of candidates) {
+                try {
+                    const resp = await fetch(url);
+                    if (resp.ok) {
+                        const payload = await resp.json();
+                        graphData = payload.data || payload;
+                        console.log('[KG] 已加载图谱数据:', url);
+                        break;
+                    }
+                } catch (e) {
+                    lastError = e;
+                }
             }
+
+            if (!graphData || !graphData.nodes) {
+                console.warn('未找到 kg_graph.json，使用示例图谱数据', lastError);
+                graphData = generateMockGraphData();
+            }
+            // 预处理：计算度数
+            const degreeMap = {};
+            graphData.nodes.forEach(n => degreeMap[n.id] = 0);
+            graphData.links.forEach(l => {
+                degreeMap[l.source] = (degreeMap[l.source] || 0) + 1;
+                degreeMap[l.target] = (degreeMap[l.target] || 0) + 1;
+            });
+            graphData.nodes.forEach(n => n.degree = degreeMap[n.id] || 0);
+            // 关系筛选默认全选
+            const relTypes = new Set(graphData.links.map(l => l.relation));
+            activeRelations = relTypes;
+        }
+
+        // 示例图谱数据（当 kg_graph.json 不存在时使用）
+        function generateMockGraphData() {
+            const nodes = [
+                { id: '麻黄', type: 'drug', name: '麻黄' },
+                { id: '桂枝', type: 'drug', name: '桂枝' },
+                { id: '杏仁', type: 'drug', name: '杏仁' },
+                { id: '甘草', type: 'drug', name: '甘草' },
+                { id: '麻黄汤', type: 'formula', name: '麻黄汤' },
+                { id: '风寒表实证', type: 'syndrome', name: '风寒表实证' },
+                { id: '头痛', type: 'symptom', name: '头痛' },
+                { id: '发热', type: 'symptom', name: '发热' },
+                { id: '恶寒', type: 'symptom', name: '恶寒' },
+                { id: '无汗', type: 'symptom', name: '无汗' },
+                { id: '伤寒论', type: 'classic', name: '伤寒论' }
+            ];
+            const links = [
+                { source: '麻黄汤', target: '麻黄', relation: '组成' },
+                { source: '麻黄汤', target: '桂枝', relation: '组成' },
+                { source: '麻黄汤', target: '杏仁', relation: '组成' },
+                { source: '麻黄汤', target: '甘草', relation: '组成' },
+                { source: '麻黄汤', target: '风寒表实证', relation: '治疗' },
+                { source: '风寒表实证', target: '头痛', relation: '主症' },
+                { source: '风寒表实证', target: '发热', relation: '主症' },
+                { source: '风寒表实证', target: '恶寒', relation: '主症' },
+                { source: '风寒表实证', target: '无汗', relation: '主症' },
+                { source: '麻黄汤', target: '伤寒论', relation: '出自' }
+            ];
+            return { nodes, links };
         }
 
         function initFilters() {
@@ -379,7 +485,7 @@
                 item.className = 'filter-item';
                 item.innerHTML = `
                     <input type="checkbox" id="rel-${rel}" checked onchange="toggleRelation('${rel}')">
-                    <span class="type-dot" style="background: ${RELATION_COLORS[rel] || '#999'}"></span>
+                    <span class="type-dot" style="background: ${RELATION_COLORS[rel] || '#8b7355'}"></span>
                     <label for="rel-${rel}">${rel}</label>
                 `;
                 relContainer.appendChild(item);
@@ -439,7 +545,7 @@
                 .selectAll('line')
                 .data(filtered.links)
                 .enter().append('line')
-                .attr('stroke', d => RELATION_COLORS[d.relation] || '#ccc')
+                .attr('stroke', d => RELATION_COLORS[d.relation] || '#d4c4b0')
                 .attr('stroke-width', d => d.relation === '十八反' || d.relation === '十九畏' ? 3 : 1.5)
                 .attr('stroke-opacity', 0.6)
                 .attr('stroke-dasharray', d => d.relation === '副作用' ? '5,3' : null);
@@ -462,7 +568,7 @@
             node.append('circle')
                 .attr('r', d => getNodeRadius(d))
                 .attr('fill', d => TYPE_COLORS[d.type])
-                .attr('stroke', '#fff')
+                .attr('stroke', '#fffdf8')
                 .attr('stroke-width', 2)
                 .attr('opacity', 0.9);
 
@@ -471,7 +577,7 @@
                 .attr('text-anchor', 'middle')
                 .text(d => d.label)
                 .attr('font-size', '11px')
-                .attr('fill', '#333')
+                .attr('fill', '#2b2b2b')
                 .attr('pointer-events', 'none');
 
             simulation.on('tick', () => {
@@ -686,7 +792,7 @@
         function handleSearch() {
             const query = document.getElementById('searchInput').value.trim().toLowerCase();
             if (!query) {
-                d3.selectAll('.nodes g circle').attr('stroke', '#fff').attr('stroke-width', 2);
+                d3.selectAll('.nodes g circle').attr('stroke', '#fffdf8').attr('stroke-width', 2);
                 return;
             }
 
@@ -696,7 +802,7 @@
             );
 
             d3.selectAll('.nodes g circle')
-                .attr('stroke', d => matched.some(m => m.id === d.id) ? '#ffeb3b' : '#fff')
+                .attr('stroke', d => matched.some(m => m.id === d.id) ? '#d4a84b' : '#fffdf8')
                 .attr('stroke-width', d => matched.some(m => m.id === d.id) ? 4 : 2);
 
             if (matched.length === 1) {

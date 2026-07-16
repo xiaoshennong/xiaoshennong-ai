@@ -29,11 +29,9 @@ HEADERS = {
     'Accept-Language': 'zh-CN,zh;q=0.9',
 }
 
-# API Keys
-YUNWU_API_KEY = os.getenv("YUNWU_API_KEY", "sk-kGZ5PiMxdpT91QzvvcGPMNk8Sp6Uzkmdmmaq20aE2kEEpzvl")
-YUNWU_BASE_URL = "https://yunwu.ai/v1"
-
-KIMI_API_KEY = os.getenv("KIMI_API_KEY", "sk-kimi-dv9yPey41r9gtlv4nyIIZtaeqRCpGjbRR5cz78zF07kveFmx6kDlg4PCE4Dhj6xs")
+# API Keys（统一使用 Yunwu AI，从环境变量读取，不再硬编码）
+YUNWU_API_KEY = os.getenv("YUNWU_API_KEY", "")
+YUNWU_BASE_URL = os.getenv("YUNWU_API_BASE") or os.getenv("YUNWU_BASE_URL", "https://yunwu.ai/v1")
 
 # 请求间隔
 MIN_DELAY = 1.5

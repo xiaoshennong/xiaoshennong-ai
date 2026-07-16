@@ -1,7 +1,27 @@
+page {
+  background: #f7f3e9;
+  font-family: 'Noto Serif SC', 'Source Han Serif SC', 'SimSun', 'STSong', serif;
+}
+
+
+page::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(180, 160, 130, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(160, 140, 110, 0.04) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: -1;
+}
+
 /* 小神农中医AI - 辨证页面样式 */
 .container {
   padding: 30rpx;
-  background: #f8f5f0;
+  background: #f7f3e9;
   min-height: 100vh;
 }
 
@@ -10,14 +30,14 @@
   margin-bottom: 30rpx;
   position: relative;
   height: 8rpx;
-  background: #e0e0e0;
-  border-radius: 4rpx;
+  background: #d4c4b0;
+  border-radius: 2rpx;
 }
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #4a7c59, #2d5016);
-  border-radius: 4rpx;
+  background: linear-gradient(90deg, #a53232, #8a2525);
+  border-radius: 2rpx;
   transition: width 0.3s ease;
 }
 
@@ -44,7 +64,7 @@
   display: block;
   font-size: 48rpx;
   font-weight: bold;
-  color: #2d5016;
+  color: #8a2525;
   margin-bottom: 20rpx;
 }
 
@@ -70,7 +90,7 @@
 }
 
 .feature-check {
-  color: #4a7c59;
+  color: #a53232;
   font-weight: bold;
   margin-right: 20rpx;
   font-size: 32rpx;
@@ -78,9 +98,9 @@
 
 .start-btn {
   margin-top: 60rpx;
-  background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+  background: linear-gradient(135deg, #a53232 0%, #8a2525 100%);
   color: white;
-  border-radius: 50rpx;
+  border-radius: 8rpx;
   font-size: 32rpx;
   padding: 30rpx 80rpx;
   border: none;
@@ -92,17 +112,17 @@
 }
 
 .question-card {
-  background: white;
-  border-radius: 20rpx;
+  background: #fffdf8;
+  border-radius: 4rpx;
   padding: 40rpx;
   margin-bottom: 40rpx;
-  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.05);
+  box-shadow: 0 2rpx 10rpx rgba(43, 27, 18, 0.12);
 }
 
 .question-number {
   display: block;
   font-size: 24rpx;
-  color: #4a7c59;
+  color: #a53232;
   margin-bottom: 15rpx;
 }
 
@@ -110,7 +130,7 @@
   display: block;
   font-size: 34rpx;
   font-weight: bold;
-  color: #2d5016;
+  color: #8a2525;
   margin-bottom: 30rpx;
   line-height: 1.5;
 }
@@ -124,15 +144,15 @@
 
 .option-item {
   padding: 30rpx;
-  border-radius: 16rpx;
-  border: 2rpx solid #e0e0e0;
-  background: #fafafa;
+  border-radius: 4rpx;
+  border: 2rpx solid #d4c4b0;
+  background: #f7f3e9;
   transition: all 0.2s;
 }
 
 .option-item.selected {
-  border-color: #4a7c59;
-  background: #e8f5e9;
+  border-color: #a53232;
+  background: #f0e8d8;
 }
 
 .option-item:active {
@@ -141,7 +161,7 @@
 
 .option-text {
   font-size: 30rpx;
-  color: #333;
+  color: #2b2b2b;
 }
 
 /* 文本输入 */
@@ -153,8 +173,8 @@
   width: 100%;
   height: 200rpx;
   padding: 20rpx;
-  border: 2rpx solid #e0e0e0;
-  border-radius: 16rpx;
+  border: 2rpx solid #d4c4b0;
+  border-radius: 4rpx;
   font-size: 28rpx;
   box-sizing: border-box;
 }
@@ -169,18 +189,18 @@
 .nav-btn {
   flex: 1;
   padding: 30rpx;
-  border-radius: 50rpx;
+  border-radius: 8rpx;
   font-size: 30rpx;
   border: none;
 }
 
 .nav-btn.prev {
-  background: #f5f5f5;
-  color: #666;
+  background: #efe8d8;
+  color: #5a5a5a;
 }
 
 .nav-btn.next {
-  background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+  background: linear-gradient(135deg, #a53232 0%, #8a2525 100%);
   color: white;
 }
 
@@ -200,8 +220,8 @@
 .loading-spinner {
   width: 80rpx;
   height: 80rpx;
-  border: 6rpx solid #e0e0e0;
-  border-top-color: #4a7c59;
+  border: 6rpx solid #d4c4b0;
+  border-top-color: #a53232;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 30rpx;
@@ -213,7 +233,7 @@
 
 .loading-text {
   font-size: 32rpx;
-  color: #2d5016;
+  color: #8a2525;
   margin-bottom: 15rpx;
 }
 
@@ -236,37 +256,37 @@
   display: block;
   font-size: 36rpx;
   font-weight: bold;
-  color: #2d5016;
+  color: #8a2525;
   margin-bottom: 20rpx;
 }
 
 .constitution-badge {
   display: inline-block;
-  background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+  background: linear-gradient(135deg, #a53232 0%, #8a2525 100%);
   color: white;
   padding: 15rpx 40rpx;
-  border-radius: 50rpx;
+  border-radius: 8rpx;
   font-size: 32rpx;
   font-weight: bold;
 }
 
 /* 结果卡片 */
 .result-card {
-  background: white;
-  border-radius: 20rpx;
+  background: #fffdf8;
+  border-radius: 4rpx;
   padding: 40rpx;
   margin-bottom: 30rpx;
-  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.05);
+  box-shadow: 0 2rpx 10rpx rgba(43, 27, 18, 0.12);
 }
 
 .card-title {
   display: block;
   font-size: 30rpx;
   font-weight: bold;
-  color: #4a7c59;
+  color: #a53232;
   margin-bottom: 20rpx;
   padding-bottom: 15rpx;
-  border-bottom: 2rpx solid #e8f5e9;
+  border-bottom: 2rpx solid #f0e8d8;
 }
 
 .card-content {
@@ -284,23 +304,23 @@
   display: block;
   font-size: 32rpx;
   font-weight: bold;
-  color: #2d5016;
+  color: #8a2525;
   margin-bottom: 20rpx;
 }
 
 .source-item {
-  background: white;
-  border-radius: 16rpx;
+  background: #fffdf8;
+  border-radius: 4rpx;
   padding: 30rpx;
   margin-bottom: 20rpx;
-  border-left: 6rpx solid #4a7c59;
+  border-left: 6rpx solid #a53232;
 }
 
 .source-book {
   display: block;
   font-size: 28rpx;
   font-weight: bold;
-  color: #4a7c59;
+  color: #a53232;
   margin-bottom: 10rpx;
 }
 
@@ -317,9 +337,9 @@
   font-size: 24rpx;
   color: #8b7355;
   font-style: italic;
-  background: #f8f5f0;
+  background: #f7f3e9;
   padding: 15rpx;
-  border-radius: 8rpx;
+  border-radius: 2rpx;
 }
 
 /* 推荐 */
@@ -342,16 +362,16 @@
 
 .recommend-card {
   min-width: 200rpx;
-  background: white;
-  border-radius: 16rpx;
+  background: #fffdf8;
+  border-radius: 4rpx;
   overflow: hidden;
-  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.05);
+  box-shadow: 0 2rpx 10rpx rgba(43, 27, 18, 0.12);
 }
 
 .recommend-img {
   width: 200rpx;
   height: 150rpx;
-  background: #f0f0f0;
+  background: #efe8d8;
 }
 
 .recommend-info {
@@ -361,22 +381,22 @@
 .recommend-name {
   display: block;
   font-size: 24rpx;
-  color: #333;
+  color: #2b2b2b;
   margin-bottom: 8rpx;
 }
 
 .recommend-price {
   font-size: 28rpx;
   font-weight: bold;
-  color: #c62828;
+  color: #a53232;
 }
 
 /* 警告 */
 .warning-box {
   display: flex;
   align-items: flex-start;
-  background: #fff8e1;
-  border-radius: 16rpx;
+  background: #f7f3e9;
+  border-radius: 4rpx;
   padding: 30rpx;
   margin: 30rpx 0;
 }
@@ -403,17 +423,17 @@
 .action-btn {
   flex: 1;
   padding: 30rpx;
-  border-radius: 50rpx;
+  border-radius: 8rpx;
   font-size: 30rpx;
   border: none;
 }
 
 .action-btn.primary {
-  background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+  background: linear-gradient(135deg, #a53232 0%, #8a2525 100%);
   color: white;
 }
 
 .action-btn.secondary {
-  background: #f5f5f5;
-  color: #666;
+  background: #efe8d8;
+  color: #5a5a5a;
 }

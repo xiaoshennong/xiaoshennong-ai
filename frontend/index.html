@@ -4,38 +4,104 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>小神农中医AI v5.0 - Agent+语义匹配</title>
-    <style>
+    <style>:root {
+    --paper: #f7f3e9;
+    --paper-dark: #efe8d8;
+    --ink: #2b2b2b;
+    --ink-light: #5a5a5a;
+    --cinnabar: #a53232;
+    --cinnabar-light: #c45c48;
+        --jade: #4a7c59;
+    --jade-dark: #2d4a35;
+    --gold: #b8860b;
+    --gold-light: #d4a84b;
+    --border: #d4c4b0;
+    --shadow: rgba(43, 27, 18, 0.12);
+}
+
+
+/* 卷轴/卡片的回纹角饰 */
+.card, .result-card {
+    position: relative;
+}
+.card::before, .card::after,
+.result-card::before, .result-card::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #a53232;
+    pointer-events: none;
+}
+.card::before, .result-card::before {
+    top: 10px;
+    left: 10px;
+    border-right: none;
+    border-bottom: none;
+}
+.card::after, .result-card::after {
+    bottom: 10px;
+    right: 10px;
+    border-left: none;
+    border-top: none;
+}
+
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
-            background: #f8f5f0;
-            color: #333;
+            font-family: 'Noto Serif SC', 'Source Han Serif SC', 'SimSun', 'STSong', serif;
+            background: #f7f3e9;
+            color: #2b2b2b;
             line-height: 1.6;
             height: 100vh;
             display: flex;
             flex-direction: column;
         }
+/* 宣纸纹理背景 */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+        radial-gradient(circle at 20% 30%, rgba(180, 160, 130, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(160, 140, 110, 0.04) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: -1;
+}
+
         
         /* 头部 */
         .header {
-            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
-            color: white;
-            padding: 12px 20px;
+            background: linear-gradient(180deg, #2b2b2b 0%, #1f1f1f 100%);
+            color: #e8dcc8;
+            padding: 14px 20px;
             text-align: center;
             flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
         }
-        .header h1 { font-size: 18px; margin-bottom: 2px; }
-        .header .subtitle { font-size: 11px; opacity: 0.9; }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            pointer-events: none;
+        }
+        .header h1 { font-size: 20px; margin-bottom: 4px; letter-spacing: 4px; font-weight: 600; }
+        .header .subtitle { font-size: 11px; opacity: 0.85; letter-spacing: 2px; }
         .header .api-status {
             display: inline-block;
             margin-top: 6px;
             padding: 2px 10px;
-            border-radius: 20px;
+            border-radius: 4px;
             font-size: 11px;
             background: rgba(255,255,255,0.2);
         }
-        .api-status.connected { background: #52c41a; }
-        .api-status.disconnected { background: #ff4d4f; }
+        .api-status.connected { background: #4a7c59; }
+        .api-status.disconnected { background: #a53232; }
         
         /* 功能标签 */
         .feature-tags {
@@ -43,18 +109,18 @@
             justify-content: center;
             gap: 6px;
             padding: 6px;
-            background: white;
-            border-bottom: 1px solid #e8e8e8;
+            background: #fffdf8;
+            border-bottom: 1px solid #d4c4b0;
             flex-shrink: 0;
         }
         .feature-tag {
             padding: 3px 10px;
-            border-radius: 12px;
+            border-radius: 4px;
             font-size: 11px;
-            background: #e8f5e9;
-            color: #2d5016;
+            background: #f0e8d8;
+            color: #8a2525;
         }
-        .feature-tag.disabled { background: #f0f0f0; color: #999; text-decoration: line-through; }
+        .feature-tag.disabled { background: #efe8d8; color: #8b7355; text-decoration: line-through; }
         
         /* 导航 */
         .nav {
@@ -62,23 +128,23 @@
             justify-content: center;
             gap: 8px;
             padding: 8px;
-            background: white;
-            border-bottom: 1px solid #e8e8e8;
+            background: #fffdf8;
+            border-bottom: 1px solid #d4c4b0;
             flex-shrink: 0;
         }
         .nav-btn {
             padding: 5px 14px;
             border: none;
-            border-radius: 16px;
-            background: #f0f0f0;
-            color: #666;
+            border-radius: 4px;
+            background: #efe8d8;
+            color: #5a5a5a;
             cursor: pointer;
             font-size: 12px;
             transition: all 0.3s;
         }
-        .nav-btn:hover { background: #e8f5e9; color: #4a7c59; }
+        .nav-btn:hover { background: #f0e8d8; color: #a53232; }
         .nav-btn.active {
-            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+            background: linear-gradient(135deg, #a53232 0%, #8a2525 100%);
             color: white;
         }
         
@@ -128,25 +194,25 @@
             flex-shrink: 0;
             margin-right: 10px;
         }
-        .bot-message .message-avatar { background: #e8f5e9; }
-        .user-message .message-avatar { background: #2d5016; color: white; }
-        .thinking-message .message-avatar { background: #fff8e1; }
+        .bot-message .message-avatar { background: #f0e8d8; }
+        .user-message .message-avatar { background: #8a2525; color: white; }
+        .thinking-message .message-avatar { background: #f7f3e9; }
         
         .message-content { flex: 1; max-width: calc(100% - 50px); }
         
         .message-bubble {
             padding: 12px 15px;
-            border-radius: 12px;
+            border-radius: 4px;
             font-size: 14px;
             line-height: 1.6;
         }
         .bot-message .message-bubble {
-            background: white;
-            border: 1px solid #e8e8e8;
+            background: #fffdf8;
+            border: 1px solid #d4c4b0;
             border-top-left-radius: 4px;
         }
         .user-message .message-bubble {
-            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+            background: linear-gradient(135deg, #a53232 0%, #8a2525 100%);
             color: white;
             border-top-right-radius: 4px;
             margin-left: auto;
@@ -158,18 +224,18 @@
         
         .message-time {
             font-size: 11px;
-            color: #999;
+            color: #8b7355;
             margin-top: 4px;
             padding: 0 5px;
         }
         
         /* AI思考过程 - 实时流式展示 */
         .thinking-process {
-            background: #fff8e1;
-            border-radius: 10px;
+            background: #f7f3e9;
+            border-radius: 2px;
             padding: 15px;
             margin-top: 10px;
-            border-left: 3px solid #f9a825;
+            border-left: 3px solid #b8860b;
         }
         .thinking-title {
             font-weight: bold;
@@ -186,8 +252,8 @@
             gap: 10px;
             margin-bottom: 8px;
             padding: 8px;
-            background: white;
-            border-radius: 6px;
+            background: #fffdf8;
+            border-radius: 2px;
             font-size: 13px;
             opacity: 0;
             transform: translateX(-10px);
@@ -201,7 +267,7 @@
             width: 22px;
             height: 22px;
             border-radius: 50%;
-            background: #f9a825;
+            background: #b8860b;
             color: white;
             display: flex;
             align-items: center;
@@ -211,24 +277,24 @@
             flex-shrink: 0;
         }
         .step-content { flex: 1; }
-        .step-agent { font-weight: 500; color: #333; margin-bottom: 2px; }
-        .step-desc { color: #666; font-size: 12px; }
+        .step-agent { font-weight: 500; color: #2b2b2b; margin-bottom: 2px; }
+        .step-desc { color: #5a5a5a; font-size: 12px; }
         .step-status {
             padding: 2px 8px;
-            border-radius: 10px;
+            border-radius: 2px;
             font-size: 11px;
             flex-shrink: 0;
         }
-        .status-completed { background: #e8f5e9; color: #4a7c59; }
-        .status-thinking { background: #fff8e1; color: #f9a825; }
-        .status-warning { background: #ffebee; color: #c62828; }
+        .status-completed { background: #f0e8d8; color: #a53232; }
+        .status-thinking { background: #f7f3e9; color: #b8860b; }
+        .status-warning { background: #f7f3e9; color: #a53232; }
         
         .thinking-summary {
             margin-top: 10px;
             padding-top: 10px;
-            border-top: 1px solid #e0e0e0;
+            border-top: 1px solid #d4c4b0;
             font-size: 12px;
-            color: #666;
+            color: #5a5a5a;
             display: flex;
             justify-content: space-between;
             flex-wrap: wrap;
@@ -240,7 +306,7 @@
             display: inline-block;
             width: 2px;
             height: 1.2em;
-            background: #4a7c59;
+            background: #a53232;
             animation: blink 0.8s infinite;
             vertical-align: text-bottom;
             margin-left: 2px;
@@ -252,8 +318,8 @@
         
         /* 输入区 */
         .chat-input-area {
-            background: white;
-            border-top: 1px solid #e8e8e8;
+            background: #fffdf8;
+            border-top: 1px solid #d4c4b0;
             padding: 10px 15px;
             flex-shrink: 0;
         }
@@ -267,18 +333,18 @@
         .quick-symptoms::-webkit-scrollbar { display: none; }
         .quick-tag {
             padding: 6px 14px;
-            background: #f0f0f0;
-            border-radius: 16px;
+            background: #efe8d8;
+            border-radius: 4px;
             font-size: 13px;
-            color: #555;
+            color: #5a5a5a;
             cursor: pointer;
             white-space: nowrap;
             transition: all 0.3s;
             border: none;
         }
         .quick-tag:hover {
-            background: #e8f5e9;
-            color: #4a7c59;
+            background: #f0e8d8;
+            color: #a53232;
         }
         
         .input-row {
@@ -289,8 +355,8 @@
         .chat-input {
             flex: 1;
             padding: 10px 15px;
-            border: 1px solid #ddd;
-            border-radius: 20px;
+            border: 1px solid #d4c4b0;
+            border-radius: 4px;
             font-size: 14px;
             resize: none;
             outline: none;
@@ -298,19 +364,19 @@
             font-family: inherit;
             max-height: 120px;
         }
-        .chat-input:focus { border-color: #4a7c59; }
+        .chat-input:focus { border-color: #a53232; }
         .send-btn {
             padding: 10px 24px;
-            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+            background: linear-gradient(135deg, #a53232 0%, #8a2525 100%);
             color: white;
             border: none;
-            border-radius: 20px;
+            border-radius: 4px;
             cursor: pointer;
             font-size: 14px;
             transition: all 0.3s;
             flex-shrink: 0;
         }
-        .send-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(45,80,22,0.3); }
+        .send-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(165, 50, 50, 0.3); }
         .send-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
         
         /* 加载动画 */
@@ -322,7 +388,7 @@
         .loading-dots span {
             width: 8px;
             height: 8px;
-            background: #4a7c59;
+            background: #a53232;
             border-radius: 50%;
             animation: bounce 1.4s ease-in-out infinite both;
         }
@@ -335,38 +401,38 @@
         
         /* 结果卡片 */
         .result-card {
-            background: #f8f5f0;
-            border-radius: 10px;
+            background: #f7f3e9;
+            border-radius: 2px;
             padding: 15px;
             margin-top: 10px;
         }
         .result-constitution {
             display: inline-block;
-            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+            background: linear-gradient(135deg, #a53232 0%, #8a2525 100%);
             color: white;
             padding: 6px 16px;
-            border-radius: 20px;
+            border-radius: 4px;
             font-size: 16px;
             font-weight: bold;
             margin-bottom: 12px;
         }
         .result-section-title {
             font-weight: bold;
-            color: #4a7c59;
+            color: #a53232;
             margin-bottom: 8px;
             font-size: 14px;
         }
         .result-section-content {
-            color: #555;
+            color: #5a5a5a;
             line-height: 1.8;
             font-size: 14px;
         }
         
         /* 警告 */
         .warning-box {
-            background: #fff8e1;
-            border: 1px solid #ffe082;
-            border-radius: 8px;
+            background: #f7f3e9;
+            border: 1px solid #d4c4b0;
+            border-radius: 2px;
             padding: 12px;
             margin-top: 12px;
             display: flex;
@@ -386,19 +452,19 @@
             width: 100%;
         }
         .card {
-            background: white;
-            border-radius: 12px;
+            background: #fffdf8;
+            border-radius: 4px;
             padding: 20px;
             margin-bottom: 15px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 8px rgba(43, 27, 18, 0.12);
         }
         .card-title {
             font-size: 18px;
             font-weight: bold;
-            color: #2d5016;
+            color: #8a2525;
             margin-bottom: 15px;
             padding-bottom: 10px;
-            border-bottom: 2px solid #e8f5e9;
+            border-bottom: 2px solid #f0e8d8;
         }
         
         /* 搜索 */
@@ -410,18 +476,18 @@
         .search-input {
             flex: 1;
             padding: 12px 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
+            border: 1px solid #d4c4b0;
+            border-radius: 2px;
             font-size: 16px;
             outline: none;
         }
-        .search-input:focus { border-color: #4a7c59; }
+        .search-input:focus { border-color: #a53232; }
         .search-btn {
             padding: 12px 25px;
-            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+            background: linear-gradient(135deg, #a53232 0%, #8a2525 100%);
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 2px;
             cursor: pointer;
             font-size: 16px;
         }
@@ -431,9 +497,9 @@
             background: #1e1e1e;
             color: #d4d4d4;
             padding: 15px;
-            border-radius: 8px;
+            border-radius: 2px;
             overflow-x: auto;
-            font-family: 'Consolas', monospace;
+            font-family: 'SFMono-Regular', 'Consolas', 'Courier New', monospace;
             font-size: 13px;
             line-height: 1.5;
         }
@@ -443,16 +509,16 @@
         
         /* Agent卡片 */
         .agent-card {
-            background: #f0f7f0;
-            border-radius: 10px;
+            background: #f7f3e9;
+            border-radius: 2px;
             padding: 15px;
             margin-bottom: 10px;
-            border-left: 4px solid #4a7c59;
+            border-left: 4px solid #a53232;
         }
-        .agent-name { font-weight: bold; color: #2d5016; font-size: 14px; }
-        .agent-desc { color: #666; font-size: 12px; margin-top: 4px; }
+        .agent-name { font-weight: bold; color: #8a2525; font-size: 14px; }
+        .agent-desc { color: #5a5a5a; font-size: 12px; margin-top: 4px; }
         .agent-stats { display: flex; gap: 15px; margin-top: 8px; font-size: 12px; }
-        .agent-stat { color: #4a7c59; }
+        .agent-stat { color: #a53232; }
         
         /* 响应式 */
         @media (max-width: 600px) {
@@ -464,25 +530,28 @@
 </head>
 <body>
     <div class="header">
-        <h1>🌿 小神农中医AI v5.0</h1>
+        <div style="display: inline-flex; align-items: center; justify-content: center; gap: 12px;">
+            <div style="width: 32px; height: 32px; background: #a53232; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; border-radius: 3px; letter-spacing: 2px; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">神农</div>
+            <h1>小神农中医AI v5.0</h1>
+        </div>
         <div class="subtitle">Agent协作 · 语义匹配 · 批判性思维 · 可溯源</div>
         <div class="api-status disconnected" id="apiStatus">API连接中...</div>
     </div>
-    
+
     <!-- 功能标签 -->
     <div class="feature-tags">
-        <span class="feature-tag" id="tagSemantic">🔍 语义匹配</span>
-        <span class="feature-tag" id="tagAgent">🤖 多Agent</span>
-        <span class="feature-tag" id="tagThinking">🧠 思考过程</span>
-        <span class="feature-tag" id="tagStream">⚡ 流式响应</span>
+        <span class="feature-tag" id="tagSemantic">◈ 语义匹配</span>
+        <span class="feature-tag" id="tagAgent">◈ 多Agent</span>
+        <span class="feature-tag" id="tagThinking">◈ 思考过程</span>
+        <span class="feature-tag" id="tagStream">◈ 流式响应</span>
     </div>
-    
+
     <div class="nav">
-        <button class="nav-btn active" onclick="showSection('chat')">💬 对话</button>
-        <button class="nav-btn" onclick="showSection('semantic')">🔍 语义搜索</button>
-        <button class="nav-btn" onclick="showSection('agents')">🤖 Agent系统</button>
-        <button class="nav-btn" onclick="showSection('api')">🔧 API测试</button>
-        <button class="nav-btn" onclick="window.open('kg_visual.html', '_blank')">🕸️ 知识图谱</button>
+        <button class="nav-btn active" onclick="showSection('chat', this)">对话</button>
+        <button class="nav-btn" onclick="showSection('semantic', this)">语义搜索</button>
+        <button class="nav-btn" onclick="showSection('agents', this)">Agent系统</button>
+        <button class="nav-btn" onclick="showSection('api', this)">API测试</button>
+        <button class="nav-btn" onclick="window.open('kg_visual.html', '_blank')">知识图谱</button>
     </div>
     
     <div class="container">
@@ -555,8 +624,8 @@
                 <div class="card">
                     <div class="card-title">🔧 API接口测试</div>
                     <div style="margin-bottom: 15px;">
-                        <label style="display: block; margin-bottom: 5px; color: #555;">API地址</label>
-                        <input type="text" class="search-input" id="apiBase" value="http://43.247.135.91:5005">
+                        <label style="display: block; margin-bottom: 5px; color: #5a5a5a;">API地址</label>
+                        <input type="text" class="search-input" id="apiBase" value="http://localhost:5001">
                     </div>
                     <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
                         <button class="search-btn" onclick="testHealth()">测试健康</button>
@@ -572,40 +641,82 @@
     
     <script>
         // API配置
-        const API_BASE = '';  // 空字符串表示同源，走 nginx 代理
+        // 本地开发时前端跑在 8080 / file://，API 跑在 5001；生产环境由 nginx 同源代理
+        const DEFAULT_API_BASE = 'http://localhost:5001';
+
+        function isValidApiBase(v) {
+            return v && (v.startsWith('http://') || v.startsWith('https://'));
+        }
+
+        function detectApiBase() {
+            const manual = localStorage.getItem('xsn_api_base');
+            if (isValidApiBase(manual)) return manual;
+            // 如果 localStorage 存的是空字符串或无效值，则清理
+            if (manual !== null && !isValidApiBase(manual)) {
+                localStorage.removeItem('xsn_api_base');
+            }
+            if (location.protocol === 'file:') return DEFAULT_API_BASE;
+            if ((location.hostname === 'localhost' || location.hostname === '127.0.0.1') && location.port !== '5001') {
+                return DEFAULT_API_BASE;
+            }
+            return '';  // 空字符串表示同源，走 nginx 代理
+        }
+
+        let API_BASE = detectApiBase();
+        console.log('[XiaoShennong] API_BASE:', API_BASE || '(relative)');
         let isProcessing = false;
-        
+
         // 页面加载
         document.addEventListener('DOMContentLoaded', () => {
             checkAPIStatus();
             initChat();
             loadAgentList();
+            document.getElementById('chatInput').focus();
         });
-        
-        // 检查API状态
+
+        // 检查API状态，支持自动探测端口
         async function checkAPIStatus() {
             const statusEl = document.getElementById('apiStatus');
-            try {
-                const resp = await fetch(`${API_BASE}/api/health`, { method: 'GET' });
-                if (resp.ok) {
-                    const data = await resp.json();
-                    const features = data.features || {};
-                    
-                    statusEl.textContent = `API已连接 v${data.version} | 知识库: ${Object.values(data.knowledge).filter(v => typeof v === 'number').reduce((a,b) => a+b, 0)}条`;
-                    statusEl.className = 'api-status connected';
-                    
-                    // 更新功能标签
-                    document.getElementById('tagSemantic').className = features.semantic_search ? 'feature-tag' : 'feature-tag disabled';
-                    document.getElementById('tagAgent').className = features.agent_system ? 'feature-tag' : 'feature-tag disabled';
-                    document.getElementById('tagThinking').className = 'feature-tag';
-                    document.getElementById('tagStream').className = 'feature-tag';
-                } else {
-                    throw new Error('API error');
+            statusEl.textContent = 'API连接中...';
+            statusEl.className = 'api-status disconnected';
+            statusEl.style.cursor = 'default';
+            statusEl.onclick = null;
+
+            const candidates = [];
+            if (isValidApiBase(API_BASE)) candidates.push(API_BASE);
+            candidates.push(DEFAULT_API_BASE);
+
+            for (const base of candidates) {
+                try {
+                    const resp = await fetch(`${base}/api/health`, { method: 'GET' });
+                    if (resp.ok) {
+                        const data = await resp.json();
+                        const kbTotal = data.rag_stats ? (data.rag_stats.symptom_count + data.rag_stats.formula_count + data.rag_stats.drug_count + data.rag_stats.total_documents) : 0;
+                        statusEl.textContent = `API已连接 v${data.version} | 知识库: ${kbTotal}条`;
+                        statusEl.className = 'api-status connected';
+
+                        if (API_BASE !== base) {
+                            API_BASE = base;
+                            console.log('[XiaoShennong] API_BASE 自动修正为:', API_BASE);
+                        }
+
+                        // 更新功能标签（核心能力默认启用）
+                        document.getElementById('tagSemantic').className = 'feature-tag';
+                        document.getElementById('tagAgent').className = 'feature-tag';
+                        document.getElementById('tagThinking').className = 'feature-tag';
+                        document.getElementById('tagStream').className = 'feature-tag';
+                        return;
+                    }
+                } catch (e) {
+                    console.warn(`[XiaoShennong] 探测 API 失败: ${base}`, e.message);
                 }
-            } catch (e) {
-                statusEl.textContent = 'API未连接 - 请检查服务器';
-                statusEl.className = 'api-status disconnected';
             }
+
+            statusEl.textContent = 'API未连接 - 点击重试';
+            statusEl.className = 'api-status disconnected';
+            statusEl.style.cursor = 'pointer';
+            statusEl.title = '点击重新检查后端连接';
+            statusEl.onclick = () => checkAPIStatus();
         }
         
         // 初始化聊天
@@ -613,13 +724,13 @@
             const container = document.getElementById('chatContainer');
             container.innerHTML = '';
             
-            await addBotMessage(`您好！我是小神农AI助手 v5.0 🌿
+            await addBotMessage(`您好！我是小神农AI助手 v5.0
 
 我具备以下能力：
-• 🤖 多Agent协作分析（症状/药物/方剂/副作用）
-• 🔍 语义匹配搜索（理解同义词、近义词）
-• 🧠 实时思考过程展示
-• 📚 基于权威知识库的可溯源回答
+◈ 多Agent协作分析（症状 / 药物 / 方剂 / 副作用）
+◈ 语义匹配搜索（理解同义词、近义词）
+◈ 实时思考过程展示
+◈ 基于权威知识库的可溯源回答
 
 请描述您的症状，我会逐步分析并给出建议。`);
         }
@@ -640,11 +751,11 @@
         }
         
         // 切换页面
-        function showSection(name) {
+        function showSection(name, btn) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(`section-${name}`).classList.add('active');
-            event.target.classList.add('active');
+            if (btn) btn.classList.add('active');
         }
         
         // 自动调整输入框高度
@@ -677,6 +788,7 @@
             addUserMessage(text);
             input.value = '';
             input.style.height = 'auto';
+            scrollToBottom();
             
             isProcessing = true;
             document.getElementById('sendBtn').disabled = true;
@@ -695,6 +807,7 @@
             } finally {
                 isProcessing = false;
                 document.getElementById('sendBtn').disabled = false;
+                input.focus();
             }
         }
         
@@ -730,12 +843,13 @@
             const stepsContainer = document.getElementById(`steps_${thinkingId}`);
             
             try {
-                const resp = await fetch(`${API_BASE}/api/diagnosis/stream`, {
+                const base = isValidApiBase(API_BASE) ? API_BASE : DEFAULT_API_BASE;
+                const resp = await fetch(`${base}/api/diagnosis/stream`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ symptoms: text, query: text })
                 });
-                
+
                 const reader = resp.body.getReader();
                 const decoder = new TextDecoder();
                 
@@ -756,47 +870,54 @@
                             const data = JSON.parse(line.substring(6));
                             
                             if (data.type === 'thinking') {
-                                // 添加思考步骤 - 带打字机效果
+                                // 添加思考步骤 - 兼容后端实际字段（name/description/details）
                                 const thought = data.data;
                                 stepCount++;
-                                
-                                const statusClass = thought.status === 'completed' ? 'status-completed' : 
-                                                   thought.status === 'warning' ? 'status-warning' : 'status-thinking';
-                                const statusText = thought.status === 'completed' ? '✓' : 
-                                                  thought.status === 'warning' ? '⚠' : '●';
-                                
+
+                                // 字段映射：后端用 name/description/details，前端展示用 agent/content/detail
+                                const agentName = thought.agent || thought.name || '分析步骤';
+                                const contentText = thought.content || thought.description || '';
+                                const detailText = thought.detail || (thought.details ? JSON.stringify(thought.details).slice(0, 120) : '');
+                                const stepNumber = thought.step || stepCount;
+                                const status = thought.status || 'thinking';
+
+                                const statusClass = status === 'completed' ? 'status-completed' :
+                                                   status === 'warning' ? 'status-warning' : 'status-thinking';
+                                const statusText = status === 'completed' ? '✓' :
+                                                  status === 'warning' ? '⚠' : '●';
+
                                 // 创建步骤容器（初始隐藏内容）
                                 const stepId = `step_${thinkingId}_${stepCount}`;
                                 const stepHtml = `
                                     <div class="thinking-step" id="${stepId}">
-                                        <div class="step-number">${thought.step}</div>
+                                        <div class="step-number">${stepNumber}</div>
                                         <div class="step-content">
-                                            <div class="step-agent">${thought.agent}</div>
+                                            <div class="step-agent">${agentName}</div>
                                             <div class="step-desc" id="${stepId}_content"></div>
-                                            <div class="step-desc" style="color: #999; font-size: 11px; margin-top: 2px;" id="${stepId}_detail"></div>
+                                            <div class="step-desc" style="color: #8b7355; font-size: 11px; margin-top: 2px;" id="${stepId}_detail"></div>
                                         </div>
                                         <span class="step-status ${statusClass}">${statusText}</span>
                                     </div>
                                 `;
-                                
+
                                 stepsContainer.innerHTML += stepHtml;
                                 scrollToBottom();
-                                
+
                                 // 延迟显示步骤（渐入效果）
                                 setTimeout(() => {
                                     const stepEl = document.getElementById(stepId);
                                     if (stepEl) stepEl.classList.add('visible');
                                 }, 100);
-                                
+
                                 // 打字机效果显示内容
                                 const contentEl = document.getElementById(`${stepId}_content`);
                                 const detailEl = document.getElementById(`${stepId}_detail`);
-                                if (contentEl && thought.content) {
-                                    typeWriter(contentEl, thought.content, 15);
+                                if (contentEl && contentText) {
+                                    typeWriter(contentEl, contentText, 15);
                                 }
-                                if (detailEl && thought.detail) {
+                                if (detailEl && detailText) {
                                     setTimeout(() => {
-                                        typeWriter(detailEl, thought.detail, 10);
+                                        typeWriter(detailEl, detailText, 10);
                                     }, 300);
                                 }
                                 
@@ -810,7 +931,7 @@
                                 const completeId = `complete_${thinkingId}`;
                                 stepsContainer.innerHTML += `
                                     <div class="thinking-step" id="${completeId}">
-                                        <div class="step-number" style="background: #4a7c59;">✓</div>
+                                        <div class="step-number" style="background: #a53232;">✓</div>
                                         <div class="step-content">
                                             <div class="step-agent">分析完成</div>
                                             <div class="step-desc" id="${completeId}_text"></div>
@@ -838,8 +959,8 @@
                                         }
                                     }, 3000);
                                     
-                                    // 显示结果
-                                    await showDiagnosisResult(resultData.diagnosis);
+                                    // 显示结果（传入完整 resultData，normalizeDiagnosis 会处理 diagnosis 嵌套）
+                                    await showDiagnosisResult(resultData);
                                 }
                             }
                         } catch (e) {
@@ -855,7 +976,8 @@
         
         // 普通诊断（fallback）
         async function normalDiagnosis(text) {
-            const resp = await fetch(`${API_BASE}/api/diagnosis`, {
+            const base = isValidApiBase(API_BASE) ? API_BASE : DEFAULT_API_BASE;
+            const resp = await fetch(`${base}/api/diagnosis`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ symptoms: text, query: text, show_thinking: true })
@@ -914,7 +1036,7 @@
                         <div class="step-content">
                             <div class="step-agent">${step.agent}</div>
                             <div class="step-desc">${step.content}</div>
-                            <div class="step-desc" style="color: #999; font-size: 11px; margin-top: 2px;">${step.detail || ''}</div>
+                            <div class="step-desc" style="color: #8b7355; font-size: 11px; margin-top: 2px;">${step.detail || ''}</div>
                         </div>
                         <span class="step-status ${statusClass}">${statusText}</span>
                     </div>
@@ -937,25 +1059,33 @@
             }
         }
         
-        // 统一诊断结果结构（兼容旧版/精简版后端）
+        // 统一诊断结果结构（兼容旧版/精简版后端与流式 SSE）
         function normalizeDiagnosis(result) {
             if (!result) result = {};
-            if (result.diagnosis) result = result.diagnosis;
 
-            const formulas = result.formulas || (result.matched_formulas || []).map(name =>
+            // 保留顶层字段（流式结果中 advice/syndrome/constitution 在 diagnosis 之外）
+            const topLevel = {
+                constitution: result.constitution || '',
+                syndrome: result.syndrome || '',
+                advice: result.advice || ''
+            };
+
+            const diagnosis = result.diagnosis || result;
+
+            const formulas = diagnosis.formulas || (diagnosis.matched_formulas || []).map(name =>
                 typeof name === 'string' ? { name, id: '', functions: '', composition: [] } : name
             );
 
             return {
-                symptoms: result.symptoms || result.matched_symptoms || [],
+                symptoms: diagnosis.symptoms || diagnosis.matched_symptoms || [],
                 formulas: formulas,
-                acupoints: result.acupoints || [],
-                dietary: result.dietary || [],
-                qigong: result.qigong || [],
-                massage: result.massage || [],
-                constitution: result.constitution || '辨证分析结果',
-                syndrome: result.syndrome || '',
-                advice: result.advice || ''
+                acupoints: diagnosis.acupoints || [],
+                dietary: diagnosis.dietary || [],
+                qigong: diagnosis.qigong || [],
+                massage: diagnosis.massage || [],
+                constitution: topLevel.constitution || diagnosis.constitution || '辨证分析结果',
+                syndrome: topLevel.syndrome || diagnosis.syndrome || '',
+                advice: topLevel.advice || diagnosis.advice || ''
             };
         }
 
@@ -969,14 +1099,27 @@
             // 构建结果HTML
             let resultHtml = '';
 
+            // 证型与核心建议
+            if (result.syndrome || result.advice) {
+                resultHtml += `<div style="margin-bottom: 16px; padding: 14px; background: #fffdf8; border-left: 3px solid #a53232; border-radius: 2px;">`;
+                if (result.syndrome) {
+                    resultHtml += `<div style="font-size: 15px; font-weight: bold; color: #a53232; margin-bottom: 8px;">${result.syndrome}</div>`;
+                }
+                if (result.advice) {
+                    // 保留换行，简单安全地渲染文本
+                    resultHtml += `<div style="color: #2b2b2b; font-size: 14px; line-height: 1.8; white-space: pre-wrap;">${escapeHtml(result.advice)}</div>`;
+                }
+                resultHtml += `</div>`;
+            }
+
             // 症状分析
             if (result.symptoms && result.symptoms.length > 0) {
                 resultHtml += `<div style="margin-bottom: 12px;">
                     <div class="result-section-title">📋 识别症状</div>
                     <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px;">
                         ${result.symptoms.map(s => `
-                            <span style="background: #e8f5e9; color: #2d5016; padding: 4px 10px; border-radius: 12px; font-size: 12px;">
-                                ${s.name} <span style="color: #999; font-size: 10px;">[${s.id}]</span>
+                            <span style="background: #f7f3e9; color: #2b2b2b; padding: 4px 10px; border-radius: 12px; font-size: 12px;">
+                                ${s.name} <span style="color: #8b7355; font-size: 10px;">[${s.id}]</span>
                             </span>
                         `).join('')}
                     </div>
@@ -988,10 +1131,10 @@
                 resultHtml += `<div style="margin-bottom: 12px;">
                     <div class="result-section-title">💊 推荐方剂</div>
                     ${result.formulas.slice(0, 3).map(f => `
-                        <div style="background: white; border-radius: 8px; padding: 10px; margin-top: 6px; border-left: 3px solid #4a7c59;">
-                            <div style="font-weight: bold; color: #2d5016;">${f.name || ''} <span style="font-size: 11px; color: #999;">${f.id || ''}</span></div>
-                            <div style="color: #666; font-size: 12px; margin-top: 4px;">${f.functions || ''}</div>
-                            ${f.composition ? `<div style="color: #999; font-size: 11px; margin-top: 4px;">组成: ${f.composition.slice(0, 5).map(c => c.name).join(', ')}</div>` : ''}
+                        <div style="background: #fffdf8; border-radius: 8px; padding: 10px; margin-top: 6px; border-left: 3px solid #4a7c59;">
+                            <div style="font-weight: bold; color: #2b2b2b;">${f.name || ''} <span style="font-size: 11px; color: #8b7355;">${f.id || ''}</span></div>
+                            <div style="color: #5a5a5a; font-size: 12px; margin-top: 4px;">${f.functions || ''}</div>
+                            ${f.composition ? `<div style="color: #8b7355; font-size: 11px; margin-top: 4px;">组成: ${f.composition.slice(0, 5).map(c => c.name).join(', ')}</div>` : ''}
                         </div>
                     `).join('')}
                 </div>`;
@@ -1002,10 +1145,10 @@
                 resultHtml += `<div style="margin-bottom: 12px;">
                     <div class="result-section-title">📍 推荐穴位</div>
                     ${result.acupoints.slice(0, 3).map(a => `
-                        <div style="background: white; border-radius: 8px; padding: 10px; margin-top: 6px; border-left: 3px solid #f9a825;">
-                            <div style="font-weight: bold; color: #8b7355;">${a.name || ''} <span style="font-size: 11px; color: #999;">${a.id || ''}</span></div>
-                            <div style="color: #666; font-size: 12px; margin-top: 4px;">定位: ${a.location || ''}</div>
-                            <div style="color: #999; font-size: 11px; margin-top: 4px;">主治: ${(a.indications || []).slice(0, 3).join(', ')}</div>
+                        <div style="background: #fffdf8; border-radius: 8px; padding: 10px; margin-top: 6px; border-left: 3px solid #b8860b;">
+                            <div style="font-weight: bold; color: #8b7355;">${a.name || ''} <span style="font-size: 11px; color: #8b7355;">${a.id || ''}</span></div>
+                            <div style="color: #5a5a5a; font-size: 12px; margin-top: 4px;">定位: ${a.location || ''}</div>
+                            <div style="color: #8b7355; font-size: 11px; margin-top: 4px;">主治: ${(a.indications || []).slice(0, 3).join(', ')}</div>
                         </div>
                     `).join('')}
                 </div>`;
@@ -1016,9 +1159,9 @@
                 resultHtml += `<div style="margin-bottom: 12px;">
                     <div class="result-section-title">🍵 推荐食疗</div>
                     ${result.dietary.slice(0, 2).map(d => `
-                        <div style="background: white; border-radius: 8px; padding: 10px; margin-top: 6px; border-left: 3px solid #81c784;">
+                        <div style="background: #fffdf8; border-radius: 8px; padding: 10px; margin-top: 6px; border-left: 3px solid #4a7c59;">
                             <div style="font-weight: bold; color: #4a7c59;">${d.name || ''}</div>
-                            <div style="color: #666; font-size: 12px; margin-top: 4px;">${d.method || ''}</div>
+                            <div style="color: #5a5a5a; font-size: 12px; margin-top: 4px;">${d.method || ''}</div>
                         </div>
                     `).join('')}
                 </div>`;
@@ -1029,10 +1172,10 @@
                 resultHtml += `<div style="margin-bottom: 12px;">
                     <div class="result-section-title">🧘 推荐导引</div>
                     ${result.qigong.slice(0, 2).map(q => `
-                        <div style="background: white; border-radius: 8px; padding: 10px; margin-top: 6px; border-left: 3px solid #64b5f6;">
-                            <div style="font-weight: bold; color: #1976d2;">${q.name || ''}</div>
-                            <div style="color: #666; font-size: 12px; margin-top: 4px;">${q.description || ''}</div>
-                            <div style="color: #999; font-size: 11px; margin-top: 4px;">时长: ${q.duration || ''}</div>
+                        <div style="background: #fffdf8; border-radius: 8px; padding: 10px; margin-top: 6px; border-left: 3px solid #4a7c59;">
+                            <div style="font-weight: bold; color: #a53232;">${q.name || ''}</div>
+                            <div style="color: #5a5a5a; font-size: 12px; margin-top: 4px;">${q.description || ''}</div>
+                            <div style="color: #8b7355; font-size: 11px; margin-top: 4px;">时长: ${q.duration || ''}</div>
                         </div>
                     `).join('')}
                 </div>`;
@@ -1043,9 +1186,9 @@
                 resultHtml += `<div style="margin-bottom: 12px;">
                     <div class="result-section-title">💆 推荐推拿</div>
                     ${result.massage.slice(0, 2).map(m => `
-                        <div style="background: white; border-radius: 8px; padding: 10px; margin-top: 6px; border-left: 3px solid #ba68c8;">
-                            <div style="font-weight: bold; color: #7b1fa2;">${m.name || ''}</div>
-                            <div style="color: #999; font-size: 11px; margin-top: 4px;">时长: ${m.duration || ''}</div>
+                        <div style="background: #fffdf8; border-radius: 8px; padding: 10px; margin-top: 6px; border-left: 3px solid #8b7355;">
+                            <div style="font-weight: bold; color: #8b7355;">${m.name || ''}</div>
+                            <div style="color: #8b7355; font-size: 11px; margin-top: 4px;">时长: ${m.duration || ''}</div>
                         </div>
                     `).join('')}
                 </div>`;
@@ -1065,7 +1208,7 @@
                     <div class="message-content">
                         <div class="message-bubble">
                             <div class="result-card">
-                                <div class="result-constitution">辨证分析结果：${result.constitution}</div>
+                                <div class="result-constitution">${result.syndrome || result.constitution || '辨证分析结果'}</div>
                                 ${resultHtml}
                             </div>
                         </div>
@@ -1160,50 +1303,50 @@
         async function testSemanticSearch() {
             const query = document.getElementById('semanticInput').value.trim();
             if (!query) return;
-            
+
             const resultsEl = document.getElementById('semanticResults');
             resultsEl.innerHTML = '<div style="text-align: center; padding: 40px;"><div class="loading-dots"><span></span><span></span><span></span></div><p>语义搜索中...</p></div>';
-            
+
             try {
-                const resp = await fetch(`${API_BASE}/api/semantic/search`, {
+                const base = isValidApiBase(API_BASE) ? API_BASE : DEFAULT_API_BASE;
+                const resp = await fetch(`${base}/api/semantic/search`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ query: query, top_k: 10 })
                 });
-                
+
                 const data = await resp.json();
-                
+
                 if (data.success) {
                     const results = data.data.results;
-                    let html = `<div style="margin-bottom: 10px; color: #666; font-size: 13px;">查询: "${query}" | 引擎: ${data.data.engine || 'keyword'}</div>`;
-                    
-                    // 按类型分组
+                    let html = `<div style="margin-bottom: 10px; color: #5a5a5a; font-size: 13px;">查询: "${query}" | 引擎: ${data.data.engine || 'semantic'}</div>`;
+
+                    // 按来源分组展示
                     const grouped = {};
-                    for (const type in results) {
-                        if (results[type].length > 0) {
-                            grouped[type] = results[type];
+                    for (const source in results) {
+                        if (results[source].length > 0) {
+                            grouped[source] = results[source];
                         }
                     }
-                    
-                    for (const [type, items] of Object.entries(grouped)) {
+
+                    for (const [source, items] of Object.entries(grouped)) {
                         html += `<div style="margin-bottom: 15px;">
-                            <div style="font-weight: bold; color: #2d5016; margin-bottom: 8px; text-transform: uppercase; font-size: 12px;">${type}</div>
+                            <div style="font-weight: bold; color: #a53232; margin-bottom: 8px; font-size: 13px;">《${source}》</div>
                             ${items.map(item => `
-                                <div style="background: white; border-radius: 8px; padding: 10px; margin-bottom: 6px; border-left: 3px solid #4a7c59;">
-                                    <div style="font-weight: 500; color: #333;">${item.metadata?.name || item.id} <span style="font-size: 11px; color: #999;">${item.id}</span></div>
-                                    <div style="color: #666; font-size: 12px; margin-top: 4px;">${item.text?.substring(0, 100) || ''}...</div>
-                                    <div style="color: #4a7c59; font-size: 11px; margin-top: 4px;">相似度: ${(item.score * 100).toFixed(1)}%</div>
+                                <div style="background: #fffdf8; border-radius: 4px; padding: 10px; margin-bottom: 6px; border-left: 3px solid #4a7c59;">
+                                    <div style="color: #5a5a5a; font-size: 13px; line-height: 1.6;">${escapeHtml(item.text?.substring(0, 200) || '')}...</div>
+                                    <div style="color: #8b7355; font-size: 11px; margin-top: 6px;">篇章: ${escapeHtml(item.source_section || '')} | 相似度: ${(item.score * 100).toFixed(1)}%</div>
                                 </div>
                             `).join('')}
                         </div>`;
                     }
-                    
+
                     resultsEl.innerHTML = html;
                 } else {
-                    resultsEl.innerHTML = `<p style="text-align: center; color: #999; padding: 40px;">${data.error || '搜索失败'}</p>`;
+                    resultsEl.innerHTML = `<p style="text-align: center; color: #8b7355; padding: 40px;">${data.error || '搜索失败'}</p>`;
                 }
             } catch (e) {
-                resultsEl.innerHTML = `<p style="text-align: center; color: #999; padding: 40px;">搜索失败: ${e.message}</p>`;
+                resultsEl.innerHTML = `<p style="text-align: center; color: #8b7355; padding: 40px;">搜索失败: ${e.message}</p>`;
             }
         }
         
@@ -1223,7 +1366,7 @@
             
             listEl.innerHTML = agents.map(a => `
                 <div class="agent-card">
-                    <div class="agent-name">${a.name} <span style="font-size: 11px; color: #999;">${a.id}</span></div>
+                    <div class="agent-name">${a.name} <span style="font-size: 11px; color: #8b7355;">${a.id}</span></div>
                     <div class="agent-desc">${a.desc}</div>
                     <div class="agent-stats">
                         <span class="agent-stat">📊 ${a.stats}</span>
@@ -1237,26 +1380,44 @@
         async function testAgentAnalysis() {
             const query = document.getElementById('agentInput').value.trim();
             if (!query) return;
-            
+
             const resultEl = document.getElementById('agentResult');
             resultEl.innerHTML = '<div style="text-align: center; padding: 40px;"><div class="loading-dots"><span></span><span></span><span></span></div><p>Agent分析中...</p></div>';
-            
+
             try {
-                const resp = await fetch(`${API_BASE}/api/agents/analyze`, {
+                const base = isValidApiBase(API_BASE) ? API_BASE : DEFAULT_API_BASE;
+                const resp = await fetch(`${base}/api/agents/analyze`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ query: query })
                 });
-                
+
                 const data = await resp.json();
-                
+
                 if (data.success) {
-                    resultEl.innerHTML = `<pre class="json-viewer">${JSON.stringify(data.data, null, 2)}</pre>`;
+                    const d = data.data;
+                    let html = `<div style="margin-bottom: 12px; color: #5a5a5a; font-size: 13px;">查询: "${query}" | 模型: ${d.model || 'yunwu'}</div>`;
+                    html += `<div style="background: #fffdf8; border-radius: 4px; padding: 14px; margin-bottom: 12px; border-left: 3px solid #a53232;">
+                        <div style="font-weight: bold; color: #a53232; margin-bottom: 8px;">综合分析</div>
+                        <div style="color: #2b2b2b; font-size: 14px; line-height: 1.8; white-space: pre-wrap;">${escapeHtml(d.analysis || '')}</div>
+                    </div>`;
+
+                    if (d.matched_symptoms?.length) {
+                        html += `<div style="margin-bottom: 8px;"><span style="font-weight: bold; color: #2b2b2b;">匹配症状：</span>${d.matched_symptoms.map(x => x.name).join('、')}</span></div>`;
+                    }
+                    if (d.matched_drugs?.length) {
+                        html += `<div style="margin-bottom: 8px;"><span style="font-weight: bold; color: #2b2b2b;">匹配药物：</span>${d.matched_drugs.map(x => x.name).join('、')}</span></div>`;
+                    }
+                    if (d.matched_formulas?.length) {
+                        html += `<div style="margin-bottom: 8px;"><span style="font-weight: bold; color: #2b2b2b;">匹配方剂：</span>${d.matched_formulas.map(x => x.name).join('、')}</span></div>`;
+                    }
+                    html += `<details style="margin-top: 12px;"><summary style="color: #8b7355; cursor: pointer; font-size: 13px;">查看原始 Agent 输出</summary><pre class="json-viewer" style="margin-top: 8px;">${JSON.stringify(d.agent_results, null, 2)}</pre></details>`;
+                    resultEl.innerHTML = html;
                 } else {
-                    resultEl.innerHTML = `<p style="text-align: center; color: #999; padding: 40px;">${data.error || '分析失败'}</p>`;
+                    resultEl.innerHTML = `<p style="text-align: center; color: #8b7355; padding: 40px;">${data.error || '分析失败'}</p>`;
                 }
             } catch (e) {
-                resultEl.innerHTML = `<p style="text-align: center; color: #999; padding: 40px;">分析失败: ${e.message}</p>`;
+                resultEl.innerHTML = `<p style="text-align: center; color: #8b7355; padding: 40px;">分析失败: ${e.message}</p>`;
             }
         }
         
@@ -1273,7 +1434,8 @@
         }
         
         async function apiRequest(method, path, body) {
-            const base = document.getElementById('apiBase').value || API_BASE;
+            const inputBase = document.getElementById('apiBase').value;
+            const base = inputBase || (isValidApiBase(API_BASE) ? API_BASE : DEFAULT_API_BASE);
             const responseEl = document.getElementById('apiResponse');
             responseEl.textContent = '请求中...';
             

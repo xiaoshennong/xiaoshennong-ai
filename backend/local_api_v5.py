@@ -36,11 +36,11 @@ try:
     from web_search_agent import init_web_search, get_web_search_agent
     HAS_WEBSEARCH = True
     
-    # 初始化联网搜索（使用环境变量或默认配置）
+    # 初始化联网搜索（统一使用 Yunwu AI）
     web_search_agent = init_web_search(
-        api_key=os.environ.get('WEBSEARCH_API_KEY', 'sk-kGZ5PiMxdpT91QzvvcGPMNk8Sp6Uzkmdmmaq20aE2kEEpzvl'),
-        base_url=os.environ.get('WEBSEARCH_BASE_URL', 'https://yunwu.ai/v1'),
-        model=os.environ.get('WEBSEARCH_MODEL', 'gpt-5.4-pro')  # 使用yunwu.ai可用模型
+        api_key=os.environ.get('YUNWU_API_KEY', ''),
+        base_url=os.environ.get('YUNWU_API_BASE', '') or 'https://yunwu.ai/v1',
+        model=os.environ.get('YUNWU_MODEL', 'gpt-4o-mini')
     )
     
     if web_search_agent.is_available():
@@ -1420,7 +1420,7 @@ def web_search_status():
     return jsonify({
         "enabled": HAS_WEBSEARCH,
         "configured": HAS_WEBSEARCH and get_web_search_agent().is_available() if HAS_WEBSEARCH else False,
-        "api_base": os.environ.get('WEBSEARCH_BASE_URL', 'https://yunwu.ai/v1') if HAS_WEBSEARCH else None
+        "api_base": (os.environ.get('YUNWU_API_BASE', '') or 'https://yunwu.ai/v1') if HAS_WEBSEARCH else None
     })
 
 if __name__ == '__main__':

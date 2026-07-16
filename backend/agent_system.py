@@ -43,7 +43,7 @@ class BaseAgent:
             if self.web_search.is_available():
                 self.think('初始化', '联网搜索能力已启用', ['WebSearchAgent已配置'])
             else:
-                self.think('初始化', '联网搜索能力未启用（未配置API密钥）', ['请设置WEBSEARCH_API_KEY环境变量'])
+                self.think('初始化', '联网搜索能力未启用（未配置API密钥）', ['请设置 YUNWU_API_KEY 环境变量'])
         else:
             self.think('初始化', '联网搜索模块未加载', ['web_search_agent.py未找到'])
     

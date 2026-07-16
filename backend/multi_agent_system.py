@@ -17,6 +17,9 @@ from dataclasses import dataclass, field, asdict
 from abc import ABC, abstractmethod
 from enum import Enum
 
+# 导入基于 Yunwu API 的 Agent 技能
+from agent_skills import AgentLLM, SKILL_REGISTRY
+
 # 导入网络爬虫
 try:
     from web_crawler_v2 import UnifiedCrawler, CrawlResult, get_unified_crawler
@@ -79,13 +82,17 @@ class IDGenerator:
 class BaseAgent(ABC):
     """所有Agent的基类"""
     
-    def __init__(self, name: str, data_dir: str, base_path: str = "./agent_data"):
+    def __init__(self, name: str, data_dir: str, base_path: str = "./agent_data",
+                 llm: Optional[AgentLLM] = None):
         self.name = name
         self.data_dir = os.path.join(base_path, data_dir)
         os.makedirs(self.data_dir, exist_ok=True)
         self.generated_count = 0
         self.thinking_log: List[Dict] = []
+        self.llm = llm
         print(f"[{self.name}] Agent初始化完成，数据目录: {self.data_dir}")
+        if self.llm:
+            print(f"[{self.name}] 已接入 Yunwu API 结构化生成能力")
     
     def log_thinking(self, step: str, description: str, details: Dict = None):
         """记录思考过程"""
@@ -95,6 +102,42 @@ class BaseAgent(ABC):
             "description": description,
             "details": details or {}
         })
+    
+    def _enrich_with_llm(self, skill_name: str, **kwargs) -> Optional[Dict]:
+        """
+        使用 Yunwu API 的结构化生成能力对 Agent 输出进行增强。
+        如果 LLM 不可用或返回无效 JSON，则返回 None，由调用方回退到原有逻辑。
+        """
+        if not self.llm:
+            return None
+        
+        skill = SKILL_REGISTRY.get(skill_name)
+        if not skill:
+            self.log_thinking("LLM警告", f"未找到技能配置: {skill_name}")
+            return None
+        
+        user_prompt = skill["user_prompt_template"](**kwargs)
+        try:
+            llm_result = self.llm.generate_json(
+                skill["system_prompt"],
+                user_prompt,
+                skill["output_schema"]
+            )
+            if skill.get("parse_response"):
+                llm_result = skill["parse_response"](llm_result)
+            self.log_thinking(
+                "LLM结构化生成",
+                f"使用 {skill_name} 技能成功生成结构化数据",
+                {"fields": list(llm_result.keys())}
+            )
+            return llm_result
+        except Exception as e:
+            self.log_thinking(
+                "LLM警告",
+                f"Yunwu API 结构化生成失败: {e}，将使用本地规则与网络爬虫回退",
+                {"skill": skill_name}
+            )
+            return None
     
     @abstractmethod
     def generate(self, **kwargs) -> Dict:
@@ -140,8 +183,8 @@ class DrugAgent(BaseAgent):
     联网搜索：性味归经、功效主治、用法用量、现代研究
     """
     
-    def __init__(self, base_path: str = "./agent_data"):
-        super().__init__("DrugAgent", "drugs", base_path)
+    def __init__(self, base_path: str = "./agent_data", llm: Optional[AgentLLM] = None):
+        super().__init__("DrugAgent", "drugs", base_path, llm=llm)
         self.drug_counter = 0
     
     def generate(self, drug_name: str, search_results: List[str] = None, 
@@ -248,6 +291,17 @@ class DrugAgent(BaseAgent):
         if all_search_results:
             self._parse_search_results(drug_data, all_search_results)
         
+        # 使用 Yunwu API 结构化生成进行增强
+        llm_result = self._enrich_with_llm("drug", drug_name=drug_name)
+        if llm_result:
+            for key, value in llm_result.items():
+                if key in ("agent", "version", "generated_at", "drug_id"):
+                    continue
+                drug_data[key] = value
+            # 保持本地生成的编码一致
+            drug_data["drug_id"] = drug_id
+            drug_data["data_sources"]["llm_enriched"] = True
+        
         self.log_thinking("档案生成", f"药物档案生成完成: {drug_name}")
         
         # 保存
@@ -304,8 +358,8 @@ class SymptomAgent(BaseAgent):
     联网搜索：症状定义、常见证型、鉴别要点、现代对应
     """
     
-    def __init__(self, base_path: str = "./agent_data"):
-        super().__init__("SymptomAgent", "symptoms", base_path)
+    def __init__(self, base_path: str = "./agent_data", llm: Optional[AgentLLM] = None):
+        super().__init__("SymptomAgent", "symptoms", base_path, llm=llm)
         self.symptom_counter = {}
     
     def generate(self, symptom_name: str, body_part: str = "QT", category: str = "Z",
@@ -403,6 +457,18 @@ class SymptomAgent(BaseAgent):
         if all_search_results:
             self._parse_search_results(symptom_data, all_search_results)
         
+        # 使用 Yunwu API 结构化生成进行增强
+        llm_result = self._enrich_with_llm(
+            "symptom", symptom_name=symptom_name, body_part=body_part, category=category
+        )
+        if llm_result:
+            for key, value in llm_result.items():
+                if key in ("agent", "version", "generated_at", "symptom_id"):
+                    continue
+                symptom_data[key] = value
+            symptom_data["symptom_id"] = symptom_id
+            symptom_data["data_sources"]["llm_enriched"] = True
+        
         self.log_thinking("节点生成", f"症状节点生成完成: {symptom_name}")
         
         filename = f"{symptom_id}.json"
@@ -443,8 +509,8 @@ class FormulaAgent(BaseAgent):
     联网搜索：组成、功效、主治、方解、临床应用
     """
     
-    def __init__(self, base_path: str = "./agent_data"):
-        super().__init__("FormulaAgent", "formulas", base_path)
+    def __init__(self, base_path: str = "./agent_data", llm: Optional[AgentLLM] = None):
+        super().__init__("FormulaAgent", "formulas", base_path, llm=llm)
         self.formula_counter = 0
     
     def generate(self, formula_name: str, composition: List[Dict] = None,
@@ -549,6 +615,18 @@ class FormulaAgent(BaseAgent):
         if all_search_results:
             self._parse_search_results(formula_data, all_search_results)
         
+        # 使用 Yunwu API 结构化生成进行增强
+        llm_result = self._enrich_with_llm(
+            "formula", formula_name=formula_name, composition=composition
+        )
+        if llm_result:
+            for key, value in llm_result.items():
+                if key in ("agent", "version", "generated_at", "formula_id"):
+                    continue
+                formula_data[key] = value
+            formula_data["formula_id"] = formula_id
+            formula_data["data_sources"]["llm_enriched"] = True
+        
         self.log_thinking("档案生成", f"方剂档案生成完成: {formula_name}")
         
         filename = f"{formula_id}.json"
@@ -587,8 +665,8 @@ class AdverseAgent(BaseAgent):
     联网搜索：不良反应、毒性、禁忌人群、药物相互作用
     """
     
-    def __init__(self, base_path: str = "./agent_data"):
-        super().__init__("AdverseAgent", "adverse", base_path)
+    def __init__(self, base_path: str = "./agent_data", llm: Optional[AgentLLM] = None):
+        super().__init__("AdverseAgent", "adverse", base_path, llm=llm)
         self.adverse_counter = 0
     
     def generate(self, drug_id: str, drug_name: str,
@@ -673,6 +751,19 @@ class AdverseAgent(BaseAgent):
         if search_results:
             self._parse_search_results(adverse_data, search_results)
         
+        # 使用 Yunwu API 结构化生成进行增强
+        llm_result = self._enrich_with_llm(
+            "adverse", drug_id=drug_id, drug_name=drug_name
+        )
+        if llm_result:
+            for key, value in llm_result.items():
+                if key in ("agent", "version", "generated_at", "adverse_id", "drug_id"):
+                    continue
+                adverse_data[key] = value
+            adverse_data["adverse_id"] = adverse_id
+            adverse_data["drug_id"] = drug_id
+            adverse_data["data_sources"]["llm_enriched"] = True
+        
         self.log_thinking("档案生成", f"副作用档案生成完成: {drug_name}")
         
         filename = f"{adverse_id}.json"
@@ -720,8 +811,8 @@ class PatientAgent(BaseAgent):
     用于：测试系统、训练模型、聚类分析、疗效预测
     """
     
-    def __init__(self, base_path: str = "./agent_data"):
-        super().__init__("PatientAgent", "patients", base_path)
+    def __init__(self, base_path: str = "./agent_data", llm: Optional[AgentLLM] = None):
+        super().__init__("PatientAgent", "patients", base_path, llm=llm)
         self.patient_counter = 0
     
     def generate(self, profile: Dict = None, timeline: List[Dict] = None) -> Dict:
@@ -789,6 +880,28 @@ class PatientAgent(BaseAgent):
                 "data_usage": ["model_training", "clustering_analysis", "efficacy_research"],
             }
         }
+        
+        # 使用 Yunwu API 结构化生成进行增强
+        llm_result = self._enrich_with_llm(
+            "patient", profile=profile, timeline=timeline
+        )
+        if llm_result:
+            for key, value in llm_result.items():
+                if key in ("agent", "version", "generated_at", "patient_id"):
+                    continue
+                patient_data[key] = value
+            patient_data["patient_id"] = patient_id
+            # 保持派生字段与时间线一致
+            patient_data["symptom_history"] = self._extract_symptom_history(
+                patient_data["timeline"]
+            )
+            patient_data["treatment_history"] = self._extract_treatment_history(
+                patient_data["timeline"]
+            )
+            patient_data["outcome_summary"] = self._calculate_outcome(
+                patient_data["timeline"]
+            )
+            patient_data["data_sources"] = {"llm_enriched": True}
         
         self.log_thinking("档案生成", f"患者档案生成完成: {patient_id}")
         
@@ -897,8 +1010,8 @@ class CooccurrenceAgent(BaseAgent):
     输出：症状共现矩阵 + 异常检测
     """
     
-    def __init__(self, base_path: str = "./agent_data"):
-        super().__init__("CooccurrenceAgent", "cooccur", base_path)
+    def __init__(self, base_path: str = "./agent_data", llm: Optional[AgentLLM] = None):
+        super().__init__("CooccurrenceAgent", "cooccur", base_path, llm=llm)
     
     def generate(self, patient_files: List[str] = None, 
                 symptom_database: Dict = None) -> Dict:
@@ -999,6 +1112,18 @@ class CooccurrenceAgent(BaseAgent):
             }
         }
         
+        # 使用 Yunwu API 结构化生成进行证候解释增强
+        symptom_list = sorted(symptom_counts.keys())
+        llm_result = self._enrich_with_llm(
+            "cooccurrence",
+            symptoms=symptom_list,
+            top_pairs=cooccurrence_results[:10]
+        )
+        if llm_result:
+            result_data["possible_syndromes"] = llm_result.get("possible_syndromes", [])
+            result_data["classic_sources"] = llm_result.get("classic_sources", [])
+            result_data["llm_enriched"] = True
+        
         self.log_thinking("分析完成", "症状共现分析完成")
         
         filename = "cooccur.json"
@@ -1098,8 +1223,8 @@ class ClusterAgent(BaseAgent):
     输出：患者聚类 + 聚类特征 + 代表方剂
     """
     
-    def __init__(self, base_path: str = "./agent_data"):
-        super().__init__("ClusterAgent", "clusters", base_path)
+    def __init__(self, base_path: str = "./agent_data", llm: Optional[AgentLLM] = None):
+        super().__init__("ClusterAgent", "clusters", base_path, llm=llm)
         self.cluster_counter = 0
     
     def generate(self, patient_files: List[str] = None, 
@@ -1178,6 +1303,22 @@ class ClusterAgent(BaseAgent):
                 "inertia": 0.0,  # 惯性
             }
         }
+        
+        # 使用 Yunwu API 结构化生成进行聚类证型标注
+        llm_result = self._enrich_with_llm(
+            "cluster", cases=patients, n_clusters=n_clusters
+        )
+        if llm_result:
+            # 合并 LLM 对每个聚类的证型解释
+            llm_syndromes = llm_result.get("syndromes", {})
+            for cluster in result_data["clusters"]:
+                idx = str(cluster["cluster_index"])
+                if idx in llm_syndromes:
+                    cluster["typical_syndrome"] = llm_syndromes[idx]
+                if "characteristics" in cluster and isinstance(cluster["characteristics"], dict):
+                    cluster["characteristics"].setdefault("typical_syndrome", cluster.get("typical_syndrome", ""))
+            result_data["representative_cases"] = llm_result.get("representative_cases", [])
+            result_data["llm_enriched"] = True
         
         self.log_thinking("分析完成", "聚类特征分析完成")
         
@@ -1322,15 +1463,18 @@ class AgentCoordinator:
     def __init__(self, base_path: str = "./agent_data"):
         self.base_path = ensure_dirs(base_path)
         
-        # 初始化所有Agent
+        # 创建共享的 Yunwu API 客户端，统一供所有 Agent 使用
+        self.llm = AgentLLM()
+        
+        # 初始化所有Agent，并注入共享 LLM
         self.agents = {
-            "drug": DrugAgent(base_path),
-            "symptom": SymptomAgent(base_path),
-            "formula": FormulaAgent(base_path),
-            "adverse": AdverseAgent(base_path),
-            "patient": PatientAgent(base_path),
-            "cooccurrence": CooccurrenceAgent(base_path),
-            "cluster": ClusterAgent(base_path),
+            "drug": DrugAgent(base_path, llm=self.llm),
+            "symptom": SymptomAgent(base_path, llm=self.llm),
+            "formula": FormulaAgent(base_path, llm=self.llm),
+            "adverse": AdverseAgent(base_path, llm=self.llm),
+            "patient": PatientAgent(base_path, llm=self.llm),
+            "cooccurrence": CooccurrenceAgent(base_path, llm=self.llm),
+            "cluster": ClusterAgent(base_path, llm=self.llm),
         }
         
         print(f"[AgentCoordinator] 协调器初始化完成，数据目录: {self.base_path}")

@@ -34,15 +34,16 @@ class WebSearchAgent:
     def __init__(self, api_key: str = None, base_url: str = None, model: str = None):
         """
         初始化联网搜索Agent
-        
+
         Args:
-            api_key: API密钥，默认从环境变量 WEBSEARCH_API_KEY 获取
-            base_url: API基础URL，默认从环境变量 WEBSEARCH_BASE_URL 获取
+            api_key: API密钥，默认从环境变量 YUNWU_API_KEY 获取（兼容 WEBSEARCH_API_KEY）
+            base_url: API基础URL，默认从环境变量 YUNWU_API_BASE 获取（兼容 WEBSEARCH_BASE_URL）
             model: 使用的模型名称
         """
-        self.api_key = api_key or os.environ.get('WEBSEARCH_API_KEY', '')
-        self.base_url = base_url or os.environ.get('WEBSEARCH_BASE_URL', 'https://yunwu.ai/v1')
-        self.model = model or os.environ.get('WEBSEARCH_MODEL', 'gpt-5.4-pro')  # yunwu.ai可用模型
+        # 统一使用 Yunwu AI（优先 WEBSEARCH_*，其次 YUNWU_*，兼容旧配置）
+        self.api_key = api_key or os.environ.get('WEBSEARCH_API_KEY', '') or os.environ.get('YUNWU_API_KEY', '')
+        self.base_url = base_url or os.environ.get('WEBSEARCH_BASE_URL', '') or os.environ.get('YUNWU_API_BASE', '') or 'https://yunwu.ai/v1'
+        self.model = model or os.environ.get('WEBSEARCH_MODEL', '') or os.environ.get('YUNWU_MODEL', 'gpt-4o-mini')
         
         self.client = None
         self.session = None
@@ -454,5 +455,5 @@ if __name__ == '__main__':
         print(f"  验证结果: {result['status']} (置信度: {result['confidence']})")
     else:
         print("\n联网搜索未配置，请设置环境变量:")
-        print("  WEBSEARCH_API_KEY=your_api_key")
-        print("  WEBSEARCH_BASE_URL=https://yunwu.ai/v1")
+        print("  YUNWU_API_KEY=your_api_key")
+        print("  YUNWU_API_BASE=https://yunwu.ai/v1")

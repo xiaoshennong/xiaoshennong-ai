@@ -1,7 +1,27 @@
+page {
+  background: #f7f3e9;
+  font-family: 'Noto Serif SC', 'Source Han Serif SC', 'SimSun', 'STSong', serif;
+}
+
+
+page::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(180, 160, 130, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(160, 140, 110, 0.04) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: -1;
+}
+
 /* 小神农中医AI - 首页样式 */
 .container {
   padding: 30rpx;
-  background: #f8f5f0;
+  background: #f7f3e9;
   min-height: 100vh;
 }
 
@@ -21,7 +41,7 @@
   display: block;
   font-size: 48rpx;
   font-weight: bold;
-  color: #2d5016;
+  color: #8a2525;
   margin-bottom: 10rpx;
 }
 
@@ -35,12 +55,12 @@
 .main-entry {
   display: flex;
   align-items: center;
-  background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
-  border-radius: 20rpx;
+  background: linear-gradient(135deg, #a53232 0%, #8a2525 100%);
+  border-radius: 4rpx;
   padding: 40rpx;
   margin: 30rpx 0;
   color: white;
-  box-shadow: 0 4rpx 20rpx rgba(45, 80, 22, 0.3);
+  box-shadow: 0 4rpx 20rpx rgba(165, 50, 50, 0.3);
 }
 
 .entry-icon {
@@ -96,9 +116,9 @@
   margin-bottom: 15rpx;
 }
 
-.action-shop { background: #e8f5e9; }
-.action-book { background: #fff3e0; }
-.action-health { background: #e3f2fd; }
+.action-shop { background: #f0e8d8; }
+.action-book { background: #f7f3e9; }
+.action-health { background: #f7f3e9; }
 
 .action-text {
   font-size: 26rpx;
@@ -120,7 +140,7 @@
 .section-title {
   font-size: 32rpx;
   font-weight: bold;
-  color: #2d5016;
+  color: #8a2525;
 }
 
 .section-more {
@@ -137,16 +157,16 @@
 
 .product-card {
   width: calc(50% - 10rpx);
-  background: white;
-  border-radius: 16rpx;
+  background: #fffdf8;
+  border-radius: 4rpx;
   overflow: hidden;
-  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.05);
+  box-shadow: 0 2rpx 10rpx rgba(43, 27, 18, 0.12);
 }
 
 .product-img {
   width: 100%;
   height: 200rpx;
-  background: #f0f0f0;
+  background: #efe8d8;
 }
 
 .product-info {
@@ -157,7 +177,7 @@
   display: block;
   font-size: 28rpx;
   font-weight: bold;
-  color: #333;
+  color: #2b2b2b;
   margin-bottom: 8rpx;
 }
 
@@ -178,30 +198,30 @@
 .product-price {
   font-size: 32rpx;
   font-weight: bold;
-  color: #c62828;
+  color: #a53232;
 }
 
 .product-original {
   font-size: 24rpx;
-  color: #999;
+  color: #8b7355;
   text-decoration: line-through;
 }
 
 .product-tag {
   display: inline-block;
   font-size: 20rpx;
-  color: #4a7c59;
-  background: #e8f5e9;
+  color: #a53232;
+  background: #f0e8d8;
   padding: 4rpx 12rpx;
-  border-radius: 8rpx;
+  border-radius: 2rpx;
 }
 
 /* 免责声明 */
 .disclaimer {
   margin-top: 40rpx;
   padding: 20rpx;
-  background: #fff8e1;
-  border-radius: 12rpx;
+  background: #f7f3e9;
+  border-radius: 2rpx;
   text-align: center;
 }
 

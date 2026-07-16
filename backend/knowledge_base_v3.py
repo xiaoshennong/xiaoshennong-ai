@@ -332,6 +332,50 @@ class MassiveKnowledgeBase:
         matched.sort(key=lambda x: len(x['name']), reverse=True)
         return matched
     
+    def find_drugs_by_text(self, text: str) -> List[Dict]:
+        """从文本中识别药物（按名称/别名匹配）"""
+        text = text.lower()
+        matched = []
+        seen = set()
+        
+        for did, drug in self.drugs.items():
+            if did in seen:
+                continue
+            names = [drug.get('name', '')]
+            names.extend(drug.get('aliases', []))
+            if any(n and n in text for n in names if n):
+                matched.append({
+                    'id': did,
+                    'name': drug.get('name', ''),
+                    'properties': drug.get('properties', {})
+                })
+                seen.add(did)
+        
+        matched.sort(key=lambda x: len(x['name']), reverse=True)
+        return matched
+    
+    def find_formulas_by_text(self, text: str) -> List[Dict]:
+        """从文本中识别方剂（按名称/别名匹配）"""
+        text = text.lower()
+        matched = []
+        seen = set()
+        
+        for fid, formula in self.formulas.items():
+            if fid in seen:
+                continue
+            names = [formula.get('name', '')]
+            names.extend(formula.get('aliases', []))
+            if any(n and n in text for n in names if n):
+                matched.append({
+                    'id': fid,
+                    'name': formula.get('name', ''),
+                    'source': formula.get('source', '')
+                })
+                seen.add(fid)
+        
+        matched.sort(key=lambda x: len(x['name']), reverse=True)
+        return matched
+    
     def find_formulas_by_symptoms(self, symptom_ids: List[str]) -> List[Dict]:
         """根据症状查找方剂"""
         formula_scores = {}

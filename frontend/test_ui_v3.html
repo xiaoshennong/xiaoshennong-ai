@@ -4,22 +4,79 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>小神农中医AI v3.0 - 对话式问诊</title>
-    <style>
+    <style>:root {
+    --paper: #f7f3e9;
+    --paper-dark: #efe8d8;
+    --ink: #2b2b2b;
+    --ink-light: #5a5a5a;
+    --cinnabar: #a53232;
+    --cinnabar-light: #c45c48;
+        --jade: #4a7c59;
+    --jade-dark: #2d4a35;
+    --gold: #b8860b;
+    --gold-light: #d4a84b;
+    --border: #d4c4b0;
+    --shadow: rgba(43, 27, 18, 0.12);
+}
+
+
+/* 卷轴/卡片的回纹角饰 */
+.card, .result-card {
+    position: relative;
+}
+.card::before, .card::after,
+.result-card::before, .result-card::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #a53232;
+    pointer-events: none;
+}
+.card::before, .result-card::before {
+    top: 10px;
+    left: 10px;
+    border-right: none;
+    border-bottom: none;
+}
+.card::after, .result-card::after {
+    bottom: 10px;
+    right: 10px;
+    border-left: none;
+    border-top: none;
+}
+
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
-            background: #f8f5f0;
-            color: #333;
+            font-family: 'Noto Serif SC', 'Source Han Serif SC', 'SimSun', 'STSong', serif;
+            background: #f7f3e9;
+            color: #2b2b2b;
             line-height: 1.6;
             height: 100vh;
             display: flex;
             flex-direction: column;
         }
+/* 宣纸纹理背景 */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+        radial-gradient(circle at 20% 30%, rgba(180, 160, 130, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(160, 140, 110, 0.04) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: -1;
+}
+
         
         /* 头部 */
         .header {
-            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
-            color: white;
+            background: linear-gradient(180deg, #2b2b2b 0%, #1f1f1f 100%);
+            color: #e8dcc8;
             padding: 12px 20px;
             text-align: center;
             flex-shrink: 0;
@@ -30,12 +87,12 @@
             display: inline-block;
             margin-top: 6px;
             padding: 2px 10px;
-            border-radius: 20px;
+            border-radius: 4px;
             font-size: 11px;
             background: rgba(255,255,255,0.2);
         }
-        .api-status.connected { background: #52c41a; }
-        .api-status.disconnected { background: #ff4d4f; }
+        .api-status.connected { background: #4a7c59; }
+        .api-status.disconnected { background: #a53232; }
         
         /* 模式切换 */
         .mode-switch {
@@ -43,23 +100,23 @@
             justify-content: center;
             gap: 0;
             padding: 8px;
-            background: white;
-            border-bottom: 1px solid #e8e8e8;
+            background: #fffdf8;
+            border-bottom: 1px solid #d4c4b0;
             flex-shrink: 0;
         }
         .mode-btn {
             padding: 6px 20px;
-            border: 1px solid #4a7c59;
-            background: white;
-            color: #4a7c59;
+            border: 1px solid #a53232;
+            background: #fffdf8;
+            color: #a53232;
             cursor: pointer;
             font-size: 13px;
             transition: all 0.3s;
         }
-        .mode-btn:first-child { border-radius: 20px 0 0 20px; border-right: none; }
-        .mode-btn:last-child { border-radius: 0 20px 20px 0; }
+        .mode-btn:first-child { border-radius: 4px 0 0 4px; border-right: none; }
+        .mode-btn:last-child { border-radius: 0 4px 4px 0; }
         .mode-btn.active {
-            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+            background: linear-gradient(135deg, #a53232 0%, #8a2525 100%);
             color: white;
         }
         
@@ -69,23 +126,23 @@
             justify-content: center;
             gap: 8px;
             padding: 8px;
-            background: white;
-            border-bottom: 1px solid #e8e8e8;
+            background: #fffdf8;
+            border-bottom: 1px solid #d4c4b0;
             flex-shrink: 0;
         }
         .nav-btn {
             padding: 5px 14px;
             border: none;
-            border-radius: 16px;
-            background: #f0f0f0;
-            color: #666;
+            border-radius: 4px;
+            background: #efe8d8;
+            color: #5a5a5a;
             cursor: pointer;
             font-size: 12px;
             transition: all 0.3s;
         }
-        .nav-btn:hover { background: #e8f5e9; color: #4a7c59; }
+        .nav-btn:hover { background: #f0e8d8; color: #a53232; }
         .nav-btn.active {
-            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+            background: linear-gradient(135deg, #a53232 0%, #8a2525 100%);
             color: white;
         }
         
@@ -135,24 +192,24 @@
             flex-shrink: 0;
             margin-right: 10px;
         }
-        .bot-message .message-avatar { background: #e8f5e9; }
-        .user-message .message-avatar { background: #2d5016; color: white; }
+        .bot-message .message-avatar { background: #f0e8d8; }
+        .user-message .message-avatar { background: #8a2525; color: white; }
         
         .message-content { flex: 1; max-width: calc(100% - 50px); }
         
         .message-bubble {
             padding: 12px 15px;
-            border-radius: 12px;
+            border-radius: 4px;
             font-size: 14px;
             line-height: 1.6;
         }
         .bot-message .message-bubble {
-            background: white;
-            border: 1px solid #e8e8e8;
+            background: #fffdf8;
+            border: 1px solid #d4c4b0;
             border-top-left-radius: 4px;
         }
         .user-message .message-bubble {
-            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+            background: linear-gradient(135deg, #a53232 0%, #8a2525 100%);
             color: white;
             border-top-right-radius: 4px;
             margin-left: auto;
@@ -164,7 +221,7 @@
         
         .message-time {
             font-size: 11px;
-            color: #999;
+            color: #8b7355;
             margin-top: 4px;
             padding: 0 5px;
         }
@@ -174,7 +231,7 @@
             display: inline-block;
             width: 2px;
             height: 1.2em;
-            background: #4a7c59;
+            background: #a53232;
             animation: blink 0.8s infinite;
             vertical-align: text-bottom;
             margin-left: 2px;
@@ -186,15 +243,15 @@
         
         /* AI思考过程 - 分步展示 */
         .thinking-process {
-            background: #f0f7f0;
-            border-radius: 10px;
+            background: #f7f3e9;
+            border-radius: 2px;
             padding: 15px;
             margin-top: 10px;
-            border-left: 3px solid #4a7c59;
+            border-left: 3px solid #a53232;
         }
         .thinking-title {
             font-weight: bold;
-            color: #2d5016;
+            color: #8a2525;
             font-size: 14px;
             margin-bottom: 10px;
             display: flex;
@@ -207,8 +264,8 @@
             gap: 10px;
             margin-bottom: 8px;
             padding: 8px;
-            background: white;
-            border-radius: 6px;
+            background: #fffdf8;
+            border-radius: 2px;
             font-size: 13px;
             opacity: 0;
             transform: translateX(-10px);
@@ -222,7 +279,7 @@
             width: 22px;
             height: 22px;
             border-radius: 50%;
-            background: #4a7c59;
+            background: #a53232;
             color: white;
             display: flex;
             align-items: center;
@@ -232,25 +289,25 @@
             flex-shrink: 0;
         }
         .step-content { flex: 1; }
-        .step-name { font-weight: 500; color: #333; margin-bottom: 2px; }
-        .step-desc { color: #666; font-size: 12px; }
-        .step-time { color: #999; font-size: 11px; margin-top: 2px; }
+        .step-name { font-weight: 500; color: #2b2b2b; margin-bottom: 2px; }
+        .step-desc { color: #5a5a5a; font-size: 12px; }
+        .step-time { color: #8b7355; font-size: 11px; margin-top: 2px; }
         .step-status {
             padding: 2px 8px;
-            border-radius: 10px;
+            border-radius: 2px;
             font-size: 11px;
             flex-shrink: 0;
         }
-        .status-completed { background: #e8f5e9; color: #4a7c59; }
-        .status-running { background: #fff8e1; color: #f9a825; }
-        .status-failed { background: #ffebee; color: #c62828; }
+        .status-completed { background: #f0e8d8; color: #a53232; }
+        .status-running { background: #f7f3e9; color: #b8860b; }
+        .status-failed { background: #f7f3e9; color: #a53232; }
         
         .thinking-summary {
             margin-top: 10px;
             padding-top: 10px;
-            border-top: 1px solid #e0e0e0;
+            border-top: 1px solid #d4c4b0;
             font-size: 12px;
-            color: #666;
+            color: #5a5a5a;
             display: flex;
             justify-content: space-between;
             flex-wrap: wrap;
@@ -259,8 +316,8 @@
         
         /* 输入区 */
         .chat-input-area {
-            background: white;
-            border-top: 1px solid #e8e8e8;
+            background: #fffdf8;
+            border-top: 1px solid #d4c4b0;
             padding: 10px 15px;
             flex-shrink: 0;
         }
@@ -274,18 +331,18 @@
         .quick-symptoms::-webkit-scrollbar { display: none; }
         .quick-tag {
             padding: 6px 14px;
-            background: #f0f0f0;
-            border-radius: 16px;
+            background: #efe8d8;
+            border-radius: 4px;
             font-size: 13px;
-            color: #555;
+            color: #5a5a5a;
             cursor: pointer;
             white-space: nowrap;
             transition: all 0.3s;
             border: none;
         }
         .quick-tag:hover {
-            background: #e8f5e9;
-            color: #4a7c59;
+            background: #f0e8d8;
+            color: #a53232;
         }
         
         .input-row {
@@ -296,8 +353,8 @@
         .chat-input {
             flex: 1;
             padding: 10px 15px;
-            border: 1px solid #ddd;
-            border-radius: 20px;
+            border: 1px solid #d4c4b0;
+            border-radius: 4px;
             font-size: 14px;
             resize: none;
             outline: none;
@@ -305,19 +362,19 @@
             font-family: inherit;
             max-height: 120px;
         }
-        .chat-input:focus { border-color: #4a7c59; }
+        .chat-input:focus { border-color: #a53232; }
         .send-btn {
             padding: 10px 24px;
-            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+            background: linear-gradient(135deg, #a53232 0%, #8a2525 100%);
             color: white;
             border: none;
-            border-radius: 20px;
+            border-radius: 4px;
             cursor: pointer;
             font-size: 14px;
             transition: all 0.3s;
             flex-shrink: 0;
         }
-        .send-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(45,80,22,0.3); }
+        .send-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(165, 50, 50, 0.3); }
         .send-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
         
         /* 加载动画 */
@@ -329,7 +386,7 @@
         .loading-dots span {
             width: 8px;
             height: 8px;
-            background: #4a7c59;
+            background: #a53232;
             border-radius: 50%;
             animation: bounce 1.4s ease-in-out infinite both;
         }
@@ -344,14 +401,14 @@
         .progress-bar {
             width: 100%;
             height: 4px;
-            background: #e0e0e0;
+            background: #d4c4b0;
             border-radius: 2px;
             margin-top: 8px;
             overflow: hidden;
         }
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #4a7c59, #2d5016);
+            background: linear-gradient(90deg, #a53232, #8a2525);
             border-radius: 2px;
             transition: width 0.5s ease;
         }
@@ -365,16 +422,16 @@
         }
         .suggested-q {
             padding: 8px 14px;
-            background: #e8f5e9;
-            border: 1px solid #c8e6c9;
-            border-radius: 16px;
+            background: #f0e8d8;
+            border: 1px solid #d4c4b0;
+            border-radius: 4px;
             font-size: 13px;
-            color: #2d5016;
+            color: #8a2525;
             cursor: pointer;
             transition: all 0.3s;
         }
         .suggested-q:hover {
-            background: #4a7c59;
+            background: #a53232;
             color: white;
         }
         
@@ -384,8 +441,8 @@
             align-items: center;
             gap: 10px;
             padding: 8px 12px;
-            background: #f0f7f0;
-            border-radius: 8px;
+            background: #f7f3e9;
+            border-radius: 2px;
             margin-top: 10px;
             font-size: 12px;
         }
@@ -396,65 +453,65 @@
         }
         .symptom-tag {
             padding: 2px 8px;
-            background: #4a7c59;
+            background: #a53232;
             color: white;
-            border-radius: 10px;
+            border-radius: 2px;
             font-size: 11px;
         }
         
         /* 结果卡片 */
         .result-card {
-            background: #f8f5f0;
-            border-radius: 10px;
+            background: #f7f3e9;
+            border-radius: 2px;
             padding: 15px;
             margin-top: 10px;
         }
         .result-constitution {
             display: inline-block;
-            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+            background: linear-gradient(135deg, #a53232 0%, #8a2525 100%);
             color: white;
             padding: 6px 16px;
-            border-radius: 20px;
+            border-radius: 4px;
             font-size: 16px;
             font-weight: bold;
             margin-bottom: 12px;
         }
         .result-section-title {
             font-weight: bold;
-            color: #4a7c59;
+            color: #a53232;
             margin-bottom: 8px;
             font-size: 14px;
         }
         .result-section-content {
-            color: #555;
+            color: #5a5a5a;
             line-height: 1.8;
             font-size: 14px;
         }
         
         /* 溯源 */
         .source-item {
-            background: white;
-            border-left: 3px solid #4a7c59;
+            background: #fffdf8;
+            border-left: 3px solid #a53232;
             padding: 10px 12px;
             margin-bottom: 8px;
             border-radius: 0 6px 6px 0;
         }
         .source-book {
             font-weight: bold;
-            color: #4a7c59;
+            color: #a53232;
             font-size: 13px;
         }
         .source-text {
-            color: #666;
+            color: #5a5a5a;
             font-size: 12px;
             margin-top: 4px;
         }
         
         /* 警告 */
         .warning-box {
-            background: #fff8e1;
-            border: 1px solid #ffe082;
-            border-radius: 8px;
+            background: #f7f3e9;
+            border: 1px solid #d4c4b0;
+            border-radius: 2px;
             padding: 12px;
             margin-top: 12px;
             display: flex;
@@ -474,19 +531,19 @@
             width: 100%;
         }
         .card {
-            background: white;
-            border-radius: 12px;
+            background: #fffdf8;
+            border-radius: 4px;
             padding: 20px;
             margin-bottom: 15px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 8px rgba(43, 27, 18, 0.12);
         }
         .card-title {
             font-size: 18px;
             font-weight: bold;
-            color: #2d5016;
+            color: #8a2525;
             margin-bottom: 15px;
             padding-bottom: 10px;
-            border-bottom: 2px solid #e8f5e9;
+            border-bottom: 2px solid #f0e8d8;
         }
         
         /* 搜索 */
@@ -498,18 +555,18 @@
         .search-input {
             flex: 1;
             padding: 12px 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
+            border: 1px solid #d4c4b0;
+            border-radius: 2px;
             font-size: 16px;
             outline: none;
         }
-        .search-input:focus { border-color: #4a7c59; }
+        .search-input:focus { border-color: #a53232; }
         .search-btn {
             padding: 12px 25px;
-            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+            background: linear-gradient(135deg, #a53232 0%, #8a2525 100%);
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 2px;
             cursor: pointer;
             font-size: 16px;
         }
@@ -519,9 +576,9 @@
             background: #1e1e1e;
             color: #d4d4d4;
             padding: 15px;
-            border-radius: 8px;
+            border-radius: 2px;
             overflow-x: auto;
-            font-family: 'Consolas', monospace;
+            font-family: 'SFMono-Regular', 'Consolas', 'Courier New', monospace;
             font-size: 13px;
             line-height: 1.5;
         }
@@ -622,7 +679,7 @@
                 <div class="card">
                     <div class="card-title">🔧 API接口测试</div>
                     <div style="margin-bottom: 15px;">
-                        <label style="display: block; margin-bottom: 5px; color: #555;">API地址</label>
+                        <label style="display: block; margin-bottom: 5px; color: #5a5a5a;">API地址</label>
                         <input type="text" class="search-input" id="apiBase" value="http://43.247.135.91">
                     </div>
                     <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
@@ -637,8 +694,8 @@
     </div>
     
     <script>
-        // 支持多个API后端，优先使用本地API（5002端口），回退到远程服务器
-        const LOCAL_API = 'http://localhost:5002';
+        // 支持多个API后端，优先使用本地API（5001端口），回退到远程服务器
+        const LOCAL_API = 'http://localhost:5001';
         const REMOTE_API = 'http://43.247.135.91';
         let API_BASE = LOCAL_API;  // 默认使用本地API
         let isProcessing = false;
@@ -662,7 +719,8 @@
                 if (resp.ok) {
                     const data = await resp.json();
                     API_BASE = LOCAL_API;
-                    statusEl.textContent = `本地API已连接 | 知识库: ${data.knowledge_count}条`;
+                    const kbTotal = data.rag_stats ? (data.rag_stats.symptom_count + data.rag_stats.formula_count + data.rag_stats.drug_count + data.rag_stats.total_documents) : 0;
+                    statusEl.textContent = `本地API已连接 | 知识库: ${kbTotal}条`;
                     statusEl.className = 'api-status connected';
                     document.getElementById('apiBase').value = LOCAL_API;
                     return;
@@ -682,7 +740,7 @@
                     return;
                 }
             } catch (e) {
-                statusEl.textContent = 'API未连接 - 请启动本地服务 (python backend/local_api.py)';
+                statusEl.textContent = 'API未连接 - 请启动本地服务 (cd backend && python api_server.py)';
                 statusEl.className = 'api-status disconnected';
             }
         }
@@ -705,7 +763,7 @@
                             <div class="message-bubble">
                                 <p><strong>快速辨证模式</strong></p>
                                 <p style="margin-top: 8px;">请直接描述所有症状，我将立即进行辨证分析：</p>
-                                <ul style="margin-top: 8px; padding-left: 20px; color: #666;">
+                                <ul style="margin-top: 8px; padding-left: 20px; color: #5a5a5a;">
                                     <li>"头痛发热，怕冷，没有汗"</li>
                                     <li>"失眠多梦，口干舌燥，手心发热"</li>
                                 </ul>
@@ -1036,7 +1094,7 @@
                             <div class="loading-dots">
                                 <span></span><span></span><span></span>
                             </div>
-                            <div style="font-size: 12px; color: #999; margin-top: 4px;">正在分析您的症状...</div>
+                            <div style="font-size: 12px; color: #8b7355; margin-top: 4px;">正在分析您的症状...</div>
                         </div>
                         <div class="message-time">${time}</div>
                     </div>
@@ -1073,8 +1131,8 @@
             let symptomHtml = '';
             if (data.symptom_analysis && data.symptom_analysis.extracted_symptoms) {
                 symptomHtml = data.symptom_analysis.extracted_symptoms.map(s => `
-                    <div style="display: inline-block; background: #e8f5e9; color: #2d5016; padding: 4px 10px; border-radius: 12px; margin: 2px; font-size: 12px;">
-                        ${s.name} <span style="color: #999; font-size: 10px;">[${s.id}]</span>
+                    <div style="display: inline-block; background: #f7f3e9; color: #2b2b2b; padding: 4px 10px; border-radius: 12px; margin: 2px; font-size: 12px;">
+                        ${s.name} <span style="color: #8b7355; font-size: 10px;">[${s.id}]</span>
                     </div>
                 `).join('');
             }
@@ -1084,16 +1142,16 @@
             if (data.syndrome_analysis && data.syndrome_analysis.length > 0) {
                 syndromeHtml = data.syndrome_analysis.map((sa, i) => {
                     const matchPercent = Math.round((sa.match_score || 0) * 100);
-                    const severityColor = sa.severity === '危重' ? '#c62828' : 
-                                         sa.severity === '重' ? '#e65100' : 
-                                         sa.severity === '中-重' ? '#f57c00' :
-                                         sa.severity === '中' ? '#f9a825' : '#4a7c59';
+                    const severityColor = sa.severity === '危重' ? '#a53232' : 
+                                         sa.severity === '重' ? '#b8860b' : 
+                                         sa.severity === '中-重' ? '#b8860b' :
+                                         sa.severity === '中' ? '#b8860b' : '#4a7c59';
                     return `
-                        <div style="background: ${i === 0 ? '#f0f7f0' : '#fafafa'}; border-radius: 8px; padding: 12px; margin-bottom: 10px; border-left: 3px solid ${severityColor};">
-                            <div style="font-weight: bold; color: #2d5016; font-size: 15px;">
+                        <div style="background: ${i === 0 ? '#f7f3e9' : '#fffdf8'}; border-radius: 8px; padding: 12px; margin-bottom: 10px; border-left: 3px solid ${severityColor};">
+                            <div style="font-weight: bold; color: #2b2b2b; font-size: 15px;">
                                 ${i === 0 ? '⭐ ' : ''}${sa.name}
                             </div>
-                            <div style="color: #666; font-size: 12px; margin-top: 4px;">
+                            <div style="color: #5a5a5a; font-size: 12px; margin-top: 4px;">
                                 匹配度: ${matchPercent}% | 辨证体系: ${sa.system}
                             </div>
                         </div>
@@ -1107,12 +1165,12 @@
                     
                     <div style="margin-bottom: 12px;">
                         <div class="result-section-title">📋 症状分析</div>
-                        <div style="margin-top: 8px;">${symptomHtml || '<span style="color: #999; font-size: 12px;">未识别到标准症状</span>'}</div>
+                        <div style="margin-top: 8px;">${symptomHtml || '<span style="color: #8b7355; font-size: 12px;">未识别到标准症状</span>'}</div>
                     </div>
                     
                     <div style="margin-bottom: 12px;">
                         <div class="result-section-title">🔬 证型分析</div>
-                        ${syndromeHtml || '<p style="color: #999; font-size: 12px;">未识别到匹配证型</p>'}
+                        ${syndromeHtml || '<p style="color: #8b7355; font-size: 12px;">未识别到匹配证型</p>'}
                     </div>
                     
                     <div style="margin-bottom: 12px;">
@@ -1188,10 +1246,10 @@
                         </div>
                     `).join('');
                 } else {
-                    resultsEl.innerHTML = '<p style="text-align: center; color: #999; padding: 40px;">暂无相关古籍记载</p>';
+                    resultsEl.innerHTML = '<p style="text-align: center; color: #8b7355; padding: 40px;">暂无相关古籍记载</p>';
                 }
             } catch (e) {
-                resultsEl.innerHTML = '<p style="text-align: center; color: #999; padding: 40px;">检索失败，请检查API连接</p>';
+                resultsEl.innerHTML = '<p style="text-align: center; color: #8b7355; padding: 40px;">检索失败，请检查API连接</p>';
             }
         }
         
@@ -1210,9 +1268,9 @@
                     
                     for (const [name, stat] of Object.entries(stats)) {
                         html += `
-                            <div style="background: #f0f7f0; border-radius: 8px; padding: 12px;">
-                                <div style="font-weight: bold; color: #2d5016; font-size: 14px;">${name}</div>
-                                <div style="color: #666; font-size: 12px; margin-top: 4px;">
+                            <div style="background: #f7f3e9; border-radius: 8px; padding: 12px;">
+                                <div style="font-weight: bold; color: #2b2b2b; font-size: 14px;">${name}</div>
+                                <div style="color: #5a5a5a; font-size: 12px; margin-top: 4px;">
                                     文件: ${stat.total_files} | 生成: ${stat.generated_count}
                                 </div>
                             </div>
@@ -1224,10 +1282,10 @@
                     // 详细JSON
                     detailsEl.innerHTML = `<pre class="json-viewer">${JSON.stringify(stats, null, 2)}</pre>`;
                 } else {
-                    statsEl.innerHTML = '<p style="color: #999;">加载失败</p>';
+                    statsEl.innerHTML = '<p style="color: #8b7355;">加载失败</p>';
                 }
             } catch (e) {
-                statsEl.innerHTML = '<p style="color: #999;">API连接失败</p>';
+                statsEl.innerHTML = '<p style="color: #8b7355;">API连接失败</p>';
             }
         }
         

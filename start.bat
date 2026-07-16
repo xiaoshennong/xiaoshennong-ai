@@ -44,22 +44,26 @@ if not exist "models\bge-m3" (
     echo   模型已存在
 )
 
-REM 设置环境变量
-set LLM_PROVIDER=mock
-set FLASK_DEBUG=false
-set PORT=5000
+REM 环境变量由项目根目录 .env 控制（YUNWU_API_KEY、PORT、ADMIN_TOKEN 等）
+REM 不再覆盖，确保使用 .env 中的 yunwu.ai 配置
 
 echo.
 echo ========================================
 echo   启动完成！
 echo ========================================
-echo   API地址: http://localhost:%PORT%
-echo   健康检查: http://localhost:%PORT%/api/health
-echo   LLM模式: %LLM_PROVIDER%
+echo   后端API: http://localhost:5001
+echo   前端页面: http://localhost:8080
+echo   健康检查: http://localhost:5001/api/health
+echo   LLM模式: yunwu.ai（由 .env 决定）
 echo.
-echo   按任意键启动服务...
+echo   按任意键同时启动后端与前端的本地服务...
 pause >nul
 
-REM 启动服务
+REM 启动前端（在新窗口中，避免阻塞后端）
+cd frontend
+start "小神农前端" python -m http.server 8080
+cd ..
+
+REM 启动后端
 cd backend
 python api_server.py

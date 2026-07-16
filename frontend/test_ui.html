@@ -4,22 +4,79 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>小神农中医AI - 测试平台</title>
-    <style>
+    <style>:root {
+    --paper: #f7f3e9;
+    --paper-dark: #efe8d8;
+    --ink: #2b2b2b;
+    --ink-light: #5a5a5a;
+    --cinnabar: #a53232;
+    --cinnabar-light: #c45c48;
+        --jade: #4a7c59;
+    --jade-dark: #2d4a35;
+    --gold: #b8860b;
+    --gold-light: #d4a84b;
+    --border: #d4c4b0;
+    --shadow: rgba(43, 27, 18, 0.12);
+}
+
+
+/* 卷轴/卡片的回纹角饰 */
+.card, .result-card {
+    position: relative;
+}
+.card::before, .card::after,
+.result-card::before, .result-card::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #a53232;
+    pointer-events: none;
+}
+.card::before, .result-card::before {
+    top: 10px;
+    left: 10px;
+    border-right: none;
+    border-bottom: none;
+}
+.card::after, .result-card::after {
+    bottom: 10px;
+    right: 10px;
+    border-left: none;
+    border-top: none;
+}
+
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
-            background: #f8f5f0;
-            color: #333;
+            font-family: 'Noto Serif SC', 'Source Han Serif SC', 'SimSun', 'STSong', serif;
+            background: #f7f3e9;
+            color: #2b2b2b;
             line-height: 1.6;
             height: 100vh;
             display: flex;
             flex-direction: column;
         }
+/* 宣纸纹理背景 */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+        radial-gradient(circle at 20% 30%, rgba(180, 160, 130, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(160, 140, 110, 0.04) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: -1;
+}
+
         
         /* 头部 */
         .header {
-            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
-            color: white;
+            background: linear-gradient(180deg, #2b2b2b 0%, #1f1f1f 100%);
+            color: #e8dcc8;
             padding: 15px 20px;
             text-align: center;
             flex-shrink: 0;
@@ -30,12 +87,12 @@
             display: inline-block;
             margin-top: 8px;
             padding: 3px 10px;
-            border-radius: 20px;
+            border-radius: 4px;
             font-size: 11px;
             background: rgba(255,255,255,0.2);
         }
-        .api-status.connected { background: #52c41a; }
-        .api-status.disconnected { background: #ff4d4f; }
+        .api-status.connected { background: #4a7c59; }
+        .api-status.disconnected { background: #a53232; }
         
         /* 导航 */
         .nav {
@@ -43,23 +100,23 @@
             justify-content: center;
             gap: 8px;
             padding: 10px;
-            background: white;
-            border-bottom: 1px solid #e8e8e8;
+            background: #fffdf8;
+            border-bottom: 1px solid #d4c4b0;
             flex-shrink: 0;
         }
         .nav-btn {
             padding: 6px 16px;
             border: none;
-            border-radius: 20px;
-            background: #f0f0f0;
-            color: #666;
+            border-radius: 4px;
+            background: #efe8d8;
+            color: #5a5a5a;
             cursor: pointer;
             font-size: 13px;
             transition: all 0.3s;
         }
-        .nav-btn:hover { background: #e8f5e9; color: #4a7c59; }
+        .nav-btn:hover { background: #f0e8d8; color: #a53232; }
         .nav-btn.active {
-            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+            background: linear-gradient(135deg, #a53232 0%, #8a2525 100%);
             color: white;
         }
         
@@ -109,24 +166,24 @@
             flex-shrink: 0;
             margin-right: 10px;
         }
-        .bot-message .message-avatar { background: #e8f5e9; }
-        .user-message .message-avatar { background: #2d5016; color: white; }
+        .bot-message .message-avatar { background: #f0e8d8; }
+        .user-message .message-avatar { background: #8a2525; color: white; }
         
         .message-content { flex: 1; max-width: calc(100% - 50px); }
         
         .message-bubble {
             padding: 12px 15px;
-            border-radius: 12px;
+            border-radius: 4px;
             font-size: 14px;
             line-height: 1.6;
         }
         .bot-message .message-bubble {
-            background: white;
-            border: 1px solid #e8e8e8;
+            background: #fffdf8;
+            border: 1px solid #d4c4b0;
             border-top-left-radius: 4px;
         }
         .user-message .message-bubble {
-            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+            background: linear-gradient(135deg, #a53232 0%, #8a2525 100%);
             color: white;
             border-top-right-radius: 4px;
             margin-left: auto;
@@ -138,22 +195,22 @@
         
         .message-time {
             font-size: 11px;
-            color: #999;
+            color: #8b7355;
             margin-top: 4px;
             padding: 0 5px;
         }
         
         /* AI思考过程 - 强制显示，不可关闭 */
         .thinking-process {
-            background: #f0f7f0;
-            border-radius: 10px;
+            background: #f7f3e9;
+            border-radius: 2px;
             padding: 15px;
             margin-top: 10px;
-            border-left: 3px solid #4a7c59;
+            border-left: 3px solid #a53232;
         }
         .thinking-title {
             font-weight: bold;
-            color: #2d5016;
+            color: #8a2525;
             font-size: 14px;
             margin-bottom: 10px;
             display: flex;
@@ -166,15 +223,15 @@
             gap: 10px;
             margin-bottom: 8px;
             padding: 8px;
-            background: white;
-            border-radius: 6px;
+            background: #fffdf8;
+            border-radius: 2px;
             font-size: 13px;
         }
         .step-number {
             width: 22px;
             height: 22px;
             border-radius: 50%;
-            background: #4a7c59;
+            background: #a53232;
             color: white;
             display: flex;
             align-items: center;
@@ -184,33 +241,33 @@
             flex-shrink: 0;
         }
         .step-content { flex: 1; }
-        .step-name { font-weight: 500; color: #333; margin-bottom: 2px; }
-        .step-desc { color: #666; font-size: 12px; }
-        .step-time { color: #999; font-size: 11px; margin-top: 2px; }
+        .step-name { font-weight: 500; color: #2b2b2b; margin-bottom: 2px; }
+        .step-desc { color: #5a5a5a; font-size: 12px; }
+        .step-time { color: #8b7355; font-size: 11px; margin-top: 2px; }
         .step-status {
             padding: 2px 8px;
-            border-radius: 10px;
+            border-radius: 2px;
             font-size: 11px;
             flex-shrink: 0;
         }
-        .status-completed { background: #e8f5e9; color: #4a7c59; }
-        .status-running { background: #fff8e1; color: #f9a825; }
-        .status-failed { background: #ffebee; color: #c62828; }
+        .status-completed { background: #f0e8d8; color: #a53232; }
+        .status-running { background: #f7f3e9; color: #b8860b; }
+        .status-failed { background: #f7f3e9; color: #a53232; }
         
         .thinking-summary {
             margin-top: 10px;
             padding-top: 10px;
-            border-top: 1px solid #e0e0e0;
+            border-top: 1px solid #d4c4b0;
             font-size: 12px;
-            color: #666;
+            color: #5a5a5a;
             display: flex;
             justify-content: space-between;
         }
         
         /* 输入区 */
         .chat-input-area {
-            background: white;
-            border-top: 1px solid #e8e8e8;
+            background: #fffdf8;
+            border-top: 1px solid #d4c4b0;
             padding: 10px 15px;
             flex-shrink: 0;
         }
@@ -224,18 +281,18 @@
         .quick-symptoms::-webkit-scrollbar { display: none; }
         .quick-tag {
             padding: 6px 14px;
-            background: #f0f0f0;
-            border-radius: 16px;
+            background: #efe8d8;
+            border-radius: 4px;
             font-size: 13px;
-            color: #555;
+            color: #5a5a5a;
             cursor: pointer;
             white-space: nowrap;
             transition: all 0.3s;
             border: none;
         }
         .quick-tag:hover {
-            background: #e8f5e9;
-            color: #4a7c59;
+            background: #f0e8d8;
+            color: #a53232;
         }
         
         .input-row {
@@ -246,8 +303,8 @@
         .chat-input {
             flex: 1;
             padding: 10px 15px;
-            border: 1px solid #ddd;
-            border-radius: 20px;
+            border: 1px solid #d4c4b0;
+            border-radius: 4px;
             font-size: 14px;
             resize: none;
             outline: none;
@@ -255,19 +312,19 @@
             font-family: inherit;
             max-height: 120px;
         }
-        .chat-input:focus { border-color: #4a7c59; }
+        .chat-input:focus { border-color: #a53232; }
         .send-btn {
             padding: 10px 24px;
-            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+            background: linear-gradient(135deg, #a53232 0%, #8a2525 100%);
             color: white;
             border: none;
-            border-radius: 20px;
+            border-radius: 4px;
             cursor: pointer;
             font-size: 14px;
             transition: all 0.3s;
             flex-shrink: 0;
         }
-        .send-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(45,80,22,0.3); }
+        .send-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(165, 50, 50, 0.3); }
         .send-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
         
         /* 加载动画 */
@@ -279,7 +336,7 @@
         .loading-dots span {
             width: 8px;
             height: 8px;
-            background: #4a7c59;
+            background: #a53232;
             border-radius: 50%;
             animation: bounce 1.4s ease-in-out infinite both;
         }
@@ -292,59 +349,59 @@
         
         /* 结果卡片 */
         .result-card {
-            background: #f8f5f0;
-            border-radius: 10px;
+            background: #f7f3e9;
+            border-radius: 2px;
             padding: 15px;
             margin-top: 10px;
         }
         .result-constitution {
             display: inline-block;
-            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+            background: linear-gradient(135deg, #a53232 0%, #8a2525 100%);
             color: white;
             padding: 6px 16px;
-            border-radius: 20px;
+            border-radius: 4px;
             font-size: 16px;
             font-weight: bold;
             margin-bottom: 12px;
         }
         .result-section-title {
             font-weight: bold;
-            color: #4a7c59;
+            color: #a53232;
             margin-bottom: 8px;
             font-size: 14px;
         }
         .result-section-content {
-            color: #555;
+            color: #5a5a5a;
             line-height: 1.8;
             font-size: 14px;
         }
         
         /* 溯源 */
         .source-item {
-            background: white;
-            border-left: 3px solid #4a7c59;
+            background: #fffdf8;
+            border-left: 3px solid #a53232;
             padding: 10px 12px;
             margin-bottom: 8px;
             border-radius: 0 6px 6px 0;
         }
         .source-book {
             font-weight: bold;
-            color: #4a7c59;
+            color: #a53232;
             font-size: 13px;
         }
         .source-text {
-            color: #666;
+            color: #5a5a5a;
             font-size: 12px;
             margin-top: 4px;
         }
         .source-original {
-            color: #999;
+            color: #8b7355;
             font-size: 11px;
             font-style: italic;
             margin-top: 4px;
-            background: #f8f5f0;
+            background: #f7f3e9;
             padding: 6px;
-            border-radius: 4px;
+            border-radius: 2px;
         }
         
         /* 推荐商品 */
@@ -357,30 +414,30 @@
         .product-recommend::-webkit-scrollbar { display: none; }
         .product-mini {
             min-width: 140px;
-            background: white;
-            border-radius: 10px;
+            background: #fffdf8;
+            border-radius: 2px;
             padding: 12px;
             text-align: center;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 6px rgba(43, 27, 18, 0.12);
         }
         .product-mini-icon { font-size: 32px; margin-bottom: 6px; }
-        .product-mini-name { font-size: 13px; font-weight: bold; color: #333; margin-bottom: 4px; }
-        .product-mini-price { color: #c62828; font-size: 15px; font-weight: bold; }
+        .product-mini-name { font-size: 13px; font-weight: bold; color: #2b2b2b; margin-bottom: 4px; }
+        .product-mini-price { color: #a53232; font-size: 15px; font-weight: bold; }
         .product-mini-tag {
             font-size: 11px;
-            color: #4a7c59;
-            background: #e8f5e9;
+            color: #a53232;
+            background: #f0e8d8;
             padding: 2px 8px;
-            border-radius: 4px;
+            border-radius: 2px;
             margin-top: 6px;
             display: inline-block;
         }
         
         /* 警告 */
         .warning-box {
-            background: #fff8e1;
-            border: 1px solid #ffe082;
-            border-radius: 8px;
+            background: #f7f3e9;
+            border: 1px solid #d4c4b0;
+            border-radius: 2px;
             padding: 12px;
             margin-top: 12px;
             display: flex;
@@ -400,19 +457,19 @@
             width: 100%;
         }
         .card {
-            background: white;
-            border-radius: 12px;
+            background: #fffdf8;
+            border-radius: 4px;
             padding: 20px;
             margin-bottom: 15px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 8px rgba(43, 27, 18, 0.12);
         }
         .card-title {
             font-size: 18px;
             font-weight: bold;
-            color: #2d5016;
+            color: #8a2525;
             margin-bottom: 15px;
             padding-bottom: 10px;
-            border-bottom: 2px solid #e8f5e9;
+            border-bottom: 2px solid #f0e8d8;
         }
         
         /* 搜索 */
@@ -424,18 +481,18 @@
         .search-input {
             flex: 1;
             padding: 12px 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
+            border: 1px solid #d4c4b0;
+            border-radius: 2px;
             font-size: 16px;
             outline: none;
         }
-        .search-input:focus { border-color: #4a7c59; }
+        .search-input:focus { border-color: #a53232; }
         .search-btn {
             padding: 12px 25px;
-            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+            background: linear-gradient(135deg, #a53232 0%, #8a2525 100%);
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 2px;
             cursor: pointer;
             font-size: 16px;
         }
@@ -447,17 +504,17 @@
             gap: 15px;
         }
         .product-card {
-            background: white;
-            border-radius: 10px;
+            background: #fffdf8;
+            border-radius: 2px;
             overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 8px rgba(43, 27, 18, 0.12);
             transition: transform 0.3s;
         }
         .product-card:hover { transform: translateY(-3px); }
         .product-img {
             width: 100%;
             height: 150px;
-            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            background: linear-gradient(135deg, #f0e8d8 0%, #d4c4b0 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -466,15 +523,15 @@
         .product-info { padding: 15px; }
         .product-name { font-weight: bold; font-size: 16px; margin-bottom: 5px; }
         .product-source { font-size: 12px; color: #8b7355; margin-bottom: 8px; }
-        .product-price { color: #c62828; font-size: 20px; font-weight: bold; }
-        .product-original { color: #999; text-decoration: line-through; font-size: 14px; margin-left: 8px; }
+        .product-price { color: #a53232; font-size: 20px; font-weight: bold; }
+        .product-original { color: #8b7355; text-decoration: line-through; font-size: 14px; margin-left: 8px; }
         .product-tag {
             display: inline-block;
             font-size: 12px;
-            color: #4a7c59;
-            background: #e8f5e9;
+            color: #a53232;
+            background: #f0e8d8;
             padding: 4px 10px;
-            border-radius: 4px;
+            border-radius: 2px;
             margin-top: 8px;
         }
         
@@ -483,9 +540,9 @@
             background: #1e1e1e;
             color: #d4d4d4;
             padding: 15px;
-            border-radius: 8px;
+            border-radius: 2px;
             overflow-x: auto;
-            font-family: 'Consolas', monospace;
+            font-family: 'SFMono-Regular', 'Consolas', 'Courier New', monospace;
             font-size: 13px;
             line-height: 1.5;
         }
@@ -527,12 +584,12 @@
                         <div class="message-bubble">
                             <p>您好，我是小神农AI助手。</p>
                             <p style="margin-top: 8px;">请直接描述您目前的症状，比如：</p>
-                            <ul style="margin-top: 8px; padding-left: 20px; color: #666;">
+                            <ul style="margin-top: 8px; padding-left: 20px; color: #5a5a5a;">
                                 <li>"我最近头痛发热，怕冷，没有汗"</li>
                                 <li>"失眠多梦，口干舌燥，手心发热"</li>
                                 <li>"腹胀腹泻，食欲不振，乏力"</li>
                             </ul>
-                            <p style="margin-top: 10px; font-size: 12px; color: #999;">
+                            <p style="margin-top: 10px; font-size: 12px; color: #8b7355;">
                                 ⚠️ 本结果仅供参考，不能替代专业医生诊断
                             </p>
                         </div>
@@ -583,7 +640,7 @@
             <div class="page-content">
                 <div class="card">
                     <div class="card-title">🍵 药食同源养生方</div>
-                    <p style="color: #666; margin-bottom: 15px;">根据中国中医科学院配方监制</p>
+                    <p style="color: #5a5a5a; margin-bottom: 15px;">根据中国中医科学院配方监制</p>
                     <div class="product-grid" id="productGrid"></div>
                 </div>
             </div>
@@ -595,7 +652,7 @@
                 <div class="card">
                     <div class="card-title">🔧 API接口测试</div>
                     <div style="margin-bottom: 15px;">
-                        <label style="display: block; margin-bottom: 5px; color: #555;">API地址</label>
+                        <label style="display: block; margin-bottom: 5px; color: #5a5a5a;">API地址</label>
                         <input type="text" class="search-input" id="apiBase" value="http://localhost:5001">
                     </div>
                     <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
@@ -862,19 +919,19 @@
                     let detailsHtml = '';
                     if (step.details) {
                         if (step.details.symptom_count !== undefined) {
-                            detailsHtml = `<div style="color: #999; font-size: 11px; margin-top: 4px;">识别到 ${step.details.symptom_count} 个症状</div>`;
+                            detailsHtml = `<div style="color: #8b7355; font-size: 11px; margin-top: 4px;">识别到 ${step.details.symptom_count} 个症状</div>`;
                         }
                         if (step.details.retrieved_count !== undefined) {
-                            detailsHtml = `<div style="color: #999; font-size: 11px; margin-top: 4px;">检索到 ${step.details.retrieved_count} 条古籍记载</div>`;
+                            detailsHtml = `<div style="color: #8b7355; font-size: 11px; margin-top: 4px;">检索到 ${step.details.retrieved_count} 条古籍记载</div>`;
                         }
                         if (step.details.matched_formulas_count !== undefined) {
-                            detailsHtml = `<div style="color: #999; font-size: 11px; margin-top: 4px;">匹配 ${step.details.matched_formulas_count} 个方剂, ${step.details.matched_drugs_count} 个药物</div>`;
+                            detailsHtml = `<div style="color: #8b7355; font-size: 11px; margin-top: 4px;">匹配 ${step.details.matched_formulas_count} 个方剂, ${step.details.matched_drugs_count} 个药物</div>`;
                         }
                         if (step.details.llm_time_ms !== undefined) {
-                            detailsHtml = `<div style="color: #999; font-size: 11px; margin-top: 4px;">AI生成耗时: ${step.details.llm_time_ms}ms</div>`;
+                            detailsHtml = `<div style="color: #8b7355; font-size: 11px; margin-top: 4px;">AI生成耗时: ${step.details.llm_time_ms}ms</div>`;
                         }
                         if (step.details.verification_passed !== undefined) {
-                            detailsHtml = `<div style="color: #999; font-size: 11px; margin-top: 4px;">校验${step.details.verification_passed ? '通过' : '失败'}</div>`;
+                            detailsHtml = `<div style="color: #8b7355; font-size: 11px; margin-top: 4px;">校验${step.details.verification_passed ? '通过' : '失败'}</div>`;
                         }
                     }
                     
@@ -895,7 +952,7 @@
                 thinkingHtml = `
                     <div class="thinking-process">
                         <div class="thinking-title">
-                            <span>🧠</span> AI双源验证思考过程（共${data.total_time_ms}ms）<span style="font-size:11px;color:#999;font-weight:normal;margin-left:8px;">— 不可关闭</span>
+                            <span>🧠</span> AI双源验证思考过程（共${data.total_time_ms}ms）<span style="font-size:11px;color:#8b7355;font-weight:normal;margin-left:8px;">— 不可关闭</span>
                         </div>
                         ${steps}
                         <div class="thinking-summary">
@@ -916,8 +973,8 @@
             let symptomHtml = '';
             if (data.symptom_analysis && data.symptom_analysis.extracted_symptoms) {
                 symptomHtml = data.symptom_analysis.extracted_symptoms.map(s => `
-                    <div style="display: inline-block; background: #e8f5e9; color: #2d5016; padding: 4px 10px; border-radius: 12px; margin: 2px; font-size: 12px;">
-                        ${s.name} <span style="color: #999; font-size: 10px;">[${s.id}]</span>
+                    <div style="display: inline-block; background: #f7f3e9; color: #2b2b2b; padding: 4px 10px; border-radius: 12px; margin: 2px; font-size: 12px;">
+                        ${s.name} <span style="color: #8b7355; font-size: 10px;">[${s.id}]</span>
                     </div>
                 `).join('');
             }
@@ -927,33 +984,33 @@
             if (data.syndrome_analysis && data.syndrome_analysis.length > 0) {
                 syndromeHtml = data.syndrome_analysis.map((sa, i) => {
                     const matchPercent = Math.round((sa.match_score || 0) * 100);
-                    const severityColor = sa.severity === '危重' ? '#c62828' : 
-                                         sa.severity === '重' ? '#e65100' : 
-                                         sa.severity === '中-重' ? '#f57c00' :
-                                         sa.severity === '中' ? '#f9a825' : '#4a7c59';
+                    const severityColor = sa.severity === '危重' ? '#a53232' : 
+                                         sa.severity === '重' ? '#b8860b' : 
+                                         sa.severity === '中-重' ? '#b8860b' :
+                                         sa.severity === '中' ? '#b8860b' : '#4a7c59';
                     const isTop = i === 0;
                     return `
-                        <div style="background: ${isTop ? '#f0f7f0' : '#fafafa'}; border-radius: 8px; padding: 12px; margin-bottom: 10px; border-left: 3px solid ${severityColor};">
+                        <div style="background: ${isTop ? '#f7f3e9' : '#fffdf8'}; border-radius: 8px; padding: 12px; margin-bottom: 10px; border-left: 3px solid ${severityColor};">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                                <div style="font-weight: bold; color: #2d5016; font-size: 15px;">
-                                    ${isTop ? '⭐ ' : ''}${sa.name} <span style="font-size: 11px; color: #999;">[${sa.id}]</span>
+                                <div style="font-weight: bold; color: #2b2b2b; font-size: 15px;">
+                                    ${isTop ? '⭐ ' : ''}${sa.name} <span style="font-size: 11px; color: #8b7355;">[${sa.id}]</span>
                                 </div>
                                 <div style="display: flex; gap: 8px; align-items: center;">
                                     <span style="background: ${severityColor}20; color: ${severityColor}; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: bold;">${sa.severity}</span>
-                                    <span style="background: #e8f5e9; color: #2d5016; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: bold;">匹配度 ${matchPercent}%</span>
+                                    <span style="background: #f7f3e9; color: #2b2b2b; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: bold;">匹配度 ${matchPercent}%</span>
                                 </div>
                             </div>
-                            <div style="color: #666; font-size: 12px; line-height: 1.8;">
-                                <div><span style="color: #999;">辨证体系：</span>${sa.system}</div>
-                                <div><span style="color: #999;">病机：</span>${sa.pathogenesis}</div>
-                                <div><span style="color: #999;">治则：</span>${sa.treatment_principle}</div>
-                                ${sa.main_formula ? `<div><span style="color: #999;">主方：</span>${sa.main_formula.formula_name} <span style="color: #999; font-size: 10px;">[${sa.main_formula.formula_id}]</span></div>` : ''}
-                                ${sa.key_signs ? `<div><span style="color: #999;">关键体征：</span>脉${sa.key_signs.pulse || '未知'}，舌${sa.key_signs.tongue || '未知'}</div>` : ''}
+                            <div style="color: #5a5a5a; font-size: 12px; line-height: 1.8;">
+                                <div><span style="color: #8b7355;">辨证体系：</span>${sa.system}</div>
+                                <div><span style="color: #8b7355;">病机：</span>${sa.pathogenesis}</div>
+                                <div><span style="color: #8b7355;">治则：</span>${sa.treatment_principle}</div>
+                                ${sa.main_formula ? `<div><span style="color: #8b7355;">主方：</span>${sa.main_formula.formula_name} <span style="color: #8b7355; font-size: 10px;">[${sa.main_formula.formula_id}]</span></div>` : ''}
+                                ${sa.key_signs ? `<div><span style="color: #8b7355;">关键体征：</span>脉${sa.key_signs.pulse || '未知'}，舌${sa.key_signs.tongue || '未知'}</div>` : ''}
                                 ${sa.differentiation && sa.differentiation.length > 0 ? `
-                                    <div style="margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e0e0e0;">
-                                        <span style="color: #999;">鉴别要点：</span>
+                                    <div style="margin-top: 6px; padding-top: 6px; border-top: 1px dashed #d4c4b0;">
+                                        <span style="color: #8b7355;">鉴别要点：</span>
                                         <div style="margin-top: 4px;">
-                                            ${sa.differentiation.map(d => `<span style="display: inline-block; background: #fff8e1; color: #8b7355; padding: 2px 8px; border-radius: 4px; margin: 2px; font-size: 11px;">${d}</span>`).join('')}
+                                            ${sa.differentiation.map(d => `<span style="display: inline-block; background: #fffdf8; color: #8b7355; padding: 2px 8px; border-radius: 4px; margin: 2px; font-size: 11px;">${d}</span>`).join('')}
                                         </div>
                                     </div>
                                 ` : ''}
@@ -975,12 +1032,12 @@
                 if (critical.length > 0) {
                     relationsSections += `
                         <div style="margin-bottom: 10px;">
-                            <div style="font-weight: bold; color: #c62828; font-size: 13px; margin-bottom: 6px;">🔴 严重禁忌 - 绝对不可同用</div>
+                            <div style="font-weight: bold; color: #a53232; font-size: 13px; margin-bottom: 6px;">🔴 严重禁忌 - 绝对不可同用</div>
                             ${critical.map(r => `
-                                <div style="background: #ffebee; border-radius: 6px; padding: 8px; margin-bottom: 6px; font-size: 12px;">
-                                    <div style="font-weight: bold; color: #c62828;">${r.drug_a} + ${r.drug_b}</div>
-                                    <div style="color: #666; margin-top: 2px;">${r.mechanism}</div>
-                                    <div style="color: #999; font-size: 11px; margin-top: 2px;">[${r.type}] ${r.verse || ''}</div>
+                                <div style="background: #fdf2f2; border-radius: 6px; padding: 8px; margin-bottom: 6px; font-size: 12px;">
+                                    <div style="font-weight: bold; color: #a53232;">${r.drug_a} + ${r.drug_b}</div>
+                                    <div style="color: #5a5a5a; margin-top: 2px;">${r.mechanism}</div>
+                                    <div style="color: #8b7355; font-size: 11px; margin-top: 2px;">[${r.type}] ${r.verse || ''}</div>
                                 </div>
                             `).join('')}
                         </div>
@@ -990,12 +1047,12 @@
                 if (warning.length > 0) {
                     relationsSections += `
                         <div style="margin-bottom: 10px;">
-                            <div style="font-weight: bold; color: #e65100; font-size: 13px; margin-bottom: 6px;">🟠 配伍警告 - 慎用</div>
+                            <div style="font-weight: bold; color: #b8860b; font-size: 13px; margin-bottom: 6px;">🟠 配伍警告 - 慎用</div>
                             ${warning.map(r => `
-                                <div style="background: #fff3e0; border-radius: 6px; padding: 8px; margin-bottom: 6px; font-size: 12px;">
-                                    <div style="font-weight: bold; color: #e65100;">${r.drug_a} + ${r.drug_b}</div>
-                                    <div style="color: #666; margin-top: 2px;">${r.mechanism}</div>
-                                    <div style="color: #999; font-size: 11px; margin-top: 2px;">[${r.type}] ${r.verse || ''}</div>
+                                <div style="background: #fffdf8; border-radius: 6px; padding: 8px; margin-bottom: 6px; font-size: 12px;">
+                                    <div style="font-weight: bold; color: #b8860b;">${r.drug_a} + ${r.drug_b}</div>
+                                    <div style="color: #5a5a5a; margin-top: 2px;">${r.mechanism}</div>
+                                    <div style="color: #8b7355; font-size: 11px; margin-top: 2px;">[${r.type}] ${r.verse || ''}</div>
                                 </div>
                             `).join('')}
                         </div>
@@ -1005,12 +1062,12 @@
                 if (good.length > 0) {
                     relationsSections += `
                         <div style="margin-bottom: 10px;">
-                            <div style="font-weight: bold; color: #2e7d32; font-size: 13px; margin-bottom: 6px;">🟢 优良配伍 - 协同增效</div>
+                            <div style="font-weight: bold; color: #4a7c59; font-size: 13px; margin-bottom: 6px;">🟢 优良配伍 - 协同增效</div>
                             ${good.map(r => `
-                                <div style="background: #e8f5e9; border-radius: 6px; padding: 8px; margin-bottom: 6px; font-size: 12px;">
-                                    <div style="font-weight: bold; color: #2e7d32;">${r.drug_a} + ${r.drug_b}</div>
-                                    <div style="color: #666; margin-top: 2px;">${r.mechanism}</div>
-                                    <div style="color: #999; font-size: 11px; margin-top: 2px;">[${r.type}] ${r.example_formula || ''}</div>
+                                <div style="background: #f7f3e9; border-radius: 6px; padding: 8px; margin-bottom: 6px; font-size: 12px;">
+                                    <div style="font-weight: bold; color: #4a7c59;">${r.drug_a} + ${r.drug_b}</div>
+                                    <div style="color: #5a5a5a; margin-top: 2px;">${r.mechanism}</div>
+                                    <div style="color: #8b7355; font-size: 11px; margin-top: 2px;">[${r.type}] ${r.example_formula || ''}</div>
                                 </div>
                             `).join('')}
                         </div>
@@ -1038,10 +1095,10 @@
             let formulaHtml = '';
             if (data.matched_formulas && data.matched_formulas.length > 0) {
                 formulaHtml = data.matched_formulas.map(f => `
-                    <div style="background: #f0f7f0; border-radius: 8px; padding: 10px; margin-bottom: 8px; border-left: 3px solid #4a7c59;">
-                        <div style="font-weight: bold; color: #2d5016; font-size: 14px;">${f.name} <span style="font-size: 11px; color: #999;">[${f.id}]</span></div>
-                        <div style="color: #666; font-size: 12px; margin-top: 4px;">证型：${f.syndrome || '未知'}</div>
-                        <div style="color: #999; font-size: 11px; margin-top: 2px;">来源：《${f.source || '未知'}》 | 匹配度：${(f.match_score * 100).toFixed(0)}%</div>
+                    <div style="background: #f7f3e9; border-radius: 8px; padding: 10px; margin-bottom: 8px; border-left: 3px solid #4a7c59;">
+                        <div style="font-weight: bold; color: #2b2b2b; font-size: 14px;">${f.name} <span style="font-size: 11px; color: #8b7355;">[${f.id}]</span></div>
+                        <div style="color: #5a5a5a; font-size: 12px; margin-top: 4px;">证型：${f.syndrome || '未知'}</div>
+                        <div style="color: #8b7355; font-size: 11px; margin-top: 2px;">来源：《${f.source || '未知'}》 | 匹配度：${(f.match_score * 100).toFixed(0)}%</div>
                     </div>
                 `).join('');
             }
@@ -1050,8 +1107,8 @@
             let drugHtml = '';
             if (data.matched_drugs && data.matched_drugs.length > 0) {
                 drugHtml = data.matched_drugs.map(d => `
-                    <div style="display: inline-block; background: #fff8e1; color: #8b7355; padding: 4px 10px; border-radius: 12px; margin: 2px; font-size: 12px;">
-                        ${d.name} <span style="color: #999; font-size: 10px;">[${d.id}]</span>
+                    <div style="display: inline-block; background: #fffdf8; color: #8b7355; padding: 4px 10px; border-radius: 12px; margin: 2px; font-size: 12px;">
+                        ${d.name} <span style="color: #8b7355; font-size: 10px;">[${d.id}]</span>
                     </div>
                 `).join('');
             }
@@ -1060,7 +1117,7 @@
             let contraHtml = '';
             if (data.contraindications && data.contraindications.length > 0) {
                 contraHtml = data.contraindications.map(c => `
-                    <div style="background: #ffebee; border-radius: 6px; padding: 8px; margin-bottom: 6px; font-size: 12px; color: #c62828;">
+                    <div style="background: #fdf2f2; border-radius: 6px; padding: 8px; margin-bottom: 6px; font-size: 12px; color: #a53232;">
                         <span style="font-weight: bold;">⚠️ ${c.type} - ${c.name}：</span>
                         ${c.contraindications ? c.contraindications.join('、') : ''}
                     </div>
@@ -1082,7 +1139,7 @@
                                 
                                 <div style="margin-bottom: 12px;">
                                     <div class="result-section-title">📋 症状分析</div>
-                                    <div style="margin-top: 8px;">${symptomHtml || '<span style="color: #999; font-size: 12px;">未识别到标准症状</span>'}</div>
+                                    <div style="margin-top: 8px;">${symptomHtml || '<span style="color: #8b7355; font-size: 12px;">未识别到标准症状</span>'}</div>
                                 </div>
                                 
                                 <div style="margin-bottom: 12px;">
@@ -1092,7 +1149,7 @@
                                 
                                 <div style="margin-bottom: 12px;">
                                     <div class="result-section-title">🔬 证型分析</div>
-                                    ${syndromeHtml || '<p style="color: #999; font-size: 12px;">未识别到匹配证型</p>'}
+                                    ${syndromeHtml || '<p style="color: #8b7355; font-size: 12px;">未识别到匹配证型</p>'}
                                 </div>
                                 
                                 <div style="margin-bottom: 12px;">
@@ -1102,22 +1159,22 @@
                                 
                                 <div style="margin-bottom: 12px;">
                                     <div class="result-section-title">🔬 证型分析</div>
-                                    ${syndromeHtml || '<p style="color: #999; font-size: 12px;">未识别到匹配证型</p>'}
+                                    ${syndromeHtml || '<p style="color: #8b7355; font-size: 12px;">未识别到匹配证型</p>'}
                                 </div>
                                 
                                 <div style="margin-bottom: 12px;">
                                     <div class="result-section-title">📜 古籍溯源</div>
-                                    ${sourcesHtml || '<p style="color: #999; font-size: 12px;">暂无溯源信息</p>'}
+                                    ${sourcesHtml || '<p style="color: #8b7355; font-size: 12px;">暂无溯源信息</p>'}
                                 </div>
                                 
                                 <div style="margin-bottom: 12px;">
                                     <div class="result-section-title">🏥 匹配方剂</div>
-                                    ${formulaHtml || '<p style="color: #999; font-size: 12px;">未匹配到相关方剂</p>'}
+                                    ${formulaHtml || '<p style="color: #8b7355; font-size: 12px;">未匹配到相关方剂</p>'}
                                 </div>
                                 
                                 <div style="margin-bottom: 12px;">
                                     <div class="result-section-title">🌿 相关药物</div>
-                                    <div style="margin-top: 8px;">${drugHtml || '<span style="color: #999; font-size: 12px;">未匹配到相关药物</span>'}</div>
+                                    <div style="margin-top: 8px;">${drugHtml || '<span style="color: #8b7355; font-size: 12px;">未匹配到相关药物</span>'}</div>
                                 </div>
                                 
                                 ${relationsHtml}
@@ -1154,7 +1211,7 @@
                                 
                                 <div style="margin-bottom: 12px;">
                                     <div class="result-section-title">⚠️ 禁忌提醒</div>
-                                    ${contraHtml || '<p style="color: #999; font-size: 12px;">暂无禁忌提醒</p>'}
+                                    ${contraHtml || '<p style="color: #8b7355; font-size: 12px;">暂无禁忌提醒</p>'}
                                 </div>
                                 
                                 ${productsHtml ? `
@@ -1181,38 +1238,38 @@
         
         function renderCredibilityAssessment(assessments) {
             if (!assessments || assessments.length === 0) {
-                return '<p style="color: #999; font-size: 12px;">暂无可信度评估数据</p>';
+                return '<p style="color: #8b7355; font-size: 12px;">暂无可信度评估数据</p>';
             }
             
             const gradeColors = {
-                'A': '#2e7d32', 'A-': '#388e3c',
-                'B+': '#689f38', 'B': '#7cb342', 'B-': '#8bc34a',
-                'C+': '#f9a825', 'C': '#fbc02d', 'C-': '#ffeb3b',
-                'D+': '#e65100', 'D': '#f57c00', 'D-': '#ff9800',
-                'F': '#c62828'
+                'A': '#4a7c59', 'A-': '#4a7c59',
+                'B+': '#4a7c59', 'B': '#4a7c59', 'B-': '#4a7c59',
+                'C+': '#b8860b', 'C': '#b8860b', 'C-': '#d4a84b',
+                'D+': '#b8860b', 'D': '#b8860b', 'D-': '#b8860b',
+                'F': '#a53232'
             };
             
             return assessments.map((a, i) => {
                 const grade = a.overall_grade || 'N/A';
-                const color = gradeColors[grade] || '#999';
+                const color = gradeColors[grade] || '#8b7355';
                 const score = a.overall_score !== undefined ? a.overall_score : 0;
                 
                 return `
-                    <div style="background: #f8f9fa; border-radius: 8px; padding: 10px; margin-bottom: 8px; border-left: 3px solid ${color};">
+                    <div style="background: #f7f3e9; border-radius: 8px; padding: 10px; margin-bottom: 8px; border-left: 3px solid ${color};">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                            <div style="font-weight: bold; font-size: 13px; color: #333;">
+                            <div style="font-weight: bold; font-size: 13px; color: #2b2b2b;">
                                 来源 ${i+1}: ${a.source_type || '古籍'}
                             </div>
                             <div style="background: ${color}20; color: ${color}; padding: 2px 10px; border-radius: 10px; font-size: 12px; font-weight: bold;">
                                 ${grade} (${score}分)
                             </div>
                         </div>
-                        <div style="color: #666; font-size: 12px; line-height: 1.6;">
+                        <div style="color: #5a5a5a; font-size: 12px; line-height: 1.6;">
                             <div>📚 文献质量: ${a.literature_quality?.grade || 'N/A'} | 年代: ${a.literature_quality?.era || '未知'}</div>
                             <div>🔬 临床验证: ${a.clinical_validation?.grade || 'N/A'} | 样本量: ${a.clinical_validation?.sample_size || 'N/A'}</div>
                             <div>🔗 交叉验证: ${a.cross_validation?.grade || 'N/A'} | 一致性: ${a.cross_validation?.consistency_score || 'N/A'}</div>
                             ${a.red_flags && a.red_flags.length > 0 ? `
-                                <div style="color: #c62828; margin-top: 4px;">⚠️ 红旗: ${a.red_flags.join('、')}</div>
+                                <div style="color: #a53232; margin-top: 4px;">⚠️ 红旗: ${a.red_flags.join('、')}</div>
                             ` : ''}
                         </div>
                     </div>
@@ -1222,7 +1279,7 @@
         
         function renderCooccurrenceAnalysis(analysis) {
             if (!analysis || Object.keys(analysis).length === 0) {
-                return '<p style="color: #999; font-size: 12px;">暂无共现分析数据</p>';
+                return '<p style="color: #8b7355; font-size: 12px;">暂无共现分析数据</p>';
             }
             
             const pairs = analysis.cooccurrence_pairs || [];
@@ -1232,9 +1289,9 @@
             
             // 正常共现
             if (pairs.length > 0) {
-                html += `<div style="margin-bottom: 8px;"><div style="font-size: 12px; color: #666; font-weight: bold; margin-bottom: 4px;">✅ 正常症状共现</div>`;
+                html += `<div style="margin-bottom: 8px;"><div style="font-size: 12px; color: #5a5a5a; font-weight: bold; margin-bottom: 4px;">✅ 正常症状共现</div>`;
                 html += pairs.slice(0, 3).map(p => `
-                    <div style="display: inline-block; background: #e8f5e9; color: #2d5016; padding: 3px 8px; border-radius: 8px; margin: 2px; font-size: 11px;">
+                    <div style="display: inline-block; background: #f7f3e9; color: #2b2b2b; padding: 3px 8px; border-radius: 8px; margin: 2px; font-size: 11px;">
                         ${p.symptom_a_name} + ${p.symptom_b_name} (强度: ${p.cooccurrence_strength?.toFixed(2) || 'N/A'})
                     </div>
                 `).join('');
@@ -1243,46 +1300,46 @@
             
             // 异常共现警报
             if (anomalies.length > 0) {
-                html += `<div style="margin-bottom: 8px;"><div style="font-size: 12px; color: #c62828; font-weight: bold; margin-bottom: 4px;">🚨 异常共现警报</div>`;
+                html += `<div style="margin-bottom: 8px;"><div style="font-size: 12px; color: #a53232; font-weight: bold; margin-bottom: 4px;">🚨 异常共现警报</div>`;
                 html += anomalies.map(a => `
-                    <div style="background: #ffebee; border-radius: 6px; padding: 8px; margin-bottom: 6px; font-size: 12px;">
-                        <div style="font-weight: bold; color: #c62828;">${a.symptom_a_name} + ${a.symptom_b_name}</div>
-                        <div style="color: #666; margin-top: 2px;">预期强度: ${a.expected_cooccurrence?.toFixed(2) || 'N/A'} | 实际: ${a.actual_cooccurrence?.toFixed(2) || 'N/A'} | 偏差: ${a.deviation?.toFixed(2) || 'N/A'}</div>
-                        <div style="color: #999; font-size: 11px; margin-top: 2px;">⚠️ 可能提示：药物副作用或并发症，建议医师重点排查</div>
+                    <div style="background: #fdf2f2; border-radius: 6px; padding: 8px; margin-bottom: 6px; font-size: 12px;">
+                        <div style="font-weight: bold; color: #a53232;">${a.symptom_a_name} + ${a.symptom_b_name}</div>
+                        <div style="color: #5a5a5a; margin-top: 2px;">预期强度: ${a.expected_cooccurrence?.toFixed(2) || 'N/A'} | 实际: ${a.actual_cooccurrence?.toFixed(2) || 'N/A'} | 偏差: ${a.deviation?.toFixed(2) || 'N/A'}</div>
+                        <div style="color: #8b7355; font-size: 11px; margin-top: 2px;">⚠️ 可能提示：药物副作用或并发症，建议医师重点排查</div>
                     </div>
                 `).join('');
                 html += '</div>';
             }
             
-            return html || '<p style="color: #999; font-size: 12px;">共现分析完成，无异常</p>';
+            return html || '<p style="color: #8b7355; font-size: 12px;">共现分析完成，无异常</p>';
         }
         
         function renderAdverseDetection(detection) {
             if (!detection || Object.keys(detection).length === 0) {
-                return '<p style="color: #999; font-size: 12px;">暂无副作用检测数据</p>';
+                return '<p style="color: #8b7355; font-size: 12px;">暂无副作用检测数据</p>';
             }
             
             const events = detection.adverse_events || [];
             const riskLevel = detection.risk_level || '未知';
-            const riskColors = { '低风险': '#2e7d32', '中风险': '#f9a825', '高风险': '#e65100', '极高风险': '#c62828' };
+            const riskColors = { '低风险': '#4a7c59', '中风险': '#b8860b', '高风险': '#b8860b', '极高风险': '#a53232' };
             
             let html = `<div style="margin-bottom: 8px;">
-                <div style="display: inline-block; background: ${riskColors[riskLevel] || '#999'}20; color: ${riskColors[riskLevel] || '#999'}; padding: 3px 12px; border-radius: 10px; font-size: 12px; font-weight: bold; margin-bottom: 8px;">
+                <div style="display: inline-block; background: ${riskColors[riskLevel] || '#8b7355'}20; color: ${riskColors[riskLevel] || '#8b7355'}; padding: 3px 12px; border-radius: 10px; font-size: 12px; font-weight: bold; margin-bottom: 8px;">
                     综合风险等级: ${riskLevel}
                 </div>
             </div>`;
             
             if (events.length > 0) {
                 html += events.map(e => `
-                    <div style="background: ${e.severity === '严重' ? '#ffebee' : e.severity === '中等' ? '#fff3e0' : '#f8f9fa'}; border-radius: 6px; padding: 8px; margin-bottom: 6px; font-size: 12px; border-left: 3px solid ${e.severity === '严重' ? '#c62828' : e.severity === '中等' ? '#e65100' : '#999'};">
-                        <div style="font-weight: bold; color: #333;">${e.adverse_type} <span style="font-size: 11px; color: #999;">[${e.severity}]</span></div>
-                        <div style="color: #666; margin-top: 2px;">涉及药物: ${e.related_drugs?.join('、') || '未知'}</div>
-                        <div style="color: #666;">时间窗口: ${e.time_window || '未知'}</div>
-                        ${e.recommendation ? `<div style="color: #2e7d32; margin-top: 4px;">💡 建议: ${e.recommendation}</div>` : ''}
+                    <div style="background: ${e.severity === '严重' ? '#fdf2f2' : e.severity === '中等' ? '#fffdf8' : '#f7f3e9'}; border-radius: 6px; padding: 8px; margin-bottom: 6px; font-size: 12px; border-left: 3px solid ${e.severity === '严重' ? '#a53232' : e.severity === '中等' ? '#b8860b' : '#8b7355'};">
+                        <div style="font-weight: bold; color: #2b2b2b;">${e.adverse_type} <span style="font-size: 11px; color: #8b7355;">[${e.severity}]</span></div>
+                        <div style="color: #5a5a5a; margin-top: 2px;">涉及药物: ${e.related_drugs?.join('、') || '未知'}</div>
+                        <div style="color: #5a5a5a;">时间窗口: ${e.time_window || '未知'}</div>
+                        ${e.recommendation ? `<div style="color: #4a7c59; margin-top: 4px;">💡 建议: ${e.recommendation}</div>` : ''}
                     </div>
                 `).join('');
             } else {
-                html += '<div style="color: #2e7d32; font-size: 12px;">✅ 未检测到明显不良反应信号</div>';
+                html += '<div style="color: #4a7c59; font-size: 12px;">✅ 未检测到明显不良反应信号</div>';
             }
             
             return html;
@@ -1290,22 +1347,22 @@
         
         function renderSimilarPatients(patients) {
             if (!patients || patients.length === 0) {
-                return '<p style="color: #999; font-size: 12px;">暂无相似患者数据</p>';
+                return '<p style="color: #8b7355; font-size: 12px;">暂无相似患者数据</p>';
             }
             
             return patients.map((p, i) => `
-                <div style="background: #f0f7f0; border-radius: 8px; padding: 10px; margin-bottom: 8px; border-left: 3px solid #4a7c59;">
+                <div style="background: #f7f3e9; border-radius: 8px; padding: 10px; margin-bottom: 8px; border-left: 3px solid #4a7c59;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                        <div style="font-weight: bold; font-size: 13px; color: #2d5016;">
+                        <div style="font-weight: bold; font-size: 13px; color: #2b2b2b;">
                             👤 相似患者 ${p.patient_id || '匿名'} 
-                            <span style="font-size: 11px; color: #999;">(相似度: ${(p.similarity_score * 100).toFixed(1) || 'N/A'}%)</span>
+                            <span style="font-size: 11px; color: #8b7355;">(相似度: ${(p.similarity_score * 100).toFixed(1) || 'N/A'}%)</span>
                         </div>
                     </div>
-                    <div style="color: #666; font-size: 12px; line-height: 1.6;">
+                    <div style="color: #5a5a5a; font-size: 12px; line-height: 1.6;">
                         <div>症状重叠: ${p.shared_symptoms?.join('、') || 'N/A'}</div>
                         <div>处方: ${p.prescription || 'N/A'}</div>
                         <div>疗效: ${p.outcome || 'N/A'}</div>
-                        ${p.adjustment_suggestion ? `<div style="color: #2e7d32; margin-top: 4px;">💡 调整建议: ${p.adjustment_suggestion}</div>` : ''}
+                        ${p.adjustment_suggestion ? `<div style="color: #4a7c59; margin-top: 4px;">💡 调整建议: ${p.adjustment_suggestion}</div>` : ''}
                     </div>
                 </div>
             `).join('');
@@ -1315,30 +1372,30 @@
             let html = '';
             
             if (gaps && gaps.length > 0) {
-                html += `<div style="margin-bottom: 8px;"><div style="font-size: 12px; color: #e65100; font-weight: bold; margin-bottom: 4px;">⚠️ 知识缺口</div>`;
+                html += `<div style="margin-bottom: 8px;"><div style="font-size: 12px; color: #b8860b; font-weight: bold; margin-bottom: 4px;">⚠️ 知识缺口</div>`;
                 html += gaps.map(g => `
-                    <div style="background: #fff3e0; border-radius: 6px; padding: 8px; margin-bottom: 6px; font-size: 12px;">
-                        <div style="font-weight: bold; color: #e65100;">[${g.severity || '中'}] ${g.type}</div>
-                        <div style="color: #666; margin-top: 2px;">${g.description}</div>
-                        <div style="color: #999; font-size: 11px; margin-top: 2px;">建议: ${g.suggested_action || '待补充'}</div>
+                    <div style="background: #fffdf8; border-radius: 6px; padding: 8px; margin-bottom: 6px; font-size: 12px;">
+                        <div style="font-weight: bold; color: #b8860b;">[${g.severity || '中'}] ${g.type}</div>
+                        <div style="color: #5a5a5a; margin-top: 2px;">${g.description}</div>
+                        <div style="color: #8b7355; font-size: 11px; margin-top: 2px;">建议: ${g.suggested_action || '待补充'}</div>
                     </div>
                 `).join('');
                 html += '</div>';
             }
             
             if (suggestions && suggestions.length > 0) {
-                html += `<div style="margin-bottom: 8px;"><div style="font-size: 12px; color: #2e7d32; font-weight: bold; margin-bottom: 4px;">📥 入库建议</div>`;
+                html += `<div style="margin-bottom: 8px;"><div style="font-size: 12px; color: #4a7c59; font-weight: bold; margin-bottom: 4px;">📥 入库建议</div>`;
                 html += suggestions.map(s => `
-                    <div style="background: #e8f5e9; border-radius: 6px; padding: 8px; margin-bottom: 6px; font-size: 12px;">
-                        <div style="font-weight: bold; color: #2d5016;">[${s.priority || '中'}] ${s.type}</div>
-                        <div style="color: #666; margin-top: 2px;">${s.description}</div>
-                        <div style="color: #999; font-size: 11px; margin-top: 2px;">来源: ${s.suggested_source || '待检索'}</div>
+                    <div style="background: #f7f3e9; border-radius: 6px; padding: 8px; margin-bottom: 6px; font-size: 12px;">
+                        <div style="font-weight: bold; color: #2b2b2b;">[${s.priority || '中'}] ${s.type}</div>
+                        <div style="color: #5a5a5a; margin-top: 2px;">${s.description}</div>
+                        <div style="color: #8b7355; font-size: 11px; margin-top: 2px;">来源: ${s.suggested_source || '待检索'}</div>
                     </div>
                 `).join('');
                 html += '</div>';
             }
             
-            return html || '<p style="color: #999; font-size: 12px;">暂无知识缺口或入库建议</p>';
+            return html || '<p style="color: #8b7355; font-size: 12px;">暂无知识缺口或入库建议</p>';
         }
         
         // 根据体质推荐商品
@@ -1433,10 +1490,10 @@
                         </div>
                     `).join('');
                 } else {
-                    resultsEl.innerHTML = '<p style="text-align: center; color: #999; padding: 40px;">暂无相关古籍记载</p>';
+                    resultsEl.innerHTML = '<p style="text-align: center; color: #8b7355; padding: 40px;">暂无相关古籍记载</p>';
                 }
             } catch (e) {
-                resultsEl.innerHTML = '<p style="text-align: center; color: #999; padding: 40px;">检索失败，请检查API连接</p>';
+                resultsEl.innerHTML = '<p style="text-align: center; color: #8b7355; padding: 40px;">检索失败，请检查API连接</p>';
             }
         }
         
