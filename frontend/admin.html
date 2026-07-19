@@ -947,7 +947,7 @@
             };
             if (body) options.body = JSON.stringify(body);
 
-            const base = isValidApiBase(API_BASE) ? API_BASE : DEFAULT_API_BASE;
+            const base = API_BASE;
             try {
                 const res = await fetch(`${base}${path}`, options);
                 const data = await res.json();
@@ -1021,7 +1021,7 @@
 
         async function checkApiHealth() {
             const statusEl = document.getElementById('apiStatus');
-            const base = isValidApiBase(API_BASE) ? API_BASE : DEFAULT_API_BASE;
+            const base = API_BASE;
             try {
                 const res = await fetch(`${base}/api/health`);
                 if (res.ok) {

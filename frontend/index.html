@@ -963,7 +963,7 @@ body::before {
                     <div class="card-title"><span class="seal-badge">试</span>API接口测试</div>
                     <div style="margin-bottom: 15px;">
                         <label style="display: block; margin-bottom: 5px; color: #5a5a5a;">API地址</label>
-                        <input type="text" class="search-input" id="apiBase" value="http://localhost:5001">
+                        <input type="text" class="search-input" id="apiBase" placeholder="留空 = 当前站点同源 /api（本地开发填 http://localhost:5001）">
                     </div>
                     <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
                         <button class="search-btn" onclick="testHealth()">测试健康</button>
@@ -1293,9 +1293,8 @@ body::before {
             statusEl.style.cursor = 'default';
             statusEl.onclick = null;
 
-            const candidates = [];
-            if (isValidApiBase(API_BASE)) candidates.push(API_BASE);
-            candidates.push(DEFAULT_API_BASE);
+            // API_BASE 为 '' 时表示同源（生产走 nginx 代理），非空为本地开发显式地址
+            const candidates = [API_BASE];
 
             for (const base of candidates) {
                 try {
@@ -1305,11 +1304,6 @@ body::before {
                         const kbTotal = data.rag_stats ? (data.rag_stats.symptom_count + data.rag_stats.formula_count + data.rag_stats.drug_count + data.rag_stats.total_documents) : 0;
                         statusEl.textContent = `API已连接 v${data.version} | 知识库: ${kbTotal}条`;
                         statusEl.className = 'api-status connected';
-
-                        if (API_BASE !== base) {
-                            API_BASE = base;
-                            console.log('[XiaoShennong] API_BASE 自动修正为:', API_BASE);
-                        }
 
                         // 更新功能标签（核心能力默认启用）
                         document.getElementById('tagSemantic').className = 'feature-tag';
@@ -1481,7 +1475,7 @@ body::before {
             const stepsContainer = document.getElementById(`steps_${thinkingId}`);
             
             try {
-                const base = isValidApiBase(API_BASE) ? API_BASE : DEFAULT_API_BASE;
+                const base = API_BASE;
                 const resp = await fetch(`${base}/api/diagnosis/stream`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1614,7 +1608,7 @@ body::before {
         
         // 普通诊断（fallback）
         async function normalDiagnosis(text) {
-            const base = isValidApiBase(API_BASE) ? API_BASE : DEFAULT_API_BASE;
+            const base = API_BASE;
             const resp = await fetch(`${base}/api/diagnosis`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -1693,7 +1687,7 @@ body::before {
         
         // 对话模式一轮问诊：首次发送先 start 拿 session_id，之后直接 turn；会话失效自动重试一次
         async function dialogueTurn(userInput, retried) {
-            const base = isValidApiBase(API_BASE) ? API_BASE : DEFAULT_API_BASE;
+            const base = API_BASE;
             const headers = { 'Content-Type': 'application/json' };
             if (userToken) headers['Authorization'] = 'Bearer ' + userToken;  // 登录用户预载病历
             
@@ -2120,7 +2114,7 @@ body::before {
             resultsEl.innerHTML = '<div style="text-align: center; padding: 40px;"><div class="loading-dots"><span></span><span></span><span></span></div><p>语义搜索中...</p></div>';
 
             try {
-                const base = isValidApiBase(API_BASE) ? API_BASE : DEFAULT_API_BASE;
+                const base = API_BASE;
                 const resp = await fetch(`${base}/api/semantic/search`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -2197,7 +2191,7 @@ body::before {
             resultEl.innerHTML = '<div style="text-align: center; padding: 40px;"><div class="loading-dots"><span></span><span></span><span></span></div><p>Agent分析中...</p></div>';
 
             try {
-                const base = isValidApiBase(API_BASE) ? API_BASE : DEFAULT_API_BASE;
+                const base = API_BASE;
                 const resp = await fetch(`${base}/api/agents/analyze`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -2246,8 +2240,8 @@ body::before {
         }
         
         async function apiRequest(method, path, body) {
-            const inputBase = document.getElementById('apiBase').value;
-            const base = inputBase || (isValidApiBase(API_BASE) ? API_BASE : DEFAULT_API_BASE);
+            const inputBase = (document.getElementById('apiBase').value || '').trim();
+            const base = inputBase || API_BASE;
             const responseEl = document.getElementById('apiResponse');
             responseEl.textContent = '请求中...';
             
@@ -2307,7 +2301,7 @@ body::before {
             if (withAuth && userToken) headers['Authorization'] = 'Bearer ' + userToken;
             const options = { method, headers };
             if (body) options.body = JSON.stringify(body);
-            const base = isValidApiBase(API_BASE) ? API_BASE : DEFAULT_API_BASE;
+            const base = API_BASE;
             try {
                 const res = await fetch(`${base}${path}`, options);
                 const data = await res.json();

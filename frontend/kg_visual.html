@@ -6,7 +6,7 @@
     <title>小神农中医AI · 知识图谱</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23a53232'/%3E%3Crect x='6' y='6' width='52' height='52' rx='8' fill='none' stroke='%23fffdf8' stroke-opacity='0.45' stroke-width='2'/%3E%3Ctext x='32' y='42' font-family='serif' font-size='24' font-weight='bold' fill='%23fffdf8' text-anchor='middle'%3E%E7%A5%9E%E5%86%9C%3C/text%3E%3C/svg%3E">
     <link rel="stylesheet" href="assets/xsn-theme.css">
-    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="./assets/d3.v7.min.js"></script>
     <style>:root {
     --paper: #f7f3e9;
     --paper-dark: #efe8d8;
@@ -399,13 +399,11 @@ body::before {
         });
 
         async function loadData() {
-            // 优先从 API 加载真实图谱数据，其次尝试本地静态路径
-            const candidates = [
-                'http://localhost:5001/api/kg/graph',
-                './data/kg_graph.json',
-                '../data/kg_graph.json',
-                '/data/kg_graph.json'
-            ];
+            // 本地开发（localhost/file:// 打开）优先连本地后端；生产环境走同源 /api/（nginx 代理）
+            const isLocalDev = location.protocol === 'file:' || ['localhost', '127.0.0.1'].includes(location.hostname);
+            const candidates = isLocalDev
+                ? ['http://localhost:5001/api/kg/graph', '/api/kg/graph', './data/kg_graph.json']
+                : ['/api/kg/graph', './data/kg_graph.json'];
 
             let lastError = null;
             for (const url of candidates) {

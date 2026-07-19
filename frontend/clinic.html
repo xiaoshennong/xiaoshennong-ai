@@ -675,7 +675,7 @@
             if (withAuth && clinicToken) headers['Authorization'] = 'Bearer ' + clinicToken;
             const options = { method, headers };
             if (body) options.body = JSON.stringify(body);
-            const base = isValidApiBase(API_BASE) ? API_BASE : DEFAULT_API_BASE;
+            const base = API_BASE;  // '' = 同源相对路径（生产走 nginx），非空 = 本地开发显式地址
             try {
                 const res = await fetch(`${base}${path}`, options);
                 const data = await res.json();
