@@ -633,3 +633,33 @@ start(greeting) → "头疼"(**profile，问年龄性别**) → "35岁，男"(cl
 - 用户要求连输入区快捷输入一并去掉，占位符不应是症状示例（"最近失眠多梦口干口苦"会诱导用户照着写）。
 - index.html：移除 quick-symptoms 标签排、sendQuick 函数、相关 CSS；textarea 占位文案改为教学式四要素：「请说清四点：哪里不舒服、什么样的感觉（胀痛/刺痛/隐痛等）、持续多久了、什么情况会加重或缓解」。
 - 设计原则最终版：**问诊区零按钮、零症状示例；只教方法，不给答案**。
+
+---
+
+## 会话快照 — 2026-07-19 20:10（推送 GitHub + 服务器全新部署）
+
+### 完成
+- **git**：全部变更提交并推送（`4388186`，26 个文件）。
+- **服务器已重装**：43.247.135.91 是全新 Ubuntu 22.04（/opt 为空、无 nginx），本次为全新部署而非更新。
+- **部署内容**：
+  - `/opt/xiaoshennong`（git clone）；venv（5.3G，含 CUDA torch——后续可精简为 CPU 版）
+  - SFTP 上传：`.env`、`data/xiaoshennong.db`（29.8MB，含 12.5 万古籍条文+演示用户/医馆/订单）、HF 模型缓存（83.4MB，all-MiniLM-L6-v2，解压至 `/root/.cache/huggingface/hub`）
+  - **systemd**：`xiaoshennong.service`（enabled 开机自启，Restart=always，MemoryMax=6G，环境 HF_HUB_OFFLINE=1 / TRANSFORMERS_OFFLINE=1）
+  - **nginx**：80 → 前端静态（root /opt/xiaoshennong/frontend，`index home.html index.html`，`/` 直达主页）+ `/api/` → 127.0.0.1:5001（SSE 关闭缓冲，180s 超时）
+  - **ADMIN_TOKEN 已更换为随机强口令**（已在会话中告知用户，**不要写入任何文件/git**；本地开发仍用 xiaoshennong-admin）
+- **远端验证全过**：外网 `/api/health` ok；`/`、`/index.html`、`/clinic.html`、`/admin.html`、`/assets/*` 全 200；`胃不舒服` 检索 engine=lexical 命中胃脘痛条文；对话问诊首轮进入 profile 问年龄；短信 dev 模式正常；admin stats（users=8/clinics=7/orders=12）；内存仅 452Mi（懒加载生效）
+
+### 已知事项
+- 服务器 Chroma 仅 5 条示例文档（向量库 361MB 未上传，可后续传 `data/chroma_db_v2` 或服务器重跑导入脚本）；检索主路是 SQLite 词法检索不受影响。
+- 服务器为开发模式短信（dev_code 出现在响应里）——接入阿里云 SMS 后自动关闭。
+- pip 装的是 CUDA torch（5.3G venv），功能正常；如需精简可重装 CPU 版（约省 4G）。
+- root 密码用户已口头提供，未写入任何文件。fail2ban 历史封锁因重装自然消失。
+- 服务器防火墙/安全组未单独配置（80 已通，5001 对公网开着——建议后续在安全组限制 5001 仅本机）。
+
+### 常用运维命令
+```bash
+systemctl restart xiaoshennong        # 重启 API
+journalctl -u xiaoshennong -f         # 看日志
+systemctl reload nginx                # 重载 nginx
+# 更新部署：cd /opt/xiaoshennong && git pull && systemctl restart xiaoshennong
+```
