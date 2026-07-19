@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>小神农中医AI v3.0 - 对话式问诊</title>
+    <title>小神农中医AI · 对话问诊</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23a53232'/%3E%3Crect x='6' y='6' width='52' height='52' rx='8' fill='none' stroke='%23fffdf8' stroke-opacity='0.45' stroke-width='2'/%3E%3Ctext x='32' y='42' font-family='serif' font-size='24' font-weight='bold' fill='%23fffdf8' text-anchor='middle'%3E%E7%A5%9E%E5%86%9C%3C/text%3E%3C/svg%3E">
+    <link rel="stylesheet" href="assets/xsn-theme.css">
+    <script src="assets/xsn-motion.js" defer></script>
     <style>:root {
     --paper: #f7f3e9;
     --paper-dark: #efe8d8;
@@ -482,6 +485,21 @@ body::before {
             margin-bottom: 8px;
             font-size: 14px;
         }
+        .seal-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            background: #a53232;
+            color: #fffdf8;
+            font-size: 13px;
+            font-weight: bold;
+            border-radius: 4px;
+            margin-right: 6px;
+            vertical-align: -5px;
+            box-shadow: inset 0 0 0 1px rgba(255,253,248,0.35), 0 1px 2px rgba(0,0,0,0.12);
+        }
         .result-section-content {
             color: #5a5a5a;
             line-height: 1.8;
@@ -592,19 +610,27 @@ body::before {
             .nav-btn { padding: 4px 10px; font-size: 11px; }
             .chat-input { font-size: 16px; }
         }
+
+        /* P3 设计系统接入 */
+        button:active { transform: scale(0.97); transition-duration: 100ms; }
+        @keyframes xsnSectionIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .xsn-section-in { animation: xsnSectionIn 200ms var(--ease-spring, ease-out); }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>🌿 小神农中医AI v3.0</h1>
+        <h1><span class="seal-badge" style="vertical-align:-2px;">神</span>小神农中医AI v3.0</h1>
         <div class="subtitle">对话式问诊 · 多Agent知识库 · 批判性思维</div>
         <div class="api-status disconnected" id="apiStatus">API连接中...</div>
     </div>
     
     <!-- 模式切换 -->
     <div class="mode-switch">
-        <button class="mode-btn active" onclick="switchMode('dialogue')" id="modeDialogue">💬 对话问诊</button>
-        <button class="mode-btn" onclick="switchMode('direct')" id="modeDirect">⚡ 快速辨证</button>
+        <button class="mode-btn active" onclick="switchMode('dialogue')" id="modeDialogue">对话问诊</button>
+        <button class="mode-btn" onclick="switchMode('direct')" id="modeDirect">快速辨证</button>
     </div>
     
     <div class="nav">
@@ -648,7 +674,7 @@ body::before {
         <div class="section" id="section-search">
             <div class="page-content">
                 <div class="card">
-                    <div class="card-title">🔍 古籍知识检索</div>
+                    <div class="card-title"><span class="seal-badge">检</span>古籍知识检索</div>
                     <div class="search-box">
                         <input type="text" class="search-input" id="searchInput" placeholder="输入中医术语，如：麻黄汤、风寒感冒、气虚..." onkeypress="if(event.key==='Enter') searchKnowledge()">
                         <button class="search-btn" onclick="searchKnowledge()">检索</button>
@@ -662,11 +688,11 @@ body::before {
         <div class="section" id="section-agents">
             <div class="page-content">
                 <div class="card">
-                    <div class="card-title">🤖 多Agent知识库系统</div>
+                    <div class="card-title"><span class="seal-badge">协</span>多Agent知识库系统</div>
                     <div id="agentStats">加载中...</div>
                 </div>
                 <div class="card">
-                    <div class="card-title">📊 Agent统计</div>
+                    <div class="card-title"><span class="seal-badge">析</span>Agent统计</div>
                     <button class="search-btn" onclick="loadAgentStats()">刷新统计</button>
                     <div id="agentDetails" style="margin-top: 15px;"></div>
                 </div>
@@ -677,7 +703,7 @@ body::before {
         <div class="section" id="section-api">
             <div class="page-content">
                 <div class="card">
-                    <div class="card-title">🔧 API接口测试</div>
+                    <div class="card-title"><span class="seal-badge">试</span>API接口测试</div>
                     <div style="margin-bottom: 15px;">
                         <label style="display: block; margin-bottom: 5px; color: #5a5a5a;">API地址</label>
                         <input type="text" class="search-input" id="apiBase" value="http://43.247.135.91">
@@ -750,7 +776,13 @@ body::before {
             currentMode = mode;
             document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(mode === 'dialogue' ? 'modeDialogue' : 'modeDirect').classList.add('active');
-            
+
+            // P3 设计系统接入：模式切换 200ms 淡入
+            const chatBox = document.getElementById('chatContainer');
+            chatBox.classList.remove('xsn-section-in');
+            void chatBox.offsetWidth;
+            chatBox.classList.add('xsn-section-in');
+
             // 重置对话
             if (mode === 'dialogue') {
                 initDialogue();
@@ -758,7 +790,7 @@ body::before {
                 // 快速模式：直接显示输入提示
                 document.getElementById('chatContainer').innerHTML = `
                     <div class="chat-message bot-message">
-                        <div class="message-avatar">🌿</div>
+                        <div class="message-avatar" style="color:#a53232; font-weight:bold;">神</div>
                         <div class="message-content">
                             <div class="message-bubble">
                                 <p><strong>快速辨证模式</strong></p>
@@ -803,7 +835,7 @@ body::before {
             const msgId = 'msg_' + Date.now();
             container.innerHTML += `
                 <div class="chat-message bot-message" id="${msgId}">
-                    <div class="message-avatar">🌿</div>
+                    <div class="message-avatar" style="color:#a53232; font-weight:bold;">神</div>
                     <div class="message-content">
                         <div class="message-bubble">
                             <span id="text_${msgId}"></span><span class="typing-cursor"></span>
@@ -1026,12 +1058,12 @@ body::before {
             const stepsId = 'steps_' + Date.now();
             container.innerHTML += `
                 <div class="chat-message bot-message" id="${stepsId}">
-                    <div class="message-avatar">🧠</div>
+                    <div class="message-avatar" style="color:#a53232; font-weight:bold;">思</div>
                     <div class="message-content">
                         <div class="message-bubble">
                             <div class="thinking-process">
                                 <div class="thinking-title">
-                                    <span>🧠</span> AI正在分析...
+                                    <span class="seal-badge" style="width:18px;height:18px;font-size:11px;vertical-align:-3px;">思</span> AI正在分析...
                                 </div>
                                 <div id="steps_${stepsId}"></div>
                             </div>
@@ -1088,7 +1120,7 @@ body::before {
             
             container.innerHTML += `
                 <div class="chat-message bot-message" id="thinkingAnimation">
-                    <div class="message-avatar">🌿</div>
+                    <div class="message-avatar" style="color:#a53232; font-weight:bold;">神</div>
                     <div class="message-content">
                         <div class="message-bubble">
                             <div class="loading-dots">
@@ -1115,7 +1147,7 @@ body::before {
             
             container.innerHTML += `
                 <div class="chat-message user-message">
-                    <div class="message-avatar">👤</div>
+                    <div class="message-avatar">我</div>
                     <div class="message-content">
                         <div class="message-bubble">${escapeHtml(text)}</div>
                         <div class="message-time">${time}</div>
@@ -1149,7 +1181,7 @@ body::before {
                     return `
                         <div style="background: ${i === 0 ? '#f7f3e9' : '#fffdf8'}; border-radius: 8px; padding: 12px; margin-bottom: 10px; border-left: 3px solid ${severityColor};">
                             <div style="font-weight: bold; color: #2b2b2b; font-size: 15px;">
-                                ${i === 0 ? '⭐ ' : ''}${sa.name}
+                                ${i === 0 ? '<span class="seal-badge" style="background:#b8860b">主</span>' : ''}${sa.name}
                             </div>
                             <div style="color: #5a5a5a; font-size: 12px; margin-top: 4px;">
                                 匹配度: ${matchPercent}% | 辨证体系: ${sa.system}
@@ -1164,22 +1196,22 @@ body::before {
                     <div class="result-constitution">${data.constitution || '待辨识'}</div>
                     
                     <div style="margin-bottom: 12px;">
-                        <div class="result-section-title">📋 症状分析</div>
+                        <div class="result-section-title"><span class="seal-badge">辨</span>症状分析</div>
                         <div style="margin-top: 8px;">${symptomHtml || '<span style="color: #8b7355; font-size: 12px;">未识别到标准症状</span>'}</div>
                     </div>
                     
                     <div style="margin-bottom: 12px;">
-                        <div class="result-section-title">🔬 证型分析</div>
+                        <div class="result-section-title"><span class="seal-badge">证</span>证型分析</div>
                         ${syndromeHtml || '<p style="color: #8b7355; font-size: 12px;">未识别到匹配证型</p>'}
                     </div>
                     
                     <div style="margin-bottom: 12px;">
-                        <div class="result-section-title">💊 双源验证报告</div>
+                        <div class="result-section-title"><span class="seal-badge">验</span>双源验证报告</div>
                         <div class="result-section-content" style="white-space: pre-wrap; font-size: 13px;">${data.advice || ''}</div>
                     </div>
                     
                     <div class="warning-box">
-                        <span class="warning-icon">⚠️</span>
+                        <span class="seal-badge" style="background:#b8860b">慎</span>
                         <span class="warning-text">${data.warning || '本结果仅供参考，不能替代专业医生诊断。如有不适，请及时就医。'}</span>
                     </div>
                 </div>

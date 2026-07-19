@@ -397,3 +397,239 @@ curl -X POST http://localhost:5001/api/diagnosis/stream \
   -H "Content-Type: application/json" \
   -d '{"symptoms":"胃不舒服"}'
 ```
+
+
+---
+
+## 会话快照 — 2026-07-19 13:05（技术债收尾 + 古籍全量入库）
+
+### 本次目标
+- 处理上一会话遗留的「待继续/可优化项」：merged_symptoms 重新导出、古籍批量入库、前端 emoji 古风化。
+
+### 完成事项
+
+#### 1. 重新导出 merged_symptoms.json
+- 运行 `python backend/merge_data.py`，重新生成 `data/raw/merged_symptoms.json`（603 症状）、`merged_drugs.json`（117）、`merged_formulas.json`（70）。
+- 旧文件生成于 07-12，不含 07-16 新增的口语化别名；新文件已验证含「胃不舒服/胃难受」（SN-TH-S-004）、「胃胀」（SN-TH-S-005）、「没胃口」（SN-TH-S-012）。
+- knowledge_base_v3 重启后别名索引自动同步。
+
+#### 2. 古籍条文全量导入 Chroma（125,005 条）
+- 新增 `scripts/import_classical_texts.py`：
+  - 转换 `data/raw/classical_texts*.json`（列表格式 `{text_id, book, section, text, symptom, keywords}`，与 data_pipeline 既有两种格式均不同，故脚本内置转换器）。
+  - 以 `text_id` 为 chunk_id，导入前按批查询已存在 id 跳过，幂等可断点续跑。
+  - 进度记录 `logs/classical_import_progress.json`；支持 `--max-files N`。
+- 全量导入结果：125 个文件 × 1000 条 = 125,000 条新增，耗时约 8 分钟，无失败。
+- 知识库文档数：5 → **125,005**（384 维 all-MiniLM-L6-v2）。
+- 注意：导入需先停止后端，避免 Chroma SQLite 并发写冲突。
+
+#### 3. 前端 emoji 古风化（34 处）
+- `frontend/index.html`（18 处）与 `frontend/test_ui_v3.html`（16 处）：
+  - 新增 `.seal-badge` 印章 CSS（朱砂底、白字、圆角、内描边）。
+  - 卡片标题 🔍🤖📊🔧 → 印章「检/协/析/试」。
+  - 结果区标题 📋💊📍🍵🧘💆 → 印章「辨/方/穴/食/引/按」（穴=鎏金、食引按=玉绿）。
+  - 头像 🌿→「神」（朱砂粗体）、👤→「我」、🧠→「思」。
+  - 警告框 ⚠️ → 鎏金印章「慎」。
+  - test_ui_v3.html 模式按钮 💬⚡ → 纯文字；⭐→「主」、🔬→「证」。
+- 保留：思考步骤内 ✓/⚠/●/✗ 纯文本状态符号（已在 styled 元素内，非彩色 emoji）。
+- 未处理：`test_ui.html`（24 处）与 `kg_visual.html`（3 处）仍有 emoji，属内部测试页，后续可按同方案处理。
+
+#### 4. 回归验证（11 项全过，脚本 `scripts/regression_test.py`）
+- `GET /api/health`：`total_documents=125005` ✅
+- `POST /api/retrieve`「咳嗽/头痛」：返回《难经》等古籍条文 ✅
+- `POST /api/diagnosis/stream`「胃不舒服」：13 个思考步骤，命中 SN-TH-S-004，`data.advice` 2432 字符（12 小节完整）✅
+  - 注意：最终回答在 result 事件 `data.advice`（顶层），`data.diagnosis` 内只有症状/方剂/穴位等结构化数组。
+- 后台接口需请求头 `X-Admin-Token: xiaoshennong-admin`：`/api/admin/auth`、`/api/admin/stats`、`/api/admin/symptoms` ✅
+- 前端 4 个页面（index/admin/test_ui_v3/kg_visual）均 200，index.html 含 14 处 seal-badge ✅
+
+### 当前服务状态
+- 后端 `http://localhost:5001`（nohup，日志 `logs/api_server.log`）
+- 前端 `http://localhost:8080`（nohup，日志 `logs/frontend.log`）
+
+### 待继续/可优化项
+- **本次变更未提交 git**（含 merged_*.json、scripts/2 个新脚本、2 个前端文件、2 个文档），待用户指示后 commit/push。
+- 服务器部署仍阻塞（SSH fail2ban/密码），新导入的 12.5 万条知识库要同步到服务器需另做数据迁移（data/chroma_db_v2 目录较大，建议打包传输或服务器端重跑导入脚本）。
+- `test_ui.html`（24 处）与 `kg_visual.html`（3 处）emoji 可按本次方案继续清理。
+- 微信小程序、区块链存证、疗效反馈闭环、医馆 SaaS 等路线图项未动。
+
+### 关键命令
+```bash
+# 古籍导入（先停后端）
+python scripts/import_classical_texts.py --max-files 5   # 小批次
+python scripts/import_classical_texts.py                 # 全量
+
+# 回归测试（需后端运行）
+python scripts/regression_test.py
+```
+
+
+---
+
+## 会话快照 — 2026-07-19 15:50（语义搜索修复 + 账号/病历/医馆/订单体系落地）
+
+### 本次目标
+经讨论确定四大方向并全部落地：
+1. 真医生式问诊（先问资料再辨证）
+2. 语义搜索 bug 修复（根因：英文嵌入模型中文退化）
+3. 用户注册/医馆入驻/电子病历/独立编号取证
+4. 医馆管理后台 + 药方审核 + 订单（邮寄/自取/代煎）
+
+### 关键架构决策（讨论结论）
+- **语义搜索走无嵌入主路**：嵌入模型不是必需品；用别名表+词典+jieba+SQLite 元数据打分替代，LLM 改写仅兜底且缓存，token 消耗主路为零。
+- **合规红线**：AI 只出"建议"，入驻医馆执业医师审核通过才生成正式处方；平台不碰药。
+- **医馆限权开通**：注册即可登录后台熟悉流程，审核/接单权限由平台核验资质后解锁。
+- **商城分层**：一期只做药食同源养生品自营；中药材原材料（药品管理范畴，需药品经营许可证）留待二期"医馆货架"由有资质医馆销售。
+- **手机号锚点**：Web 账密+短信绑定；小程序端一期用验证码登录，手机号一键授权需企业主体小程序（约 3 分/次）。
+
+### 完成事项（M1-M5，回归 33/33 全过）
+
+#### M1 语义搜索修复
+- 实证根因：`all-MiniLM-L6-v2` 对中文退化（sim(咳嗽,咳嗽咳痰)=0.538 < sim(咳嗽,腰痛)=0.594，排序倒置）。
+- 新增 `backend/db.py`（SQLite 持久化层+编号发号器）、`backend/lexical_retriever.py`（词法检索）、`scripts/import_classical_to_sqlite.py`（125,000 条入库）。
+- `/api/retrieve`、`/api/semantic/search` 切换到词法主路（零结果回退向量），响应带 `engine` 字段。
+- LLM 改写修正：只改写成症状/证型（改写药名会取不到候选）；无效改写不缓存。
+- 评测：咳嗽相关度 5/5，不同查询结果互不重叠，口语查询（胃不舒服→胃脘痛）全部命中。
+
+#### M2 账号认证
+- `backend/sms_service.py`（可插拔，开发模式返回 dev_code；60s 重发限制；10 分钟有效；5 次试错锁定）。
+- `backend/auth_service.py`（注册/登录/验证码登录/重置/me/登出；werkzeug 密码哈希；32 字节 token 7 天会话；require_user/require_clinic 装饰器；手机号脱敏）。
+- 旧 `/api/user/register|profile`（内存版）标注 deprecated 保留兼容。
+
+#### M3 电子病历 + 真医生式问诊
+- `backend/emr_service.py`：profile 档案（懒创建，结构化字段 JSON 存 personal_history）+ visit 就诊记录。
+- `dialogue_engine.py`：新增 PROFILE/HISTORY 阶段；年龄/性别/过敏/用药从输入捕获（含 pending 问题整句捕获）；信息完整度评分（资料40+症状20+互动20+过敏10+用药10）替代固定 3 轮；"直接辨证"快速通道；`create_session(user_id)` 病历预载。
+- 辨证查询携带年龄/性别/既往史/过敏史/在用药物；辨证完成自动写 visit 病历（EMR 编号）。
+- 接口：`GET /api/user/emr`、`GET|PUT /api/user/emr/profile`。
+
+#### M4 医馆入驻 + 药方审核 + 处方订单
+- `backend/clinic_service.py`：入驻申请（pending 即开通）→ 平台 verify（CV 编号）→ 审核队列（approve 带加减/reject 填理由）→ 订单状态机（created→accepted→preparing→decocting→shipped/awaiting_pickup→completed，order_events 全留痕）。
+- `/api/rx/apply` 双来源：对话模式取服务端会话快照（可信）；快速辨证模式客户端回传 symptoms+advice（快照标注 source=quick）。
+- 商城订单服务端按 products_db 重算金额（防篡改）。
+- 编号：U/EMR/MC/CA/RX/ORD/CV-YYYYMMDD-序号，全部预留 hash 字段。
+
+#### M5 前端
+- `frontend/clinic.html`（新，1161 行）：登录/入驻、状态徽章、Dashboard、药方审核（病历快照+AI 建议全文+加减/驳回，pending 锁定态）、订单流转、医馆资料。
+- `frontend/index.html`（1486→2694 行，纯增量）：页头「登录/注册」「医馆入驻」；登录/注册/忘记密码弹窗（dev_code 提示+知情同意）；个人中心（病历编辑/处方下单/订单留痕）；结果卡片「转医馆审核开方」→ 医馆选择弹窗；商城 section（合规横幅+商品网格+中药材占位卡）。
+- 全站零彩色 emoji。
+
+### 测试数据（dev 库，可留作演示）
+- 用户 13800138000/abc12345（有病历、已审核处方、订单）；医馆 13700137000/clinic123（仁心堂，已核验）；回归脚本每次跑会新增随机手机号用户与医馆。
+
+### 待继续/可优化项
+- **本次变更未提交 git**（新模块 8 个、前端 2 个、脚本 3 个、文档 4 个），待用户指示后 commit/push。
+- 服务器部署仍阻塞（SSH）；上线前需：jieba 安装、SQLite 初始化（自动）、短信企业报备、ADMIN_TOKEN 更换。
+- 微信小程序端改造（登录对接 login_sms；企业主体后接 getPhoneNumber）。
+- `test_ui.html`（24 处）与 `kg_visual.html`（3 处）emoji 未清理。
+- 嵌入模型可作为词法检索增强（bge-small-zh），非必需。
+- LLM 客户端启动日志会打印部分 API Key（llm_client_yunwu.py），建议后续抹除。
+
+### 关键命令
+```bash
+python scripts/regression_test.py           # 全量 33 项（含 LLM 辨证，约 1-2 分钟）
+python scripts/regression_test.py --quick   # 跳过 LLM 链路
+python scripts/import_classical_to_sqlite.py  # 古籍入 SQLite（幂等）
+```
+
+
+---
+
+## 会话快照 — 2026-07-19 17:20（「本草长卷」主页 + 全站动效统一 + 后台完善）
+
+### 本次目标
+1. 高大上古风主页（苹果动效+古风，slogan：古有神农尝百草，今有小神农辩百症）
+2. 全站页面统一苹果动效+古风（动效逻辑参照 github.com/emilkowalski/skills 的 apple-design）
+3. 前后台可用性打磨
+
+### 动效规约（DESIGN.md 十条铁律摘要）
+- 按压即时反馈 scale(0.97)/100ms；临界阻尼 `cubic-bezier(0.22,1,0.36,1)` **禁回弹**；时长 100/150/300/600ms 四档
+- 只动 transform/opacity（弹窗加 blur materialize）；弹窗从触发点长出、进出同路（XSNModal）
+- 半透明宣纸材质吸顶栏（backdrop-filter blur 20px）；滚动叙事用 [data-reveal]+IntersectionObserver
+- reduced-motion 全降级为 200ms 透明度（主题包内置，全站继承）
+- 本土化：中文大标题加宽字距 0.2em（不从 Apple 负字距）；零彩色 emoji（汉字印章）
+
+### 完成事项（P1-P5，回归 38/38 全过）
+
+#### P1 设计系统
+- `frontend/assets/xsn-theme.css`（8KB：token+组件+规范弹窗+降级规则）、`frontend/assets/xsn-motion.js`（8.8KB：reveal/counter/draw/视差/XSNModal）、`frontend/DESIGN.md`（规约文档）。
+
+#### P2 home.html 主页（32KB 零外部图片）
+- 吸顶材质 nav（滚动出现渐变淡出边）、Hero 三层 SVG 山水视差（鼠标+滚动双源）、竖排「神农尝百草，一日而遇七十毒」、印章 450ms 临界阻尼落定、双 CTA stagger 入场
+- 粘性滚动品牌故事三段（300vh track+sticky，上古→千年→今日）、四能力卡（问/典/历/证）、数字带计数（125005/282/28/724 时辰守候）、SVG 墨线描边问诊流程四节点、卷轴医馆入驻、免责+备案占位页脚
+- OG 标签、SVG favicon、响应式（竖排/云雾层移动端隐藏）、总大小 32KB
+
+#### P3 全站统一（7 页）
+- index.html：theme/motion 引入（主题先于内联样式加载避免覆盖）、6 个弹窗全部改造为 XSNModal（带降级回退）、nav 材质化、section 切换 200ms 淡入、按钮按压反馈、title 去 v5.0、favicon
+- clinic/admin/test_ui_v3：theme+motion 引入、登录卡 reveal、tab/视图切换淡入、按压反馈
+- kg_visual/test_ui：theme 引入 + emoji 清理（5 处 + 约 50 处，含 🔴🟠🟢 过滤逻辑改 Unicode 转义防功能回归、商品 emoji 字段改汉字 icon）
+- 全部页面统一 favicon 与 title 格式「小神农中医AI · xxx」
+
+#### P4 平台后台
+- 新接口：`GET /api/admin/users`（分页+脱敏+聚合）、`GET /api/admin/orders`（过滤+分页）、`GET /api/admin/clinics/<id>/verifications`；`/api/admin/stats` 扩展 users/clinics/orders/prescriptions
+- admin.html 三视图：医馆核验（状态过滤+核验/冻结+CV 记录弹窗）、用户管理（分页）、订单总览（类型/状态过滤+分页）；Dashboard 四卡（待核验/待审核鎏金提示可点击跳转）
+
+#### P5 打磨
+- 删除 llm_client_yunwu.py 启动日志 API Key 前缀打印（实测新日志 0 命中）
+- .env.example 补 SMS_* 配置说明；DEPLOY.md 补 CORS 生产收紧建议 + Key 轮换提醒
+- 回归脚本扩至 38 项（新增 P4 后台用例）全过
+
+### 访问入口
+- 主页 `http://localhost:8080/home.html`；问诊 `index.html`；医馆 `clinic.html`；平台后台 `admin.html`
+
+### 待继续/可优化项
+- **本次全部变更未提交 git**（frontend 9 个文件+assets 2 个+backend 3 个+脚本 1 个+文档 4 个），待用户指示。
+- 主页改名换位（home.html→index.html、对话页→chat.html）待主页浏览器实测定型后做；视差/粘性段建议浏览器里过一眼手感。
+- 小程序端、真实短信、在线支付、区块链存证、服务器部署（SSH 阻塞）同前。
+- home.html 的 `.xsn-seal-deep` 深红印章是页内扩展类，多页面需要时可上移到主题包。
+
+### 关键命令
+```bash
+python scripts/regression_test.py           # 38 项全量
+python scripts/regression_test.py --quick   # 跳过 LLM
+```
+
+
+---
+
+## 会话快照 — 2026-07-19 18:30（主站接入真医生式问诊）
+
+### 问题
+用户反馈主站聊天打"头疼"直接出答案，没有问诊过程。
+
+### 根因
+index.html 的 sendMessage 走 `/api/diagnosis/stream`（一次性快速辨证），从未经过 M3 升级的对话问诊引擎（`/api/dialogue/*`）。**与 agent_skills.py 无关**（那是 7 个后台数据 Agent 的提示词）。
+
+### 修复（index.html，2754→2977 行）
+- 聊天区加模式切换：**对话问诊（默认）** | 快速辨证（原 SSE 流式不动）
+- 对话模式客户端：`/api/dialogue/start`（带 token 预载病历）→ 逐轮 `/api/dialogue/turn`；阶段印章标签（问·基本情况/问·症状细节/问·过敏与用药/辨·鉴别分析/断·辨证论治）、suggested_questions 可点胶囊（≤3 个）、鎏金进度条（transform scaleX）、思考步骤与打字并行渲染
+- 辨证出卡后「转医馆审核开方」：对话模式传 **session_id**（服务端可信快照），快速模式传 symptoms+advice（原逻辑）
+- 登录用户 visit_emr_id 时结果卡下方提示「已存入病历（EMR 编号）」
+- 会话失效自动重新 start 重试一次；欢迎语改为坐诊式开场
+
+### 实测对话流（urllib 断言全过）
+start(greeting) → "头疼"(**profile，问年龄性别**) → "35岁，男"(clarifying) → "疼了三天，胀痛，直接辨证"(ready，出诊断 2819 字)
+
+### 回归
+`regression_test.py --quick` 29/29 全过；快速辨证/登录/商城/语义搜索/Agent 零破坏。
+
+### 遗留
+- 匿名开局后中途登录：该匿名会话开方申请会被后端拒（规则如此），重新发送即带 token 恢复。
+- 对话模式 thinking_steps 为并行渲染（不 await），如需串行在 showThinkingSteps 前加 await。
+
+
+---
+
+## 会话快照 — 2026-07-19 19:20（问诊交互逻辑修正：回答选项而非选择题）
+
+### 用户反馈
+追问胶囊把"医生该问的问题"做成可选按钮——患者不该替医生选问题，且每人病情不同不应是选择题。
+
+### 修正（对话引擎 + index.html）
+- **最终交互模型：零按钮**。用户进一步指出"怕冷/怕热"选项本身会诱导主诉（"都不怕"的情况被选项抹掉）——故将上一轮的 quick_replies 方案整体移除。
+- 后端：`dialogue_engine.py` 移除 quick_replies 计算与返回字段及选项解析器；`api_server.py` 响应不再含 quick_replies；`suggested_questions` 保留为纯调试字段。
+- 前端：index.html 移除胶囊渲染、点击委托、相关 CSS。问诊=纯自由输入。
+- 保留：输入区「失眠/头痛」等 quick-tag 快捷输入（既有功能，等于替用户打字发起主诉，非回答医生问题的选项）。
+- 实测：API 响应已无 quick_replies 字段；回归 29/29 全过。
+
+### 追加（同日）：quick-tag 也移除 + 占位文案改为教学式
+- 用户要求连输入区快捷输入一并去掉，占位符不应是症状示例（"最近失眠多梦口干口苦"会诱导用户照着写）。
+- index.html：移除 quick-symptoms 标签排、sendQuick 函数、相关 CSS；textarea 占位文案改为教学式四要素：「请说清四点：哪里不舒服、什么样的感觉（胀痛/刺痛/隐痛等）、持续多久了、什么情况会加重或缓解」。
+- 设计原则最终版：**问诊区零按钮、零症状示例；只教方法，不给答案**。

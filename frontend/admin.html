@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>小神农 · 后台管理系统</title>
+    <title>小神农中医AI · 平台后台</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23a53232'/%3E%3Crect x='6' y='6' width='52' height='52' rx='8' fill='none' stroke='%23fffdf8' stroke-opacity='0.45' stroke-width='2'/%3E%3Ctext x='32' y='42' font-family='serif' font-size='24' font-weight='bold' fill='%23fffdf8' text-anchor='middle'%3E%E7%A5%9E%E5%86%9C%3C/text%3E%3C/svg%3E">
+    <link rel="stylesheet" href="assets/xsn-theme.css">
+    <script src="assets/xsn-motion.js" defer></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&display=swap">
     <style>
@@ -274,7 +277,7 @@
             gap: 12px;
             padding: 14px 22px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 300ms var(--ease-spring);
             border-left: 3px solid transparent;
             font-size: 14px;
         }
@@ -764,12 +767,31 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* P3 设计系统接入 */
+        button:active { transform: scale(0.97); transition-duration: 100ms; }
+        .btn:active { transform: scale(0.97); }
+        .nav-item:active { transform: scale(0.98); transition-duration: 100ms; }
+        @keyframes xsnSectionIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .xsn-section-in { animation: xsnSectionIn 200ms var(--ease-spring, ease-out); }
+
+        /* P4 管理视图 */
+        .xsn-btn-sm { padding: 5px 12px; font-size: 12px; }
+        .stat-gold-text { color: var(--gold); }
+        .stat-hint { color: var(--gold); font-size: 12px; }
+        .stat-card.clickable { cursor: pointer; }
+        .action-cell { white-space: nowrap; }
+        .action-cell .xsn-btn { margin-right: 6px; }
+        .toolbar-right { margin-left: auto; }
     </style>
 </head>
 <body>
     <!-- 登录界面 -->
     <div class="login-screen" id="loginScreen">
-        <div class="login-card">
+        <div class="login-card" data-reveal>
             <div class="seal">神农</div>
             <div class="login-title">
                 <h1>小神农</h1>
@@ -818,6 +840,18 @@
                 <div class="nav-item" data-view="sessions">
                     <span class="nav-icon">话</span>
                     <span>会话管理</span>
+                </div>
+                <div class="nav-item" data-view="clinics">
+                    <span class="nav-icon">馆</span>
+                    <span>医馆核验</span>
+                </div>
+                <div class="nav-item" data-view="users">
+                    <span class="nav-icon">众</span>
+                    <span>用户管理</span>
+                </div>
+                <div class="nav-item" data-view="orders">
+                    <span class="nav-icon">单</span>
+                    <span>订单总览</span>
                 </div>
                 <div class="nav-item" data-view="logs">
                     <span class="nav-icon">志</span>
@@ -896,7 +930,10 @@
             syndromes: { page: 1, keyword: '', system: '' },
             formulas: { page: 1, keyword: '' },
             drugs: { page: 1, keyword: '', category: '' },
-            sessions: { page: 1 }
+            sessions: { page: 1 },
+            clinics: { status: '' },
+            users: { page: 1 },
+            orders: { page: 1, status: '', order_type: '' }
         };
 
         // API 请求封装
@@ -1017,6 +1054,9 @@
                 formulas: '方剂管理',
                 drugs: '药物管理',
                 sessions: '会话管理',
+                clinics: '医馆核验',
+                users: '用户管理',
+                orders: '订单总览',
                 logs: '系统日志',
                 system: '系统信息'
             };
@@ -1025,6 +1065,10 @@
             // 渲染视图
             const main = document.getElementById('mainContent');
             main.innerHTML = '<div class="loading">加载中...</div>';
+            // P3 设计系统接入：主区视图切换 200ms 淡入
+            main.classList.remove('xsn-section-in');
+            void main.offsetWidth;
+            main.classList.add('xsn-section-in');
 
             switch (view) {
                 case 'dashboard': renderDashboard(); break;
@@ -1033,6 +1077,9 @@
                 case 'formulas': renderFormulas(); break;
                 case 'drugs': renderDrugs(); break;
                 case 'sessions': renderSessions(); break;
+                case 'clinics': renderClinics(); break;
+                case 'users': renderUsers(); break;
+                case 'orders': renderOrders(); break;
                 case 'logs': renderLogs(); break;
                 case 'system': renderSystem(); break;
             }
@@ -1049,6 +1096,8 @@
             }
 
             const s = res.data.data;
+            const pendingClinics = (s.clinics && s.clinics.pending) || 0;
+            const pendingRx = (s.prescriptions && s.prescriptions.pending_review) || 0;
             main.innerHTML = `
                 <div class="page-title">
                     <h2>总览</h2>
@@ -1084,6 +1133,26 @@
                         <div class="stat-label">活跃会话</div>
                         <div class="stat-value">${s.sessions.active}</div>
                         <div class="stat-desc">当前对话式问诊会话数</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">用户总数</div>
+                        <div class="stat-value">${(s.users && s.users.total) || 0}</div>
+                        <div class="stat-desc">平台注册用户数</div>
+                    </div>
+                    <div class="stat-card gold clickable" onclick="switchView('clinics')">
+                        <div class="stat-label">待核验医馆</div>
+                        <div class="stat-value ${pendingClinics > 0 ? 'stat-gold-text' : ''}">${pendingClinics}</div>
+                        <div class="stat-desc">${pendingClinics > 0 ? '<span class="stat-hint">需处理 · 点击前往核验</span>' : `医馆共 ${(s.clinics && s.clinics.total) || 0} 家`}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">订单总数</div>
+                        <div class="stat-value">${(s.orders && s.orders.total) || 0}</div>
+                        <div class="stat-desc">处方与商城订单合计</div>
+                    </div>
+                    <div class="stat-card gold">
+                        <div class="stat-label">待审核处方</div>
+                        <div class="stat-value ${pendingRx > 0 ? 'stat-gold-text' : ''}">${pendingRx}</div>
+                        <div class="stat-desc">${pendingRx > 0 ? '<span class="stat-hint">需处理</span>' : `处方共 ${(s.prescriptions && s.prescriptions.total) || 0} 张`}</div>
                     </div>
                 </div>
 
@@ -1164,6 +1233,8 @@
                 case 'formulas': renderFormulas(); break;
                 case 'drugs': renderDrugs(); break;
                 case 'sessions': renderSessions(); break;
+                case 'users': renderUsers(); break;
+                case 'orders': renderOrders(); break;
             }
         }
 
@@ -1452,6 +1523,266 @@
             `);
         }
 
+        // ========== 医馆核验 ==========
+        const CLINIC_STATUS_MAP = {
+            pending: ['xsn-status-pending', '待核验'],
+            verified: ['xsn-status-ok', '已核验'],
+            frozen: ['xsn-status-bad', '已冻结']
+        };
+
+        async function renderClinics() {
+            const res = await apiRequest('GET', '/api/admin/clinics');
+            const main = document.getElementById('mainContent');
+
+            if (!res.ok || !res.data.success) {
+                main.innerHTML = `<div class="empty-state">加载失败：${res.data.error || '未知错误'}</div>`;
+                return;
+            }
+
+            window._clinicsCache = res.data.data.clinics || [];
+            const st = viewState.clinics;
+            main.innerHTML = `
+                <div class="page-title">
+                    <h2>医馆核验</h2>
+                    <p>审核医馆入驻资质，可冻结或恢复医馆服务状态</p>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">医馆列表</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="toolbar">
+                            <select class="filter-select toolbar-right" onchange="setClinicFilter(this.value)">
+                                <option value="" ${st.status === '' ? 'selected' : ''}>全部状态</option>
+                                <option value="pending" ${st.status === 'pending' ? 'selected' : ''}>待核验</option>
+                                <option value="verified" ${st.status === 'verified' ? 'selected' : ''}>已核验</option>
+                                <option value="frozen" ${st.status === 'frozen' ? 'selected' : ''}>已冻结</option>
+                            </select>
+                        </div>
+                        <div style="overflow-x:auto">
+                            <table class="data-table">
+                                <thead><tr><th>编号</th><th>名称</th><th>许可证号</th><th>地址</th><th>代煎</th><th>状态</th><th>申请时间</th><th>操作</th></tr></thead>
+                                <tbody id="clinicTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+            renderClinicTableBody();
+        }
+
+        function setClinicFilter(status) {
+            viewState.clinics.status = status;
+            renderClinicTableBody();
+        }
+
+        function renderClinicTableBody() {
+            const tbody = document.getElementById('clinicTableBody');
+            if (!tbody) return;
+            const st = viewState.clinics;
+            const list = (window._clinicsCache || []).filter(c => !st.status || c.status === st.status);
+
+            if (list.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:#999">暂无数据</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = list.map(c => {
+                const [badgeCls, statusText] = CLINIC_STATUS_MAP[c.status] || ['xsn-status-pending', c.status || '未知'];
+                const decoction = c.support_decoction ? `支持（${fenToYuan(c.decoction_fee)}）` : '不支持';
+                let actions = `<button class="xsn-btn xsn-btn-outline-jade xsn-btn-sm" onclick="showClinicVerifications('${c.clinic_id}')">核验记录</button>`;
+                if (c.status === 'pending') {
+                    actions += `<button class="xsn-btn xsn-btn-jade xsn-btn-sm" onclick="clinicAction('${c.clinic_id}', 'verified', '通过核验')">通过核验</button>`;
+                    actions += `<button class="xsn-btn xsn-btn-outline-cinnabar xsn-btn-sm" onclick="clinicAction('${c.clinic_id}', 'frozen', '冻结')">冻结</button>`;
+                } else if (c.status === 'verified') {
+                    actions += `<button class="xsn-btn xsn-btn-outline-cinnabar xsn-btn-sm" onclick="clinicAction('${c.clinic_id}', 'frozen', '冻结')">冻结</button>`;
+                } else if (c.status === 'frozen') {
+                    actions += `<button class="xsn-btn xsn-btn-jade xsn-btn-sm" onclick="clinicAction('${c.clinic_id}', 'verified', '恢复核验')">恢复核验</button>`;
+                }
+                return `<tr>
+                    <td><code>${c.clinic_id}</code></td>
+                    <td><strong>${c.name}</strong></td>
+                    <td>${c.license_no || '-'}</td>
+                    <td>${c.address || '-'}</td>
+                    <td>${decoction}</td>
+                    <td><span class="xsn-status ${badgeCls}">${statusText}</span></td>
+                    <td>${fmtMinute(c.created_at)}</td>
+                    <td class="action-cell">${actions}</td>
+                </tr>`;
+            }).join('');
+        }
+
+        async function clinicAction(clinicId, action, label) {
+            if (!confirm(`确认对医馆 ${clinicId} 执行「${label}」操作？`)) return;
+            const note = prompt(`${label}备注（可留空）`, '');
+            if (note === null) return;
+
+            const res = await apiRequest('POST', `/api/admin/clinics/${clinicId}/verify`, { action, note });
+            if (res.ok && res.data.success) {
+                renderClinics();
+            } else {
+                alert('操作失败：' + (res.data.error || '未知错误'));
+            }
+        }
+
+        async function showClinicVerifications(clinicId) {
+            const res = await apiRequest('GET', `/api/admin/clinics/${clinicId}/verifications`);
+            if (!res.ok || !res.data.success) {
+                alert('加载核验记录失败：' + (res.data.error || '未知错误'));
+                return;
+            }
+            const list = res.data.data.list || [];
+            const rows = list.length === 0
+                ? '<tr><td colspan="5" style="text-align:center;padding:30px;color:#999">暂无数据</td></tr>'
+                : list.map(v => `<tr>
+                    <td><code>${v.cv_id}</code></td>
+                    <td><span class="xsn-status ${v.action === 'verified' ? 'xsn-status-ok' : 'xsn-status-bad'}">${v.action === 'verified' ? '核验通过' : '冻结'}</span></td>
+                    <td>${v.reviewer || '-'}</td>
+                    <td>${v.note || '-'}</td>
+                    <td>${fmtMinute(v.created_at)}</td>
+                </tr>`).join('');
+            openModal(`核验记录 · ${clinicId}`, `
+                <table class="data-table">
+                    <thead><tr><th>记录编号</th><th>动作</th><th>操作人</th><th>备注</th><th>时间</th></tr></thead>
+                    <tbody>${rows}</tbody>
+                </table>
+            `);
+        }
+
+        // ========== 用户管理 ==========
+        async function renderUsers() {
+            const st = viewState.users;
+            const params = new URLSearchParams({ page: st.page, size: 20 });
+            const res = await apiRequest('GET', `/api/admin/users?${params}`);
+            const main = document.getElementById('mainContent');
+
+            if (!res.ok || !res.data.success) {
+                main.innerHTML = `<div class="empty-state">加载失败：${res.data.error || '未知错误'}</div>`;
+                return;
+            }
+
+            const data = res.data.data;
+            const users = data.users || [];
+            const rowsHtml = users.length === 0
+                ? '<tr><td colspan="8" style="text-align:center;padding:40px;color:#999">暂无数据</td></tr>'
+                : users.map(u => `<tr>
+                    <td><code>${u.user_id}</code></td>
+                    <td>${u.phone || '-'}</td>
+                    <td><strong>${u.nickname || '未设置'}</strong></td>
+                    <td>${u.gender || '-'}</td>
+                    <td>${u.birth_year || '-'}</td>
+                    <td>${u.emr_count || 0}</td>
+                    <td>${u.order_count || 0}</td>
+                    <td>${fmtMinute(u.created_at)}</td>
+                </tr>`).join('');
+
+            main.innerHTML = `
+                <div class="page-title">
+                    <h2>用户管理</h2>
+                    <p>查看平台注册用户及其病历、订单概况（手机号已脱敏）</p>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">用户列表</div>
+                    </div>
+                    <div class="card-body">
+                        <div style="overflow-x:auto">
+                            <table class="data-table">
+                                <thead><tr><th>用户编号</th><th>手机号</th><th>昵称</th><th>性别</th><th>出生年</th><th>病历数</th><th>订单数</th><th>注册时间</th></tr></thead>
+                                <tbody>${rowsHtml}</tbody>
+                            </table>
+                        </div>
+                        ${renderPagination('users', data.total || 0, st.page, 20)}
+                    </div>
+                </div>
+            `;
+        }
+
+        // ========== 订单总览 ==========
+        const ORDER_STATUS_MAP = {
+            created: '待接单',
+            accepted: '已接单',
+            preparing: '配药中',
+            decocting: '代煎中',
+            shipped: '已发货',
+            awaiting_pickup: '待取货',
+            completed: '已完成',
+            cancelled: '已取消'
+        };
+
+        async function renderOrders() {
+            const st = viewState.orders;
+            const params = new URLSearchParams({
+                status: st.status,
+                order_type: st.order_type,
+                page: st.page,
+                size: 20
+            });
+            const res = await apiRequest('GET', `/api/admin/orders?${params}`);
+            const main = document.getElementById('mainContent');
+
+            if (!res.ok || !res.data.success) {
+                main.innerHTML = `<div class="empty-state">加载失败：${res.data.error || '未知错误'}</div>`;
+                return;
+            }
+
+            const data = res.data.data;
+            const orders = data.orders || [];
+            const typeBadge = t => t === 'prescription'
+                ? '<span class="xsn-status xsn-status-bad">处方</span>'
+                : '<span class="xsn-status xsn-status-ok">商城</span>';
+
+            const toolbar = `
+                <div class="toolbar">
+                    <select class="filter-select" onchange="updateFilter('orders', 'order_type', this.value)">
+                        <option value="" ${st.order_type === '' ? 'selected' : ''}>全部类型</option>
+                        <option value="prescription" ${st.order_type === 'prescription' ? 'selected' : ''}>处方</option>
+                        <option value="mall" ${st.order_type === 'mall' ? 'selected' : ''}>商城</option>
+                    </select>
+                    <select class="filter-select" onchange="updateFilter('orders', 'status', this.value)">
+                        <option value="" ${st.status === '' ? 'selected' : ''}>全部状态</option>
+                        ${Object.keys(ORDER_STATUS_MAP).map(k => `<option value="${k}" ${st.status === k ? 'selected' : ''}>${ORDER_STATUS_MAP[k]}</option>`).join('')}
+                    </select>
+                </div>
+            `;
+
+            const rowsHtml = orders.length === 0
+                ? '<tr><td colspan="9" style="text-align:center;padding:40px;color:#999">暂无数据</td></tr>'
+                : orders.map(o => `<tr>
+                    <td><code>${o.order_id}</code></td>
+                    <td>${typeBadge(o.order_type)}</td>
+                    <td><code>${o.user_id}</code></td>
+                    <td>${o.clinic_name || '-'}</td>
+                    <td>${o.fulfillment === 'delivery' ? '邮寄' : o.fulfillment === 'pickup' ? '自取' : (o.fulfillment || '-')}</td>
+                    <td>${o.decoction ? '代煎' : '-'}</td>
+                    <td>${fenToYuan(o.amount)}</td>
+                    <td>${ORDER_STATUS_MAP[o.status] || o.status || '-'}</td>
+                    <td>${fmtMinute(o.created_at)}</td>
+                </tr>`).join('');
+
+            main.innerHTML = `
+                <div class="page-title">
+                    <h2>订单总览</h2>
+                    <p>查看处方流转与商城订单，支持按类型与状态筛选</p>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">订单列表</div>
+                    </div>
+                    <div class="card-body">
+                        ${toolbar}
+                        <div style="overflow-x:auto">
+                            <table class="data-table">
+                                <thead><tr><th>订单号</th><th>类型</th><th>用户</th><th>医馆</th><th>履约</th><th>代煎</th><th>金额</th><th>状态</th><th>时间</th></tr></thead>
+                                <tbody>${rowsHtml}</tbody>
+                            </table>
+                        </div>
+                        ${renderPagination('orders', data.total || 0, st.page, 20)}
+                    </div>
+                </div>
+            `;
+        }
+
         // ========== 系统日志 ==========
         async function renderLogs() {
             const res = await apiRequest('GET', '/api/admin/logs?lines=200');
@@ -1532,6 +1863,7 @@
                 case 'syndromes': renderSyndromes(); break;
                 case 'formulas': renderFormulas(); break;
                 case 'drugs': renderDrugs(); break;
+                case 'orders': renderOrders(); break;
             }
         }
 
@@ -1559,6 +1891,17 @@
             if (!ts) return '-';
             const d = new Date(ts * 1000);
             return d.toLocaleString('zh-CN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+        }
+
+        // ISO 时间字符串截到分钟，如 2026-07-19T15:47:15 -> 2026-07-19 15:47
+        function fmtMinute(ts) {
+            if (!ts) return '-';
+            return String(ts).replace('T', ' ').slice(0, 16);
+        }
+
+        // 金额分转元
+        function fenToYuan(fen) {
+            return '¥' + ((fen || 0) / 100).toFixed(2);
         }
 
         function escapeHtml(text) {

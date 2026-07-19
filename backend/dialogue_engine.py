@@ -19,8 +19,10 @@ from syndrome_db import find_syndromes_by_symptoms
 class DialoguePhase(Enum):
     """对话阶段"""
     GREETING = "greeting"           # 欢迎/初始
+    PROFILE = "profile"             # 基本资料采集（年龄/性别）
     COLLECTING = "collecting"       # 收集症状
     CLARIFYING = "clarifying"       # 澄清/确认
+    HISTORY = "history"             # 既往史/过敏史/用药史
     DIFFERENTIATING = "differentiating"  # 鉴别诊断
     CONFIRMING = "confirming"       # 确认信息
     READY = "ready"                 # 准备辨证
@@ -48,12 +50,18 @@ class DialogueState:
     collected_symptoms: Dict[str, CollectedSymptom] = field(default_factory=dict)
     pending_questions: List[str] = field(default_factory=list)
     asked_questions: Set[str] = field(default_factory=set)
-    user_profile: Dict = field(default_factory=dict)  # age, gender, etc.
+    user_profile: Dict = field(default_factory=dict)  # age, gender, histories...
     last_user_input: str = ""
     last_bot_response: str = ""
     diagnosis_triggered: bool = False
     created_at: float = field(default_factory=time.time)
     last_activity: float = field(default_factory=time.time)
+    # M3 新增：真医生式问诊
+    user_id: str = ""                       # 登录用户（病历预载/写回）
+    first_complaint: str = ""               # 首次主诉（病历主诉）
+    profile_asked: Set[str] = field(default_factory=set)  # 已问过的资料项
+    pending_profile_question: str = ""      # 上一轮问的资料项（捕获答案用）
+    last_diagnosis: Dict = field(default_factory=dict)    # 最近一次辨证结果快照（开方申请用）
     
     def to_dict(self) -> Dict:
         return {
@@ -240,12 +248,23 @@ class DialogueEngine:
         self.sessions: Dict[str, DialogueState] = {}
         print("[DialogueEngine] 对话式问诊引擎初始化完成")
     
-    def create_session(self, session_id: Optional[str] = None) -> str:
-        """创建新对话会话"""
+    def create_session(self, session_id: Optional[str] = None, user_id: Optional[str] = None) -> str:
+        """创建新对话会话；登录用户自动预载健康档案（已知信息不再问）"""
         if session_id is None:
             session_id = f"dialogue_{int(time.time() * 1000)}"
         
-        self.sessions[session_id] = DialogueState(session_id=session_id)
+        state = DialogueState(session_id=session_id)
+        if user_id:
+            state.user_id = user_id
+            try:
+                from emr_service import get_profile_for_dialogue
+                profile = get_profile_for_dialogue(user_id)
+                state.user_profile.update({k: v for k, v in profile.items() if v})
+                print(f"[DialogueEngine] 预载用户档案: {user_id}, 字段: {list(state.user_profile.keys())}")
+            except Exception as e:
+                print(f"[DialogueEngine] 档案预载失败（不影响问诊）: {e}")
+        
+        self.sessions[session_id] = state
         print(f"[DialogueEngine] 创建会话: {session_id}")
         return session_id
     
@@ -318,18 +337,35 @@ class DialogueEngine:
             }
         })
         
+        # Step 1.5: 从输入中捕获基本资料（年龄/性别/过敏史/用药史）
+        self._parse_profile_input(state, user_input)
+        if state.turn_count == 1 and user_input.strip() and not state.first_complaint:
+            state.first_complaint = user_input.strip()[:200]
+        
         # Step 2: 判断对话阶段，生成追问
         step2_start = time.time()
         
         symptom_ids = list(state.collected_symptoms.keys())
         symptom_count = len(symptom_ids)
         
-        # 计算进度
-        progress = min(100, int(symptom_count / self.MIN_SYMPTOMS_FOR_DIAGNOSIS * 100))
+        # 信息完整度评分（真医生式问诊：资料齐了才触发辨证）
+        completeness, missing = self._info_completeness(state)
+        progress = completeness
         
-        # 判断阶段
-        if state.turn_count == 1:
-            state.phase = DialoguePhase.COLLECTING
+        # 快速通道：用户明确要求直接辨证
+        fast_track = any(k in user_input for k in self.FAST_TRACK_PHRASES)
+        
+        # 判断阶段（基本资料 → 症状收集 → 既往/过敏/用药 → 鉴别 → 辨证）
+        if state.turn_count == 1 and not user_input.strip():
+            state.phase = DialoguePhase.GREETING  # /api/dialogue/start 的问候轮
+        elif fast_track and symptom_count >= 1:
+            state.phase = DialoguePhase.READY
+        elif self._profile_missing(state) and 'age_gender' not in state.profile_asked:
+            state.phase = DialoguePhase.PROFILE
+        elif symptom_count < self.MIN_SYMPTOMS_FOR_DIAGNOSIS and state.turn_count < self.MAX_TURNS:
+            state.phase = DialoguePhase.COLLECTING if state.turn_count <= 1 else DialoguePhase.CLARIFYING
+        elif self._history_missing(state) and 'allergy_med' not in state.profile_asked:
+            state.phase = DialoguePhase.HISTORY
         elif symptom_count >= self.MIN_SYMPTOMS_FOR_DIAGNOSIS:
             # 检查是否需要鉴别诊断
             need_diff = self._need_differentiation(state)
@@ -345,12 +381,14 @@ class DialogueEngine:
         thinking_steps.append({
             "step": 2,
             "name": "阶段判断",
-            "description": f"当前阶段: {state.phase.value}, 已收集 {symptom_count} 个症状",
+            "description": f"当前阶段: {state.phase.value}, 已收集 {symptom_count} 个症状, 信息完整度 {completeness}%",
             "time_ms": round((time.time() - step2_start) * 1000, 2),
             "details": {
                 "phase": state.phase.value,
                 "symptom_count": symptom_count,
                 "turn_count": state.turn_count,
+                "completeness": completeness,
+                "missing": missing,
                 "need_differentiation": state.phase == DialoguePhase.DIFFERENTIATING
             }
         })
@@ -367,6 +405,12 @@ class DialogueEngine:
             bot_response = self._generate_greeting()
             suggested_questions = ["我最近头痛发热，怕冷", "失眠多梦，口干舌燥"]
             
+        elif state.phase == DialoguePhase.PROFILE:
+            state.profile_asked.add('age_gender')
+            state.pending_profile_question = 'age_gender'
+            bot_response = self._generate_profile_response(state, new_symptoms)
+            suggested_questions = ["35岁，男", "28岁，女"]
+            
         elif state.phase == DialoguePhase.COLLECTING:
             bot_response = self._generate_collecting_response(state, new_symptoms)
             suggested_questions = self._generate_follow_up_questions(state)
@@ -374,6 +418,12 @@ class DialogueEngine:
         elif state.phase == DialoguePhase.CLARIFYING:
             bot_response = self._generate_clarifying_response(state)
             suggested_questions = self._generate_follow_up_questions(state)
+            
+        elif state.phase == DialoguePhase.HISTORY:
+            state.profile_asked.add('allergy_med')
+            state.pending_profile_question = 'allergy_med'
+            bot_response = self._generate_history_response(state)
+            suggested_questions = ["没有过敏，也没在吃药", "对青霉素过敏"]
             
         elif state.phase == DialoguePhase.DIFFERENTIATING:
             bot_response = self._generate_differentiation_response(state)
@@ -397,8 +447,12 @@ class DialogueEngine:
             }
         })
         
+        # 问诊交互原则：医生主导提问（bot_response 直接问），患者自由回答，
+        # 不下发任何选项按钮——选项会诱导主诉（如“都不怕”的情况被抹掉）。
         return {
             "session_id": session_id,
+            "user_id": state.user_id,
+            "first_complaint": state.first_complaint,
             "phase": state.phase.value,
             "bot_response": bot_response,
             "thinking_steps": thinking_steps,
@@ -415,7 +469,7 @@ class DialogueEngine:
             "symptom_count": symptom_count,
             "is_ready_for_diagnosis": is_ready,
             "diagnosis_query": diagnosis_query,
-            "suggested_questions": suggested_questions[:3],  # 最多3个
+            "suggested_questions": suggested_questions[:3],  # 调试/兼容字段，前端不渲染
             "progress_percent": progress,
             "turn_count": state.turn_count,
         }
@@ -430,6 +484,109 @@ class DialogueEngine:
 • 有没有其他伴随症状？
 
 您现在最不舒服的地方是什么？"""
+
+    # ============ M3: 真医生式问诊辅助 ============
+
+    FAST_TRACK_PHRASES = ["直接辨证", "不用问了", "立即辨证", "快速辨证", "直接分析", "直接给我结果"]
+
+    def _profile_missing(self, state: DialogueState) -> bool:
+        return not (state.user_profile.get("age") and state.user_profile.get("gender"))
+
+    def _history_missing(self, state: DialogueState) -> bool:
+        return not (state.user_profile.get("allergy_history") and state.user_profile.get("medication_history"))
+
+    def _info_completeness(self, state: DialogueState) -> Tuple[int, List[str]]:
+        """信息完整度评分：基本资料40 + 症状20 + 追问互动20 + 过敏史10 + 用药史10"""
+        score = 0
+        missing = []
+        p = state.user_profile
+        if p.get("age") and p.get("gender"):
+            score += 40
+        else:
+            missing.append("基本资料(年龄/性别)")
+        n = len(state.collected_symptoms)
+        score += min(20, n * 7)
+        if n == 0:
+            missing.append("症状")
+        if state.turn_count >= 3:
+            score += 20
+        else:
+            score += state.turn_count * 5
+        if p.get("allergy_history"):
+            score += 10
+        else:
+            missing.append("过敏史")
+        if p.get("medication_history"):
+            score += 10
+        else:
+            missing.append("用药史")
+        return min(100, score), missing
+
+    def _parse_profile_input(self, state: DialogueState, user_input: str) -> None:
+        """从用户输入捕获基本资料（年龄/性别/过敏史/用药史）"""
+        text = (user_input or "").strip()
+        if not text:
+            return
+        p = state.user_profile
+        pending = state.pending_profile_question
+        state.pending_profile_question = ""
+
+        # 年龄：35岁 / 今年35 / 35
+        if not p.get("age"):
+            m = re.search(r"(\d{1,3})\s*岁", text)
+            if m and 0 < int(m.group(1)) <= 120:
+                p["age"] = m.group(1)
+            elif pending == "age_gender":
+                m2 = re.search(r"(?<!\d)(\d{1,3})(?!\d)", text)
+                if m2 and 0 < int(m2.group(1)) <= 120:
+                    p["age"] = m2.group(1)
+
+        # 性别（“子女”等词排除；男女同现视为歧义跳过，等下一轮）
+        if not p.get("gender"):
+            male_hit = ("男" in text) and not re.search(r"[姑娘嫂媳妇]男", text)
+            female_hit = ("女" in text) and ("子女" not in text)
+            if male_hit and not female_hit:
+                p["gender"] = "男"
+            elif female_hit and not male_hit:
+                p["gender"] = "女"
+            elif pending == "age_gender":
+                if "男" in text:
+                    p["gender"] = "男"
+                elif "女" in text:
+                    p["gender"] = "女"
+
+        # 过敏史/用药史：优先按 pending 问题捕获整句回答
+        if pending == "allergy_med":
+            if not p.get("allergy_history"):
+                if re.search(r"(不过敏|没有.{0,4}过敏|无.{0,2}过敏)", text) or ("没有" in text and "过敏" not in text):
+                    p["allergy_history"] = "无"
+                elif "过敏" in text:
+                    p["allergy_history"] = text[:100]
+                else:
+                    p["allergy_history"] = "无"
+            if not p.get("medication_history"):
+                if re.search(r"(没|无|不).{0,3}(吃|服|用|喝).{0,2}药", text) or "没有" in text:
+                    p["medication_history"] = "无"
+                else:
+                    p["medication_history"] = text[:100]
+        elif not p.get("allergy_history") and "过敏" in text:
+            # 机会主义捕获：用户主动提及过敏
+            p["allergy_history"] = text[:100]
+
+    def _generate_profile_response(self, state: DialogueState, new_symptoms: List[Dict]) -> str:
+        prefix = ""
+        if new_symptoms:
+            prefix = f"我注意到您提到了{'、'.join(s['name'] for s in new_symptoms)}。\n\n"
+        return (prefix +
+                "为了像医生面诊一样准确辨证，先了解一下您的基本情况：\n"
+                "请问您的年龄和性别？（如：35岁，女）")
+
+    def _generate_history_response(self, state: DialogueState) -> str:
+        return ("为了给您推荐安全合适的方剂，开方前还需要确认两件事：\n"
+                "1. 您有没有药物或食物过敏史？\n"
+                "2. 最近有没有在服用其他药物（包括西药、保健品）？\n"
+                "（都没有的话回复“没有”即可）")
+
     
     def _generate_collecting_response(self, state: DialogueState, new_symptoms: List[Dict]) -> str:
         """生成收集阶段的回复"""
@@ -531,7 +688,7 @@ class DialogueEngine:
         return questions[:3]
     
     def _build_diagnosis_query(self, state: DialogueState) -> str:
-        """构建辨证查询"""
+        """构建辨证查询（含基本资料与病史，让辨证更贴合患者个体）"""
         symptoms = list(state.collected_symptoms.values())
         symptom_desc = "，".join([s.name for s in symptoms])
         
@@ -542,6 +699,12 @@ class DialogueEngine:
             query += f"，年龄：{state.user_profile['age']}岁"
         if state.user_profile.get("gender"):
             query += f"，性别：{state.user_profile['gender']}"
+        # 病史（仅在有实质内容时携带）
+        for key, label in (("past_history", "既往史"), ("allergy_history", "过敏史"),
+                           ("medication_history", "在用药物")):
+            v = state.user_profile.get(key)
+            if v and v != "无":
+                query += f"，{label}：{v}"
         
         return query
     

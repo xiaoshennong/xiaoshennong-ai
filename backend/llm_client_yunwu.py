@@ -37,9 +37,7 @@ class YunwuAIClient:
         self.model = model or os.getenv("YUNWU_MODEL", "gpt-4o-mini")
 
         print(f"[LLM] Yunwu AI 客户端初始化: {self.base_url}, model={self.model}")
-        if self.api_key:
-            print(f"[LLM] API Key: {self.api_key[:20]}...")
-        else:
+        if not self.api_key:
             print("[LLM] 警告：未配置 YUNWU_API_KEY")
 
     def generate(self, prompt: str, system_prompt: Optional[str] = None,

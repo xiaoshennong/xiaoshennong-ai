@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小神农中医AI · 医馆后台</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23a53232'/%3E%3Crect x='6' y='6' width='52' height='52' rx='8' fill='none' stroke='%23fffdf8' stroke-opacity='0.45' stroke-width='2'/%3E%3Ctext x='32' y='42' font-family='serif' font-size='24' font-weight='bold' fill='%23fffdf8' text-anchor='middle'%3E%E7%A5%9E%E5%86%9C%3C/text%3E%3C/svg%3E">
+    <link rel="stylesheet" href="assets/xsn-theme.css">
+    <script src="assets/xsn-motion.js" defer></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&display=swap">
+    <style>
+        :root {
+            --paper: #f7f3e9;
+            --paper-dark: #efe8d8;
+            --ink: #2b2b2b;
+            --ink-light: #5a5a5a;
+            --cinnabar: #a53232;
+            --cinnabar-light: #c45c48;
+            --jade: #4a7c59;
+            --jade-dark: #2d4a35;
+            --gold: #b8860b;
+            --gold-light: #d4a84b;
+            --border: #d4c4b0;
+            --shadow: rgba(43, 27, 18, 0.12);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Noto Serif SC', 'Source Han Serif SC', 'SimSun', 'STSong', serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        /* 宣纸纹理背景 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image:
+                radial-gradient(circle at 20% 30%, rgba(180, 160, 130, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(160, 140, 110, 0.04) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* 登录页 */
+        .login-screen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 460px;
+            background: linear-gradient(180deg, #fffdf8 0%, var(--paper) 100%);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 44px 40px;
+            box-shadow: 0 12px 40px var(--shadow);
+            position: relative;
+        }
+
+        .login-card::before,
+        .login-card::after {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--cinnabar);
+            pointer-events: none;
+        }
+
+        .login-card::before { top: 12px; left: 12px; border-right: none; border-bottom: none; }
+        .login-card::after { bottom: 12px; right: 12px; border-left: none; border-top: none; }
+
+        .seal {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 20px;
+            background: var(--cinnabar);
+            color: white;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            box-shadow: 0 4px 12px rgba(165, 50, 50, 0.3);
+        }
+
+        .login-title { text-align: center; margin-bottom: 8px; }
+        .login-title h1 { font-size: 30px; font-weight: 700; letter-spacing: 5px; color: var(--cinnabar); }
+        .login-title p { font-size: 13px; color: var(--ink-light); letter-spacing: 2px; margin-top: 8px; }
+
+        .login-form { margin-top: 30px; }
+
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-size: 14px; margin-bottom: 8px; color: var(--ink-light); }
+
+        .form-control {
+            width: 100%;
+            padding: 11px 15px;
+            border: 1px solid var(--border);
+            border-radius: 2px;
+            background: #fffdf8;
+            font-family: inherit;
+            font-size: 15px;
+            color: var(--ink);
+            transition: all 0.25s;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: var(--cinnabar-light);
+            box-shadow: 0 0 0 3px rgba(165, 50, 50, 0.08);
+        }
+        textarea.form-control { resize: vertical; min-height: 70px; }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 10px 22px;
+            border: none;
+            border-radius: 2px;
+            font-family: inherit;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.25s;
+            letter-spacing: 1px;
+        }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--cinnabar) 0%, #8a2525 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(165, 50, 50, 0.25);
+        }
+        .btn-primary:hover:not(:disabled) { background: linear-gradient(135deg, var(--cinnabar-light) 0%, var(--cinnabar) 100%); }
+
+        .btn-jade {
+            background: linear-gradient(135deg, var(--jade) 0%, var(--jade-dark) 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(74, 124, 89, 0.25);
+        }
+        .btn-jade:hover:not(:disabled) { filter: brightness(1.08); }
+
+        .btn-secondary { background: var(--paper-dark); color: var(--ink); border: 1px solid var(--border); }
+        .btn-secondary:hover:not(:disabled) { background: #e8e0d0; }
+
+        .btn-sm { padding: 5px 13px; font-size: 13px; }
+        .btn-block { width: 100%; margin-top: 8px; }
+
+        .form-msg { font-size: 13px; margin-top: 12px; text-align: center; min-height: 20px; }
+        .form-msg.error { color: var(--cinnabar); }
+        .form-msg.ok { color: var(--jade); }
+
+        .switch-link {
+            text-align: center;
+            margin-top: 18px;
+            font-size: 13px;
+            color: var(--ink-light);
+        }
+        .switch-link a {
+            color: var(--gold);
+            cursor: pointer;
+            text-decoration: none;
+            border-bottom: 1px dashed var(--gold);
+        }
+        .switch-link a:hover { color: var(--cinnabar); border-color: var(--cinnabar); }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: var(--ink);
+        }
+        .checkbox-row input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--cinnabar); }
+
+        /* 后台主界面 */
+        .app-shell { display: none; min-height: 100vh; flex-direction: column; }
+        .app-shell.active { display: flex; }
+
+        .top-header {
+            background: linear-gradient(180deg, #2b2b2b 0%, #1f1f1f 100%);
+            color: #e8dcc8;
+            padding: 14px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .clinic-identity { display: flex; align-items: center; gap: 12px; }
+        .clinic-identity .mini-seal {
+            width: 34px; height: 34px;
+            background: var(--cinnabar);
+            color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; font-weight: bold;
+            border-radius: 3px;
+            letter-spacing: 1px;
+        }
+        .clinic-identity .name { font-size: 17px; font-weight: 600; letter-spacing: 2px; }
+        .clinic-identity .sub { font-size: 11px; opacity: 0.7; letter-spacing: 1px; }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            letter-spacing: 1px;
+        }
+        .status-badge.pending { background: rgba(184, 134, 11, 0.18); color: var(--gold-light); border: 1px solid var(--gold); }
+        .status-badge.verified { background: rgba(74, 124, 89, 0.18); color: #8fc49e; border: 1px solid var(--jade); }
+        .status-badge.frozen { background: rgba(165, 50, 50, 0.18); color: #e08a80; border: 1px solid var(--cinnabar); }
+
+        .logout-btn {
+            background: transparent;
+            border: 1px solid rgba(212, 196, 176, 0.4);
+            color: #e8dcc8;
+            padding: 6px 16px;
+            border-radius: 2px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+        .logout-btn:hover { border-color: var(--cinnabar-light); color: #fff; }
+
+        .tab-bar {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px;
+            background: #fffdf8;
+            border-bottom: 1px solid var(--border);
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            padding: 7px 20px;
+            border: none;
+            border-radius: 4px;
+            background: var(--paper-dark);
+            color: var(--ink-light);
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 14px;
+            letter-spacing: 1px;
+            transition: all 0.25s;
+        }
+        .tab-btn:hover { color: var(--cinnabar); }
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--cinnabar) 0%, #8a2525 100%);
+            color: white;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 26px;
+            max-width: 1080px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .page-title { margin-bottom: 22px; }
+        .page-title h2 {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            display: inline-block;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--cinnabar);
+        }
+        .page-title p { font-size: 13px; color: var(--ink-light); margin-top: 8px; }
+
+        /* 统计卡片 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+            gap: 18px;
+            margin-bottom: 26px;
+        }
+        .stat-card {
+            background: #fffdf8;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 20px 22px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+        }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 4px; height: 100%;
+            background: var(--jade);
+        }
+        .stat-card.cinnabar::before { background: var(--cinnabar); }
+        .stat-card.gold::before { background: var(--gold); }
+        .stat-label { font-size: 13px; color: var(--ink-light); margin-bottom: 6px; }
+        .stat-value { font-size: 30px; font-weight: 700; letter-spacing: 1px; }
+        .stat-desc { font-size: 12px; color: var(--ink-light); margin-top: 4px; }
+
+        /* 内容卡片 */
+        .card {
+            background: #fffdf8;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            margin-bottom: 18px;
+            position: relative;
+        }
+        .card::before, .card::after {
+            content: '';
+            position: absolute;
+            width: 14px; height: 14px;
+            border: 2px solid var(--cinnabar);
+            pointer-events: none;
+        }
+        .card::before { top: 8px; left: 8px; border-right: none; border-bottom: none; }
+        .card::after { bottom: 8px; right: 8px; border-left: none; border-top: none; }
+
+        .card-header {
+            padding: 16px 22px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .card-title::before {
+            content: '';
+            width: 4px; height: 17px;
+            background: var(--cinnabar);
+            border-radius: 2px;
+        }
+        .card-body { padding: 20px 22px; }
+
+        .seal-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px; height: 22px;
+            background: var(--cinnabar);
+            color: #fffdf8;
+            font-size: 13px;
+            font-weight: bold;
+            border-radius: 4px;
+            margin-right: 6px;
+            vertical-align: -5px;
+            box-shadow: inset 0 0 0 1px rgba(255, 253, 248, 0.35), 0 1px 2px rgba(0, 0, 0, 0.12);
+        }
+
+        /* 列表条目 */
+        .list-item {
+            background: #fffdf8;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            flex-wrap: wrap;
+            transition: all 0.2s;
+        }
+        .list-item:hover { box-shadow: 0 4px 14px rgba(0, 0, 0, 0.07); }
+        .list-item .item-main { flex: 1; min-width: 220px; }
+        .list-item .item-title { font-weight: 600; font-size: 15px; }
+        .list-item .item-sub { font-size: 12px; color: var(--ink-light); margin-top: 4px; }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 2px;
+            font-size: 12px;
+        }
+        .badge-jade { background: #eef5f0; color: var(--jade); }
+        .badge-gold { background: #fbf3e0; color: var(--gold); }
+        .badge-cinnabar { background: #fdf2f2; color: var(--cinnabar); }
+        .badge-ink { background: #f0ede6; color: var(--ink-light); }
+
+        /* 锁定提示 */
+        .lock-banner {
+            background: #fbf3e0;
+            border: 1px solid var(--gold);
+            border-radius: 4px;
+            padding: 14px 18px;
+            margin-bottom: 18px;
+            font-size: 13px;
+            color: #8a6d1a;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* 弹窗 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(43, 27, 18, 0.5);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: #fffdf8;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            width: 100%;
+            max-width: 720px;
+            max-height: 86vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+            position: relative;
+        }
+        .modal-header {
+            padding: 16px 22px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            background: #fffdf8;
+            z-index: 2;
+        }
+        .modal-header h3 { font-size: 17px; letter-spacing: 1px; color: var(--cinnabar); }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            color: var(--ink-light);
+            line-height: 1;
+        }
+        .modal-close:hover { color: var(--cinnabar); }
+        .modal-body { padding: 20px 22px; }
+
+        .detail-row { display: flex; padding: 8px 0; border-bottom: 1px dashed #ebe4d6; }
+        .detail-label { width: 96px; flex-shrink: 0; color: var(--ink-light); font-size: 13px; }
+        .detail-value { flex: 1; color: var(--ink); font-size: 14px; }
+
+        .section-subtitle {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--cinnabar);
+            margin: 18px 0 10px;
+            padding-left: 10px;
+            border-left: 3px solid var(--cinnabar);
+        }
+        .section-subtitle:first-child { margin-top: 0; }
+
+        .advice-text {
+            background: var(--paper);
+            border: 1px solid var(--border);
+            border-radius: 2px;
+            padding: 14px;
+            font-size: 13px;
+            line-height: 1.9;
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 320px;
+            overflow-y: auto;
+        }
+
+        .symptom-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+        .symptom-tag {
+            background: var(--paper);
+            border: 1px solid var(--border);
+            padding: 3px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+
+        .review-actions {
+            margin-top: 18px;
+            border-top: 1px solid var(--border);
+            padding-top: 16px;
+        }
+        .review-actions .btn-row { display: flex; gap: 12px; margin-top: 12px; flex-wrap: wrap; }
+
+        .empty-state { text-align: center; padding: 50px 20px; color: var(--ink-light); }
+        .empty-state .seal-badge { width: 40px; height: 40px; font-size: 20px; margin: 0 auto 12px; border-radius: 6px; }
+
+        .loading { text-align: center; padding: 40px; color: var(--ink-light); }
+
+        .order-amount { color: var(--cinnabar); font-weight: 700; }
+        .order-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+
+        .hidden { display: none !important; }
+
+        @media (max-width: 640px) {
+            .login-card { padding: 34px 24px; }
+            .main-content { padding: 16px; }
+            .detail-label { width: 80px; }
+        }
+
+        /* P3 设计系统接入 */
+        button:active { transform: scale(0.97); transition-duration: 100ms; }
+        @keyframes xsnSectionIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .xsn-section-in { animation: xsnSectionIn 200ms var(--ease-spring, ease-out); }
+    </style>
+</head>
+<body>
+    <!-- 登录 / 入驻界面 -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-card" data-reveal>
+            <div class="seal">医馆</div>
+            <div class="login-title">
+                <h1>医馆管理后台</h1>
+                <p>小神农中医 AI · 入驻医馆工作台</p>
+            </div>
+
+            <!-- 登录表单 -->
+            <form class="login-form" id="loginForm">
+                <div class="form-group">
+                    <label>登录手机号</label>
+                    <input type="tel" class="form-control" id="loginPhone" placeholder="请输入医馆账号手机号" required>
+                </div>
+                <div class="form-group">
+                    <label>密码</label>
+                    <input type="password" class="form-control" id="loginPassword" placeholder="请输入密码" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">登 录</button>
+                <div class="form-msg error" id="loginMsg"></div>
+                <div class="switch-link">尚未入驻？<a id="showApplyLink">医馆入驻申请</a></div>
+            </form>
+
+            <!-- 入驻申请表单 -->
+            <form class="login-form hidden" id="applyForm">
+                <div class="form-group">
+                    <label>医馆名称</label>
+                    <input type="text" class="form-control" id="applyName" placeholder="如：仁心堂中医馆" required>
+                </div>
+                <div class="form-group">
+                    <label>执业许可证号</label>
+                    <input type="text" class="form-control" id="applyLicense" placeholder="医疗机构执业许可证号" required>
+                </div>
+                <div class="form-group">
+                    <label>地址</label>
+                    <input type="text" class="form-control" id="applyAddress" placeholder="医馆经营地址">
+                </div>
+                <div class="form-group">
+                    <label>联系电话</label>
+                    <input type="tel" class="form-control" id="applyPhone" placeholder="对外联系电话">
+                </div>
+                <div class="form-group">
+                    <label>登录手机号（账号）</label>
+                    <input type="tel" class="form-control" id="applyAccountPhone" placeholder="用于登录本后台" required>
+                </div>
+                <div class="form-group">
+                    <label>登录密码（至少 6 位）</label>
+                    <input type="password" class="form-control" id="applyPassword" placeholder="请设置登录密码" required>
+                </div>
+                <div class="form-group">
+                    <label>联系人姓名</label>
+                    <input type="text" class="form-control" id="applyContact" placeholder="联系人 / 医师姓名">
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-row">
+                        <input type="checkbox" id="applyDecoction"> 支持中药代煎服务
+                    </label>
+                </div>
+                <div class="form-group" id="decoctionFeeGroup" style="display:none;">
+                    <label>代煎费（元 / 单）</label>
+                    <input type="number" class="form-control" id="applyDecoctionFee" min="0" step="0.01" placeholder="如：15">
+                </div>
+                <div class="form-group">
+                    <label>配送范围</label>
+                    <input type="text" class="form-control" id="applyDeliveryScope" placeholder="如：北京市 / 本区 5 公里内">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">提交入驻申请</button>
+                <div class="form-msg" id="applyMsg"></div>
+                <div class="switch-link">已有账号？<a id="showLoginLink">返回登录</a></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 后台主界面 -->
+    <div class="app-shell" id="appShell">
+        <header class="top-header">
+            <div class="clinic-identity">
+                <div class="mini-seal">医馆</div>
+                <div>
+                    <div class="name" id="clinicName">医馆</div>
+                    <div class="sub">小神农 · 医馆管理后台</div>
+                </div>
+                <span class="status-badge pending" id="clinicStatusBadge">资质审核中</span>
+            </div>
+            <button class="logout-btn" id="logoutBtn">退出登录</button>
+        </header>
+
+        <div class="tab-bar">
+            <button class="tab-btn active" data-tab="dashboard">总览</button>
+            <button class="tab-btn" data-tab="rx">药方审核</button>
+            <button class="tab-btn" data-tab="orders">订单管理</button>
+            <button class="tab-btn" data-tab="profile">医馆资料</button>
+        </div>
+
+        <main class="main-content" id="mainContent"></main>
+    </div>
+
+    <!-- 详情弹窗 -->
+    <div class="modal-overlay" id="detailModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modalTitle">详情</h3>
+                <button class="modal-close" id="modalClose">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        // API 基础配置（与主站 index.html 同一套探测逻辑）
+        const DEFAULT_API_BASE = 'http://localhost:5001';
+
+        function isValidApiBase(v) {
+            return v && (v.startsWith('http://') || v.startsWith('https://'));
+        }
+
+        function detectApiBase() {
+            const manual = localStorage.getItem('xsn_api_base');
+            if (isValidApiBase(manual)) return manual;
+            if (manual !== null && !isValidApiBase(manual)) {
+                localStorage.removeItem('xsn_api_base');
+            }
+            if (location.protocol === 'file:') return DEFAULT_API_BASE;
+            if ((location.hostname === 'localhost' || location.hostname === '127.0.0.1') && location.port !== '5001') {
+                return DEFAULT_API_BASE;
+            }
+            return '';  // 空字符串表示同源，走 nginx 代理
+        }
+
+        let API_BASE = detectApiBase();
+        console.log('[XiaoShennong Clinic] API_BASE:', API_BASE || '(relative)');
+
+        let clinicToken = localStorage.getItem('xsn_clinic_token') || '';
+        let clinicInfo = null;      // /api/clinic/profile 返回的 clinic 对象
+        let currentTab = 'dashboard';
+        let rxQueue = [];
+        let clinicOrders = [];
+
+        // API 请求封装
+        async function apiRequest(method, path, body = null, withAuth = true) {
+            const headers = { 'Content-Type': 'application/json' };
+            if (withAuth && clinicToken) headers['Authorization'] = 'Bearer ' + clinicToken;
+            const options = { method, headers };
+            if (body) options.body = JSON.stringify(body);
+            const base = isValidApiBase(API_BASE) ? API_BASE : DEFAULT_API_BASE;
+            try {
+                const res = await fetch(`${base}${path}`, options);
+                const data = await res.json();
+                return { ok: res.ok, status: res.status, data };
+            } catch (err) {
+                return { ok: false, status: 0, data: { success: false, error: '网络连接失败：' + err.message } };
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text == null ? '' : String(text);
+            return div.innerHTML;
+        }
+
+        function fenToYuan(fen) {
+            return '¥' + ((Number(fen) || 0) / 100).toFixed(2);
+        }
+
+        // 医馆状态徽章
+        function statusBadge(status) {
+            const map = {
+                pending: ['pending', '资质审核中'],
+                verified: ['verified', '已核验'],
+                frozen: ['frozen', '已冻结']
+            };
+            const [cls, label] = map[status] || ['pending', status || '未知'];
+            return { cls, label };
+        }
+
+        function isVerified() {
+            return clinicInfo && clinicInfo.status === 'verified';
+        }
+
+        // ============ 初始化 ============
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('loginForm').addEventListener('submit', handleLogin);
+            document.getElementById('applyForm').addEventListener('submit', handleApply);
+            document.getElementById('showApplyLink').addEventListener('click', () => toggleAuthView('apply'));
+            document.getElementById('showLoginLink').addEventListener('click', () => toggleAuthView('login'));
+            document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+            document.getElementById('modalClose').addEventListener('click', closeModal);
+            document.getElementById('detailModal').addEventListener('click', (e) => {
+                if (e.target.id === 'detailModal') closeModal();
+            });
+            document.getElementById('applyDecoction').addEventListener('change', (e) => {
+                document.getElementById('decoctionFeeGroup').style.display = e.target.checked ? 'block' : 'none';
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+            });
+
+            if (clinicToken) {
+                resumeSession();
+            }
+        });
+
+        function toggleAuthView(view) {
+            document.getElementById('loginForm').classList.toggle('hidden', view !== 'login');
+            document.getElementById('applyForm').classList.toggle('hidden', view !== 'apply');
+            document.getElementById('loginMsg').textContent = '';
+            document.getElementById('applyMsg').textContent = '';
+            document.getElementById('applyMsg').className = 'form-msg';
+            // P3 设计系统接入：表单切换 200ms 淡入
+            const shownForm = document.getElementById(view === 'login' ? 'loginForm' : 'applyForm');
+            shownForm.classList.remove('xsn-section-in');
+            void shownForm.offsetWidth;
+            shownForm.classList.add('xsn-section-in');
+        }
+
+        // ============ 登录 / 入驻 ============
+        async function handleLogin(e) {
+            e.preventDefault();
+            const phone = document.getElementById('loginPhone').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const msgEl = document.getElementById('loginMsg');
+            msgEl.textContent = '登录中...';
+
+            const res = await apiRequest('POST', '/api/clinic/login', { phone, password }, false);
+            if (res.ok && res.data.success) {
+                clinicToken = res.data.data.token;
+                localStorage.setItem('xsn_clinic_token', clinicToken);
+                msgEl.textContent = '';
+                await loadProfileAndEnter();
+            } else {
+                msgEl.textContent = res.data.error || '登录失败，请检查手机号与密码';
+            }
+        }
+
+        async function handleApply(e) {
+            e.preventDefault();
+            const msgEl = document.getElementById('applyMsg');
+            msgEl.className = 'form-msg';
+            msgEl.textContent = '提交中...';
+
+            const supportDecoction = document.getElementById('applyDecoction').checked;
+            const feeYuan = parseFloat(document.getElementById('applyDecoctionFee').value || '0');
+            const body = {
+                name: document.getElementById('applyName').value.trim(),
+                license_no: document.getElementById('applyLicense').value.trim(),
+                address: document.getElementById('applyAddress').value.trim(),
+                phone: document.getElementById('applyPhone').value.trim(),
+                account_phone: document.getElementById('applyAccountPhone').value.trim(),
+                password: document.getElementById('applyPassword').value,
+                contact_name: document.getElementById('applyContact').value.trim(),
+                support_decoction: supportDecoction,
+                decoction_fee: supportDecoction ? Math.round(feeYuan * 100) : 0,
+                delivery_scope: document.getElementById('applyDeliveryScope').value.trim()
+            };
+
+            const res = await apiRequest('POST', '/api/clinic/apply', body, false);
+            if (res.ok && res.data.success) {
+                msgEl.className = 'form-msg ok';
+                msgEl.textContent = '已开通账号，资质审核通过后即可接单审核，请使用登录手机号登录。';
+                document.getElementById('applyForm').reset();
+                document.getElementById('decoctionFeeGroup').style.display = 'none';
+            } else {
+                msgEl.className = 'form-msg error';
+                msgEl.textContent = res.data.error || '提交失败，请稍后重试';
+            }
+        }
+
+        async function resumeSession() {
+            const res = await apiRequest('GET', '/api/clinic/profile');
+            if (res.ok && res.data.success) {
+                clinicInfo = res.data.data.clinic;
+                enterApp();
+            } else {
+                clinicToken = '';
+                localStorage.removeItem('xsn_clinic_token');
+            }
+        }
+
+        async function loadProfileAndEnter() {
+            const res = await apiRequest('GET', '/api/clinic/profile');
+            if (res.ok && res.data.success) {
+                clinicInfo = res.data.data.clinic;
+                enterApp();
+            } else {
+                document.getElementById('loginMsg').textContent = res.data.error || '获取医馆信息失败';
+            }
+        }
+
+        function handleLogout() {
+            clinicToken = '';
+            clinicInfo = null;
+            localStorage.removeItem('xsn_clinic_token');
+            document.getElementById('appShell').classList.remove('active');
+            document.getElementById('loginScreen').style.display = 'flex';
+            toggleAuthView('login');
+        }
+
+        function enterApp() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('appShell').classList.add('active');
+            document.getElementById('clinicName').textContent = clinicInfo.name || '医馆';
+            const { cls, label } = statusBadge(clinicInfo.status);
+            const badge = document.getElementById('clinicStatusBadge');
+            badge.className = 'status-badge ' + cls;
+            badge.textContent = label;
+            switchTab('dashboard');
+        }
+
+        // ============ Tab 切换 ============
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+            // P3 设计系统接入：主区切换 200ms 淡入
+            const main = document.getElementById('mainContent');
+            main.classList.remove('xsn-section-in');
+            void main.offsetWidth;
+            main.classList.add('xsn-section-in');
+            if (tab === 'dashboard') renderDashboard();
+            else if (tab === 'rx') renderRxQueue();
+            else if (tab === 'orders') renderOrders();
+            else if (tab === 'profile') renderProfile();
+        }
+
+        function lockBannerHtml(text) {
+            return `<div class="lock-banner"><span class="seal-badge" style="background:var(--gold)">锁</span>${escapeHtml(text)}</div>`;
+        }
+
+        // ============ 总览 ============
+        async function renderDashboard() {
+            const main = document.getElementById('mainContent');
+            main.innerHTML = '<div class="loading">数据加载中...</div>';
+            const res = await apiRequest('GET', '/api/clinic/dashboard');
+            if (!res.ok || !res.data.success) {
+                main.innerHTML = `<div class="empty-state">${escapeHtml(res.data.error || '加载失败')}</div>`;
+                return;
+            }
+            const d = res.data.data;
+            main.innerHTML = `
+                <div class="page-title">
+                    <h2>总览</h2>
+                    <p>${escapeHtml(d.clinic_name || '')} 的经营概况</p>
+                </div>
+                ${!isVerified() ? lockBannerHtml('医馆资质审核中，审核与接单权限暂未开通，通过后即可操作。') : ''}
+                <div class="stats-grid">
+                    <div class="stat-card cinnabar">
+                        <div class="stat-label">待审核药方</div>
+                        <div class="stat-value">${d.pending_rx || 0}</div>
+                        <div class="stat-desc">等待医师审核的开方申请</div>
+                    </div>
+                    <div class="stat-card gold">
+                        <div class="stat-label">进行中订单</div>
+                        <div class="stat-value">${d.active_orders || 0}</div>
+                        <div class="stat-desc">已接单未完成的订单</div>
+                    </div>
+                    <div class="stat-card jade">
+                        <div class="stat-label">累计药方</div>
+                        <div class="stat-value">${d.total_rx || 0}</div>
+                        <div class="stat-desc">收到的开方申请总数</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">累计订单</div>
+                        <div class="stat-value">${d.total_orders || 0}</div>
+                        <div class="stat-desc">履约订单总数</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ============ 药方审核 ============
+        async function renderRxQueue() {
+            const main = document.getElementById('mainContent');
+            main.innerHTML = '<div class="loading">待审核队列加载中...</div>';
+            const res = await apiRequest('GET', '/api/clinic/rx_queue?status=pending_review');
+            if (!res.ok || !res.data.success) {
+                main.innerHTML = `<div class="empty-state">${escapeHtml(res.data.error || '加载失败')}</div>`;
+                return;
+            }
+            rxQueue = res.data.data.list || [];
+            const locked = !isVerified();
+
+            let html = `
+                <div class="page-title">
+                    <h2>药方审核</h2>
+                    <p>AI 建议经执业医师审核通过后方可生成正式处方</p>
+                </div>
+            `;
+            if (locked) {
+                html += lockBannerHtml('资质审核中，审核权限未开通。可查看队列，审核操作暂不可用。');
+            }
+            if (rxQueue.length === 0) {
+                html += `<div class="empty-state">
+                    <div class="seal-badge">方</div>
+                    <p>暂无待审核的药方申请</p>
+                </div>`;
+            } else {
+                html += rxQueue.map(rx => {
+                    const snap = rx.emr_snapshot || {};
+                    const chief = snap.first_complaint || snap.symptoms_text || '(无主诉)';
+                    return `
+                    <div class="list-item">
+                        <div class="item-main">
+                            <div class="item-title">${escapeHtml(rx.rx_id)}</div>
+                            <div class="item-sub">提交时间：${escapeHtml(rx.created_at || '')} ｜ 主诉：${escapeHtml(String(chief).slice(0, 50))}</div>
+                        </div>
+                        <span class="badge badge-gold">待审核</span>
+                        <button class="btn btn-jade btn-sm" onclick="openRxDetail('${escapeHtml(rx.rx_id)}')">查看详情</button>
+                    </div>`;
+                }).join('');
+            }
+            main.innerHTML = html;
+        }
+
+        function openRxDetail(rxId) {
+            const rx = rxQueue.find(r => r.rx_id === rxId);
+            if (!rx) return;
+            const snap = rx.emr_snapshot || {};
+            const profile = snap.profile || {};
+            const locked = !isVerified();
+
+            const profileRows = [
+                ['年龄', profile.age ? profile.age + ' 岁' : ''],
+                ['性别', profile.gender || ''],
+                ['身高', profile.height ? profile.height + ' cm' : ''],
+                ['体重', profile.weight ? profile.weight + ' kg' : ''],
+                ['血型', profile.blood_type || ''],
+                ['既往史', profile.past_history || ''],
+                ['过敏史', profile.allergy_history || ''],
+                ['用药史', profile.medication_history || ''],
+                ['月经婚育史', profile.gynecology_history || '']
+            ].filter(r => r[1]);
+
+            let symptomsHtml = '';
+            if (Array.isArray(snap.collected_symptoms) && snap.collected_symptoms.length > 0) {
+                symptomsHtml = `<div class="symptom-tags">${snap.collected_symptoms.map(s =>
+                    `<span class="symptom-tag">${escapeHtml(s.name || s.id || '')}</span>`).join('')}</div>`;
+            } else if (snap.symptoms_text) {
+                symptomsHtml = `<div class="advice-text" style="max-height:none;">${escapeHtml(snap.symptoms_text)}</div>`;
+            } else {
+                symptomsHtml = '<div style="color:var(--ink-light);font-size:13px;">无症状记录</div>';
+            }
+
+            document.getElementById('modalTitle').textContent = `药方审核 · ${rx.rx_id}`;
+            document.getElementById('modalBody').innerHTML = `
+                <div class="section-subtitle">患者档案快照</div>
+                ${profileRows.length ? profileRows.map(r => `
+                    <div class="detail-row">
+                        <div class="detail-label">${escapeHtml(r[0])}</div>
+                        <div class="detail-value">${escapeHtml(r[1])}</div>
+                    </div>`).join('') : '<div style="color:var(--ink-light);font-size:13px;">患者尚未填写健康档案</div>'}
+                <div class="section-subtitle">症状信息</div>
+                ${symptomsHtml}
+                <div class="section-subtitle">AI 辨证建议（全文）</div>
+                <div class="advice-text">${escapeHtml(rx.ai_advice || '(无内容)')}</div>
+                <div class="review-actions">
+                    <div class="section-subtitle">审核操作</div>
+                    <div class="form-group">
+                        <label>加减方说明（选填，通过时生效）</label>
+                        <textarea class="form-control" id="reviewAdjusted" placeholder="如：原方加酸枣仁三钱、夜交藤五钱..." ${locked ? 'disabled' : ''}></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>审核备注（通过选填；驳回必填理由）</label>
+                        <textarea class="form-control" id="reviewNote" placeholder="审核意见或驳回理由" ${locked ? 'disabled' : ''}></textarea>
+                    </div>
+                    <div class="btn-row">
+                        <button class="btn btn-jade" onclick="submitReview('${escapeHtml(rx.rx_id)}', 'approve')" ${locked ? 'disabled' : ''}>审核通过</button>
+                        <button class="btn btn-primary" onclick="submitReview('${escapeHtml(rx.rx_id)}', 'reject')" ${locked ? 'disabled' : ''}>驳 回</button>
+                    </div>
+                    ${locked ? '<div class="form-msg error" style="text-align:left;">资质审核中，审核权限未开通</div>' : ''}
+                    <div class="form-msg" id="reviewMsg"></div>
+                </div>
+            `;
+            document.getElementById('detailModal').classList.add('active');
+        }
+
+        async function submitReview(rxId, action) {
+            const note = document.getElementById('reviewNote').value.trim();
+            const adjusted = document.getElementById('reviewAdjusted').value.trim();
+            const msgEl = document.getElementById('reviewMsg');
+
+            if (action === 'reject' && !note) {
+                msgEl.className = 'form-msg error';
+                msgEl.style.textAlign = 'left';
+                msgEl.textContent = '驳回时请填写理由';
+                return;
+            }
+            const body = { action, note };
+            if (action === 'approve' && adjusted) body.adjusted_formula = adjusted;
+
+            msgEl.className = 'form-msg';
+            msgEl.style.textAlign = 'left';
+            msgEl.textContent = '提交中...';
+            const res = await apiRequest('POST', `/api/clinic/rx/${rxId}/review`, body);
+            if (res.ok && res.data.success) {
+                closeModal();
+                renderRxQueue();
+            } else {
+                msgEl.className = 'form-msg error';
+                msgEl.textContent = res.data.error || '操作失败，请稍后重试';
+            }
+        }
+
+        // ============ 订单管理 ============
+        async function renderOrders() {
+            const main = document.getElementById('mainContent');
+            main.innerHTML = '<div class="loading">订单加载中...</div>';
+            const res = await apiRequest('GET', '/api/clinic/orders');
+            if (!res.ok || !res.data.success) {
+                main.innerHTML = `<div class="empty-state">${escapeHtml(res.data.error || '加载失败')}</div>`;
+                return;
+            }
+            clinicOrders = res.data.data.orders || [];
+            const locked = !isVerified();
+
+            let html = `
+                <div class="page-title">
+                    <h2>订单管理</h2>
+                    <p>处方订单履约流转：接单 → 配药 → （代煎）→ 发货 / 待取货 → 完成</p>
+                </div>
+            `;
+            if (locked) {
+                html += lockBannerHtml('资质审核中，接单权限未开通。可查看订单，流转操作暂不可用。');
+            }
+            if (clinicOrders.length === 0) {
+                html += `<div class="empty-state">
+                    <div class="seal-badge">单</div>
+                    <p>暂无订单</p>
+                </div>`;
+            } else {
+                html += clinicOrders.map(o => orderCardHtml(o, locked)).join('');
+            }
+            main.innerHTML = html;
+        }
+
+        function orderCardHtml(o, locked) {
+            const typeLabel = o.order_type === 'prescription' ? '处方订单' : '商城订单';
+            const fulfillLabel = o.fulfillment === 'pickup' ? '自取' : '邮寄';
+            const itemsText = Array.isArray(o.items) && o.items.length
+                ? o.items.map(it => `${escapeHtml(it.product_id || '')} ×${it.qty || 1}`).join('、')
+                : (o.rx_id ? `处方 ${escapeHtml(o.rx_id)}` : '—');
+
+            const actions = nextOrderActions(o);
+            const btnsHtml = actions.map(a =>
+                `<button class="btn ${a.cls} btn-sm" onclick="updateOrderStatus('${escapeHtml(o.order_id)}', '${a.to}')" ${locked ? 'disabled' : ''}>${a.label}</button>`
+            ).join('');
+
+            return `
+            <div class="list-item" style="align-items:flex-start;">
+                <div class="item-main">
+                    <div class="item-title">
+                        ${escapeHtml(o.order_id)}
+                        <span class="badge badge-ink">${typeLabel}</span>
+                        <span class="badge badge-jade">${escapeHtml(o.status_label || o.status)}</span>
+                    </div>
+                    <div class="item-sub">
+                        履约：${fulfillLabel}${o.decoction ? ' ｜ 代煎' : ''} ｜ 内容：${itemsText}<br>
+                        地址：${escapeHtml(o.address || '—')} ｜ 下单：${escapeHtml(o.created_at || '')}
+                    </div>
+                    <div class="order-actions">${btnsHtml}</div>
+                </div>
+                <div class="order-amount">${fenToYuan(o.amount)}</div>
+            </div>`;
+        }
+
+        // 按状态机计算下一步操作
+        function nextOrderActions(o) {
+            const s = o.status;
+            const delivery = o.fulfillment !== 'pickup';
+            const acts = [];
+            const cancel = { to: 'cancelled', label: '取消订单', cls: 'btn-secondary' };
+            if (s === 'created') {
+                acts.push({ to: 'accepted', label: '接单', cls: 'btn-jade' }, cancel);
+            } else if (s === 'accepted') {
+                acts.push({ to: 'preparing', label: '开始配药', cls: 'btn-jade' }, cancel);
+            } else if (s === 'preparing') {
+                if (o.decoction) {
+                    acts.push({ to: 'decocting', label: '开始代煎', cls: 'btn-jade' });
+                } else {
+                    acts.push(delivery
+                        ? { to: 'shipped', label: '发货', cls: 'btn-jade' }
+                        : { to: 'awaiting_pickup', label: '待取货', cls: 'btn-jade' });
+                }
+                acts.push(cancel);
+            } else if (s === 'decocting') {
+                acts.push(delivery
+                    ? { to: 'shipped', label: '发货', cls: 'btn-jade' }
+                    : { to: 'awaiting_pickup', label: '待取货', cls: 'btn-jade' });
+            } else if (s === 'shipped' || s === 'awaiting_pickup') {
+                acts.push({ to: 'completed', label: '完成订单', cls: 'btn-jade' });
+            }
+            return acts;
+        }
+
+        async function updateOrderStatus(orderId, toStatus) {
+            let note = '';
+            if (toStatus === 'cancelled') {
+                const input = prompt('请输入取消原因（可留空）：');
+                if (input === null) return;  // 用户放弃取消操作
+                note = input;
+            }
+            const res = await apiRequest('POST', `/api/clinic/orders/${orderId}/status`, { to_status: toStatus, note });
+            if (res.ok && res.data.success) {
+                renderOrders();
+            } else {
+                alert(res.data.error || '操作失败，请稍后重试');
+            }
+        }
+
+        // ============ 医馆资料 ============
+        function renderProfile() {
+            const main = document.getElementById('mainContent');
+            const c = clinicInfo || {};
+            const { cls, label } = statusBadge(c.status);
+            const rows = [
+                ['医馆编号', c.clinic_id],
+                ['医馆名称', c.name],
+                ['执业许可证号', c.license_no],
+                ['地址', c.address],
+                ['联系电话', c.phone],
+                ['代煎服务', c.support_decoction ? `支持（代煎费 ${fenToYuan(c.decoction_fee)} / 单）` : '不支持'],
+                ['配送范围', c.delivery_scope],
+                ['入驻时间', c.created_at]
+            ];
+            main.innerHTML = `
+                <div class="page-title">
+                    <h2>医馆资料</h2>
+                    <p>入驻信息与资质状态</p>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">${escapeHtml(c.name || '医馆')}</div>
+                        <span class="status-badge ${cls}" style="border-color:currentColor;">${label}</span>
+                    </div>
+                    <div class="card-body">
+                        ${rows.map(r => `
+                            <div class="detail-row">
+                                <div class="detail-label">${escapeHtml(r[0])}</div>
+                                <div class="detail-value">${escapeHtml(r[1] == null || r[1] === '' ? '—' : r[1])}</div>
+                            </div>`).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function closeModal() {
+            document.getElementById('detailModal').classList.remove('active');
+        }
+    </script>
+</body>
+</html>

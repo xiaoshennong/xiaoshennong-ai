@@ -1,0 +1,223 @@
+/* ============================================================
+   小神农中医AI - 设计系统（xsn-theme.css）
+   古风 × 苹果动效。token 与规范详见 frontend/DESIGN.md
+   使用：只引入，不覆盖页面既有类名；组件一律 xsn- 前缀。
+   ============================================================ */
+
+:root {
+    /* ---- 色板 ---- */
+    --paper: #f7f3e9;          /* 宣纸底 */
+    --paper-dark: #efe8d8;     /* 宣纸深色 */
+    --card: #fffdf8;           /* 卡片 */
+    --ink: #2b2b2b;            /* 墨色 */
+    --ink-light: #5a5a5a;      /* 淡墨 */
+    --ink-faint: #8b7355;      /* 枯墨 */
+    --cinnabar: #a53232;       /* 朱砂 */
+    --cinnabar-light: #c45c48;
+    --cinnabar-dark: #8a2525;  /* 深红 */
+    --jade: #4a7c59;           /* 玉绿 */
+    --jade-dark: #2d4a35;
+    --gold: #b8860b;           /* 鎏金 */
+    --gold-light: #d4a84b;
+    --border: #d4c4b0;         /* 纸边 */
+    --paper-texture: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0.55 0 0 0 0 0.5 0 0 0 0 0.42 0 0 0 0.04 0'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+
+    /* ---- 字排印 ---- */
+    --font-serif: 'Noto Serif SC', 'Source Han Serif SC', 'SimSun', 'STSong', serif;
+    --text-sm: 0.8125rem;      /* 13px */
+    --text-base: 0.9375rem;    /* 15px */
+    --text-lg: 1.125rem;       /* 18px */
+    --text-title: clamp(1.375rem, 3vw, 1.75rem);
+    --text-display: clamp(2.5rem, 6vw, 4.5rem);
+    --tracking-display: 0.2em; /* 中文大标题加宽字距（书法端庄感，不从 Apple 负字距） */
+
+    /* ---- 动效 token（临界阻尼，无回弹） ---- */
+    --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);   /* 弹簧落定近似，入场/位移主曲线 */
+    --ease-out-fast: cubic-bezier(0.16, 1, 0.3, 1);
+    --dur-instant: 100ms;      /* 按压反馈 */
+    --dur-fast: 150ms;
+    --dur-med: 300ms;
+    --dur-slow: 600ms;
+
+    /* ---- 材质 ---- */
+    --material-paper: rgba(247, 243, 233, 0.78);
+    --material-blur: blur(20px) saturate(160%);
+
+    --radius: 4px;
+    --shadow-card: 0 2px 12px rgba(43, 27, 18, 0.08);
+    --shadow-lift: 0 12px 32px rgba(43, 27, 18, 0.14);
+    --shadow-modal: 0 20px 60px rgba(0, 0, 0, 0.25);
+}
+
+/* ============ 按压即时反馈（全站按钮的最低标准） ============ */
+.xsn-btn, button.xsn-btn, a.xsn-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 26px;
+    border-radius: var(--radius);
+    font-family: var(--font-serif);
+    font-size: var(--text-base);
+    letter-spacing: 0.12em;
+    cursor: pointer;
+    border: 1px solid transparent;
+    text-decoration: none;
+    transition: transform var(--dur-instant) ease-out,
+                background var(--dur-fast) var(--ease-spring),
+                color var(--dur-fast) var(--ease-spring),
+                box-shadow var(--dur-fast) var(--ease-spring);
+}
+.xsn-btn:active { transform: scale(0.97); transition-duration: var(--dur-instant); }
+.xsn-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.xsn-btn:disabled:active { transform: none; }
+
+.xsn-btn-cinnabar { background: var(--cinnabar); color: #fffdf8; }
+.xsn-btn-cinnabar:hover:not(:disabled) { background: var(--cinnabar-dark); box-shadow: var(--shadow-lift); }
+.xsn-btn-jade { background: var(--jade); color: #fffdf8; }
+.xsn-btn-jade:hover:not(:disabled) { background: var(--jade-dark); box-shadow: var(--shadow-lift); }
+.xsn-btn-gold { background: var(--gold); color: #fffdf8; }
+.xsn-btn-gold:hover:not(:disabled) { background: #9a7209; box-shadow: var(--shadow-lift); }
+
+.xsn-btn-outline-cinnabar { background: transparent; border-color: var(--cinnabar-light); color: var(--cinnabar); }
+.xsn-btn-outline-cinnabar:hover:not(:disabled) { background: var(--cinnabar); color: #fff; }
+.xsn-btn-outline-gold { background: transparent; border-color: var(--gold); color: var(--gold); }
+.xsn-btn-outline-gold:hover:not(:disabled) { background: var(--gold); color: #fff; }
+.xsn-btn-outline-jade { background: transparent; border-color: var(--jade); color: var(--jade); }
+.xsn-btn-outline-jade:hover:not(:disabled) { background: var(--jade); color: #fff; }
+
+/* ============ 印章徽章 ============ */
+.xsn-seal {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    background: var(--cinnabar);
+    color: #fffdf8;
+    font-size: 13px;
+    font-weight: bold;
+    font-family: var(--font-serif);
+    border-radius: 4px;
+    margin-right: 6px;
+    vertical-align: -5px;
+    box-shadow: inset 0 0 0 1px rgba(255, 253, 248, 0.35), 0 1px 2px rgba(0, 0, 0, 0.12);
+}
+.xsn-seal-lg { width: 40px; height: 40px; font-size: 19px; margin-right: 0; border-radius: 6px; }
+.xsn-seal-jade { background: var(--jade); }
+.xsn-seal-gold { background: var(--gold); }
+
+/* ============ 状态徽章 ============ */
+.xsn-status {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 3px;
+    font-size: var(--text-sm);
+    letter-spacing: 0.08em;
+    border: 1px solid currentColor;
+}
+.xsn-status-pending { color: var(--gold); background: rgba(184, 134, 11, 0.08); }
+.xsn-status-ok { color: var(--jade); background: rgba(74, 124, 89, 0.08); }
+.xsn-status-bad { color: var(--cinnabar); background: rgba(165, 50, 50, 0.08); }
+
+/* ============ 卡片 ============ */
+.xsn-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
+    transition: transform var(--dur-med) var(--ease-spring),
+                box-shadow var(--dur-med) var(--ease-spring);
+}
+.xsn-card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lift);
+}
+
+/* ============ 入场（IntersectionObserver 驱动，见 xsn-motion.js） ============ */
+[data-reveal] {
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity var(--dur-slow) var(--ease-spring),
+                transform var(--dur-slow) var(--ease-spring);
+    transition-delay: var(--reveal-delay, 0ms);
+    will-change: opacity, transform;
+}
+[data-reveal].xsn-revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* SVG 描边动画 */
+[data-draw] {
+    transition: stroke-dashoffset 1.6s var(--ease-spring);
+}
+
+/* ============ 半透明材质吸顶栏 ============ */
+.xsn-material-bar {
+    background: var(--material-paper);
+    backdrop-filter: var(--material-blur);
+    -webkit-backdrop-filter: var(--material-blur);
+}
+
+/* ============ 规范弹窗（配合 XSNModal，空间一致性：从触发点长出、进出同路） ============ */
+.xsn-m-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(43, 27, 18, 0);
+    z-index: 300;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    transition: background 220ms ease;
+}
+.xsn-m-overlay.active { display: flex; }
+.xsn-m-overlay.xsn-m-in { background: rgba(43, 27, 18, 0.5); }
+.xsn-m-dialog {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    width: 100%;
+    max-width: 600px;
+    max-height: 86vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-modal);
+}
+.xsn-m-enter .xsn-m-dialog {
+    opacity: 0;
+    transform: scale(0.92) translateY(10px);
+    filter: blur(6px);
+    transition: opacity 220ms var(--ease-spring),
+                transform 220ms var(--ease-spring),
+                filter 220ms var(--ease-spring);
+    will-change: opacity, transform, filter;
+}
+.xsn-m-in .xsn-m-dialog {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    filter: blur(0);
+}
+
+/* ============ 无障碍降级（苹果合规标配，全站必须） ============ */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+    }
+    [data-reveal] {
+        transform: none !important;
+        transition: opacity 200ms ease !important;
+    }
+    [data-draw] { transition: none !important; }
+    .xsn-m-overlay { transition: none; background: rgba(43, 27, 18, 0.5); }
+    .xsn-m-enter .xsn-m-dialog {
+        transform: none !important;
+        filter: none !important;
+        transition: opacity 200ms ease !important;
+    }
+}
+@media (prefers-reduced-transparency: reduce) {
+    .xsn-material-bar { background: var(--paper); backdrop-filter: none; -webkit-backdrop-filter: none; }
+}

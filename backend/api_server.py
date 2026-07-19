@@ -34,13 +34,16 @@ try:
 except Exception as e:
     print(f"[API] 加载 .env 失败（可忽略）: {e}")
 
-from flask import Flask, request, jsonify, Response
+from flask import Flask, request, jsonify, Response, g
 from flask_cors import CORS
 
 from rag_engine_v2 import XiaoShennongRAGv2, DiagnosisResult
 
 # 症状编号体系（比 knowledge_base_v3 的索引更完整，含口语化别名）
 from symptom_codes import find_symptoms_by_text
+
+# 无嵌入词法检索器（语义搜索主路，替代退化的英文向量模型）
+from lexical_retriever import retrieve as lexical_retrieve
 
 # 统一使用 Yunwu AI API（用户明确要求所有 API 走 yunwu.ai）
 from llm_client_yunwu import get_llm_client, YunwuAIClient
@@ -517,7 +520,12 @@ def retrieve():
         if not query:
             return jsonify({"success": False, "error": "缺少查询内容"}), 400
         
-        chunks = rag_engine.retrieve(query, top_k=top_k)
+        # 词法检索主路（别名+元数据打分）；零结果时回退向量检索兜底
+        chunks = lexical_retrieve(query, top_k=top_k)
+        engine = "lexical"
+        if not chunks:
+            chunks = rag_engine.retrieve(query, top_k=top_k)
+            engine = "vector"
         
         results = []
         for chunk in chunks:
@@ -533,6 +541,7 @@ def retrieve():
             "success": True,
             "data": {
                 "query": query,
+                "engine": engine,
                 "results": results,
                 "total": len(results)
             }
@@ -557,7 +566,12 @@ def semantic_search():
         if not query:
             return jsonify({"success": False, "error": "缺少查询内容"}), 400
 
-        chunks = rag_engine.retrieve(query, top_k=top_k)
+        # 词法检索主路；零结果时回退向量检索兜底
+        chunks = lexical_retrieve(query, top_k=top_k)
+        engine = "lexical"
+        if not chunks:
+            chunks = rag_engine.retrieve(query, top_k=top_k)
+            engine = "vector"
 
         # 按来源/类型分组，兼容前端展示
         grouped = {}
@@ -575,7 +589,7 @@ def semantic_search():
             "success": True,
             "data": {
                 "query": query,
-                "engine": "semantic",
+                "engine": engine,
                 "results": grouped,
                 "total": len(chunks)
             }
@@ -658,6 +672,9 @@ def batch_import():
 
 
 # ============ 用户相关接口（简化版） ============
+# 注意：以下两个接口为早期 MVP 内存版，已废弃（deprecated），
+# 新系统请使用 /api/auth/* （手机号+密码+短信绑定，SQLite 持久化）。
+# 保留仅为避免旧前端/小程序骨架 404，内存数据重启即失。
 
 @app.route("/api/user/register", methods=["POST"])
 def user_register():
@@ -689,6 +706,490 @@ def user_profile():
         "success": True,
         "data": users_db[user_id]
     })
+
+
+# ============ 账号认证接口（手机号锚点，M2） ============
+
+from auth_service import (
+    register_user, login_by_password, login_by_sms, reset_password,
+    update_profile, logout as auth_logout, require_user,
+)
+from sms_service import send_code, verify_code
+
+
+@app.route("/api/auth/sms_code", methods=["POST"])
+def auth_sms_code():
+    """发送短信验证码（开发模式下响应带 dev_code）"""
+    data = request.get_json() or {}
+    phone = data.get("phone", "").strip()
+    purpose = data.get("purpose", "register")
+    if purpose not in ("register", "login", "reset"):
+        return jsonify({"success": False, "error": "不支持的验证码用途"}), 400
+    result = send_code(phone, purpose)
+    if not result["success"]:
+        return jsonify({"success": False, "error": result["error"]}), 400
+    resp = {"success": True, "data": {"message": "验证码已发送"}}
+    if result.get("dev_code"):
+        resp["data"]["dev_code"] = result["dev_code"]
+        resp["data"]["dev_mode"] = True
+    return jsonify(resp)
+
+
+@app.route("/api/auth/register", methods=["POST"])
+def auth_register():
+    """注册：手机号+密码+短信验证码+知情同意"""
+    data = request.get_json() or {}
+    phone = data.get("phone", "").strip()
+    password = data.get("password", "")
+    code = data.get("code", "").strip()
+    consent = bool(data.get("consent"))
+    nickname = data.get("nickname", "").strip()
+
+    if not verify_code(phone, code, "register"):
+        return jsonify({"success": False, "error": "验证码错误或已过期"}), 400
+
+    user, err = register_user(phone, password, consent, nickname)
+    if err:
+        return jsonify({"success": False, "error": err}), 400
+    return jsonify({"success": True, "data": {"user": user}})
+
+
+@app.route("/api/auth/login", methods=["POST"])
+def auth_login():
+    """账密登录"""
+    data = request.get_json() or {}
+    token, user, err = login_by_password(data.get("phone", "").strip(), data.get("password", ""))
+    if err:
+        return jsonify({"success": False, "error": err}), 401
+    return jsonify({"success": True, "data": {"token": token, "user": user}})
+
+
+@app.route("/api/auth/login_sms", methods=["POST"])
+def auth_login_sms():
+    """验证码登录（Web 备用 / 小程序一期）"""
+    data = request.get_json() or {}
+    phone = data.get("phone", "").strip()
+    code = data.get("code", "").strip()
+    if not verify_code(phone, code, "login"):
+        return jsonify({"success": False, "error": "验证码错误或已过期"}), 400
+    token, user, err = login_by_sms(phone)
+    if err:
+        return jsonify({"success": False, "error": err}), 401
+    return jsonify({"success": True, "data": {"token": token, "user": user}})
+
+
+@app.route("/api/auth/reset_password", methods=["POST"])
+def auth_reset_password():
+    """短信验证码重置密码"""
+    data = request.get_json() or {}
+    phone = data.get("phone", "").strip()
+    code = data.get("code", "").strip()
+    if not verify_code(phone, code, "reset"):
+        return jsonify({"success": False, "error": "验证码错误或已过期"}), 400
+    ok, err = reset_password(phone, data.get("new_password", ""))
+    if not ok:
+        return jsonify({"success": False, "error": err}), 400
+    return jsonify({"success": True, "data": {"message": "密码已重置，请重新登录"}})
+
+
+@app.route("/api/auth/me", methods=["GET"])
+@require_user
+def auth_me():
+    from auth_service import get_user
+    user = get_user(g.current_user["user_id"])
+    return jsonify({"success": True, "data": {"user": user}})
+
+
+@app.route("/api/auth/profile", methods=["PUT"])
+@require_user
+def auth_update_profile():
+    data = request.get_json() or {}
+    user = update_profile(g.current_user["user_id"], data)
+    return jsonify({"success": True, "data": {"user": user}})
+
+
+@app.route("/api/auth/logout", methods=["POST"])
+def auth_logout_route():
+    auth = request.headers.get("Authorization", "")
+    token = auth[7:].strip() if auth.startswith("Bearer ") else request.headers.get("X-User-Token", "")
+    if token:
+        auth_logout(token)
+    return jsonify({"success": True, "data": {"message": "已退出登录"}})
+
+
+@app.route("/api/auth/wx_phone_login", methods=["POST"])
+def auth_wx_phone_login():
+    """微信小程序手机号一键登录（二期实现：需企业主体小程序，约 3 分/次）。
+    一期小程序端请走 /api/auth/login_sms。"""
+    return jsonify({
+        "success": False,
+        "error": "微信一键登录二期开放，请使用手机号验证码登录"
+    }), 501
+
+
+# ============ 电子病历接口（M3） ============
+
+from emr_service import ensure_profile, update_profile as emr_update_profile, list_records
+
+
+@app.route("/api/user/emr", methods=["GET"])
+@require_user
+def emr_list():
+    """我的病历列表（健康档案 + 历次就诊记录）"""
+    records = list_records(g.current_user["user_id"])
+    return jsonify({"success": True, "data": {"records": records, "total": len(records)}})
+
+
+@app.route("/api/user/emr/profile", methods=["GET"])
+@require_user
+def emr_profile_get():
+    """查看健康档案"""
+    profile = ensure_profile(g.current_user["user_id"])
+    return jsonify({"success": True, "data": {"profile": profile}})
+
+
+@app.route("/api/user/emr/profile", methods=["PUT"])
+@require_user
+def emr_profile_put():
+    """编辑健康档案（身高体重/血型/家族史 + 既往史/过敏史/用药史/月经婚育史）"""
+    data = request.get_json() or {}
+    profile = emr_update_profile(g.current_user["user_id"], data)
+    return jsonify({"success": True, "data": {"profile": profile}})
+
+
+# ============ 医馆入驻 / 药方审核 / 处方订单接口（M4） ============
+
+from auth_service import require_clinic, create_session as auth_create_session
+from clinic_service import (
+    apply_clinic, login_clinic, get_clinic, list_verified_clinics, verify_clinic,
+    list_all_clinics, apply_prescription, rx_queue, review_prescription,
+    get_user_rx, get_rx, create_order, update_order_status, list_orders,
+    order_events, clinic_dashboard,
+)
+
+
+@app.route("/api/clinic/apply", methods=["POST"])
+def clinic_apply():
+    """医馆入驻申请：立即开通账号（pending），审核/接单权限待平台核验后解锁"""
+    data = request.get_json() or {}
+    result, err = apply_clinic(
+        name=data.get("name", "").strip(),
+        license_no=data.get("license_no", "").strip(),
+        address=data.get("address", "").strip(),
+        phone=data.get("phone", "").strip(),
+        account_phone=data.get("account_phone", "").strip(),
+        password=data.get("password", ""),
+        contact_name=data.get("contact_name", "").strip(),
+        support_decoction=bool(data.get("support_decoction")),
+        decoction_fee=int(data.get("decoction_fee") or 0),
+        delivery_scope=data.get("delivery_scope", "").strip(),
+    )
+    if err:
+        return jsonify({"success": False, "error": err}), 400
+    return jsonify({"success": True, "data": result})
+
+
+@app.route("/api/clinic/login", methods=["POST"])
+def clinic_login():
+    data = request.get_json() or {}
+    clinic_id, name, err = login_clinic(data.get("phone", "").strip(), data.get("password", ""))
+    if err:
+        return jsonify({"success": False, "error": err}), 401
+    token = auth_create_session(clinic_id, "clinic", clinic_id=clinic_id)
+    clinic = get_clinic(clinic_id)
+    return jsonify({"success": True, "data": {
+        "token": token, "clinic_id": clinic_id, "name": name,
+        "clinic_name": clinic["name"] if clinic else "",
+        "status": clinic["status"] if clinic else "",
+    }})
+
+
+@app.route("/api/clinic/list", methods=["GET"])
+def clinic_list():
+    """给用户挑选的医馆列表（仅已核验，含代煎/配送信息）"""
+    return jsonify({"success": True, "data": {"clinics": list_verified_clinics()}})
+
+
+@app.route("/api/clinic/dashboard", methods=["GET"])
+@require_clinic
+def clinic_dash():
+    return jsonify({"success": True, "data": clinic_dashboard(g.current_user["clinic_id"])})
+
+
+@app.route("/api/clinic/profile", methods=["GET"])
+@require_clinic
+def clinic_profile():
+    clinic = get_clinic(g.current_user["clinic_id"])
+    return jsonify({"success": True, "data": {"clinic": clinic}})
+
+
+@app.route("/api/clinic/rx_queue", methods=["GET"])
+@require_clinic
+def clinic_rx_queue():
+    status = request.args.get("status", "pending_review")
+    return jsonify({"success": True, "data": {"list": rx_queue(g.current_user["clinic_id"], status)}})
+
+
+@app.route("/api/clinic/rx/<rx_id>/review", methods=["POST"])
+@require_clinic
+def clinic_rx_review(rx_id):
+    """医师审核：approve（可带 adjusted_formula 加减）/ reject（填 note）"""
+    data = request.get_json() or {}
+    ok, err = review_prescription(
+        clinic_id=g.current_user["clinic_id"],
+        rx_id=rx_id,
+        action=data.get("action", ""),
+        reviewer=g.current_user["user_id"],
+        note=data.get("note", "").strip(),
+        adjusted_formula=data.get("adjusted_formula"),
+    )
+    if not ok:
+        code = 403 if "权限" in (err or "") else 400
+        return jsonify({"success": False, "error": err}), code
+    return jsonify({"success": True, "data": {"rx_id": rx_id}})
+
+
+@app.route("/api/clinic/orders", methods=["GET"])
+@require_clinic
+def clinic_orders():
+    return jsonify({"success": True, "data": {"orders": list_orders(clinic_id=g.current_user["clinic_id"])}})
+
+
+@app.route("/api/clinic/orders/<order_id>/status", methods=["POST"])
+@require_clinic
+def clinic_order_status(order_id):
+    data = request.get_json() or {}
+    ok, err = update_order_status(
+        clinic_id=g.current_user["clinic_id"],
+        order_id=order_id,
+        to_status=data.get("to_status", ""),
+        operator=f"clinic:{g.current_user['user_id']}",
+        note=data.get("note", "").strip(),
+    )
+    if not ok:
+        code = 403 if "权限" in (err or "") else 400
+        return jsonify({"success": False, "error": err}), code
+    return jsonify({"success": True, "data": {"order_id": order_id}})
+
+
+# ---- 用户端：开方申请与订单 ----
+
+@app.route("/api/rx/apply", methods=["POST"])
+@require_user
+def rx_apply():
+    """发起开方申请：AI 建议+病历快照推给选定医馆审核。
+    两种来源：
+    - 对话模式：传 session_id（服务端取会话快照，可信来源）
+    - 快速辨证：传 symptoms + advice（客户端回传，快照标注 source=quick，医师审核时可见）"""
+    data = request.get_json() or {}
+    session_id = data.get("session_id", "")
+    clinic_id = data.get("clinic_id", "")
+    user_id = g.current_user["user_id"]
+
+    from emr_service import get_profile_for_dialogue
+
+    if session_id:
+        dialogue_engine = get_dialogue_engine_lazy()
+        state = dialogue_engine.get_session(session_id)
+        if not state or state.user_id != user_id:
+            return jsonify({"success": False, "error": "问诊会话不存在或不属于当前用户"}), 400
+        if not state.last_diagnosis:
+            return jsonify({"success": False, "error": "该会话尚未完成辨证，无法申请开方"}), 400
+        snapshot = {
+            "source": "dialogue",
+            "profile": get_profile_for_dialogue(user_id),
+            "collected_symptoms": [
+                {"id": s.symptom_id, "name": s.name} for s in state.collected_symptoms.values()
+            ],
+            "first_complaint": state.first_complaint,
+        }
+        ai_advice = state.last_diagnosis.get("advice", "")
+    else:
+        symptoms_text = (data.get("symptoms") or "").strip()
+        ai_advice = (data.get("advice") or "").strip()
+        if not symptoms_text or not ai_advice:
+            return jsonify({"success": False, "error": "缺少症状或辨证建议内容"}), 400
+        snapshot = {
+            "source": "quick",
+            "profile": get_profile_for_dialogue(user_id),
+            "symptoms_text": symptoms_text[:500],
+        }
+        ai_advice = ai_advice[:5000]
+
+    rx_id, err = apply_prescription(
+        user_id=user_id, clinic_id=clinic_id, session_id=session_id,
+        emr_snapshot=snapshot, ai_advice=ai_advice,
+    )
+    if err:
+        return jsonify({"success": False, "error": err}), 400
+    return jsonify({"success": True, "data": {"rx_id": rx_id, "status": "pending_review"}})
+
+
+@app.route("/api/rx/list", methods=["GET"])
+@require_user
+def rx_list():
+    return jsonify({"success": True, "data": {"list": get_user_rx(g.current_user["user_id"])}})
+
+
+@app.route("/api/rx/<rx_id>", methods=["GET"])
+@require_user
+def rx_detail(rx_id):
+    rx = get_rx(rx_id)
+    if not rx or rx["user_id"] != g.current_user["user_id"]:
+        return jsonify({"success": False, "error": "处方不存在"}), 404
+    return jsonify({"success": True, "data": {"rx": rx}})
+
+
+@app.route("/api/orders", methods=["POST"])
+@require_user
+def order_create():
+    """创建订单：prescription 线需 RX 已审核；mall 线服务端按商品价重算金额"""
+    data = request.get_json() or {}
+    order_type = data.get("order_type", "mall")
+    items = data.get("items") or []
+    amount = 0
+    if order_type == "mall":
+        price_map = {p["id"]: p["price"] for p in products_db}
+        for it in items:
+            pid = it.get("product_id")
+            qty = max(1, int(it.get("qty") or 1))
+            if pid not in price_map:
+                return jsonify({"success": False, "error": f"商品不存在: {pid}"}), 400
+            amount += price_map[pid] * qty
+            it["qty"] = qty
+    order_id, err = create_order(
+        user_id=g.current_user["user_id"],
+        order_type=order_type,
+        items=items,
+        rx_id=data.get("rx_id", ""),
+        fulfillment=data.get("fulfillment", ""),
+        decoction=bool(data.get("decoction")),
+        address=data.get("address", "").strip(),
+        amount=int(data.get("amount") or amount),
+    )
+    if err:
+        return jsonify({"success": False, "error": err}), 400
+    return jsonify({"success": True, "data": {"order_id": order_id, "amount": amount}})
+
+
+@app.route("/api/orders", methods=["GET"])
+@require_user
+def order_list():
+    return jsonify({"success": True, "data": {"orders": list_orders(user_id=g.current_user["user_id"])}})
+
+
+@app.route("/api/orders/<order_id>/events", methods=["GET"])
+@require_user
+def order_event_list(order_id):
+    return jsonify({"success": True, "data": {"events": order_events(order_id)}})
+
+
+# ---- 平台端：医馆核验 ----
+
+@app.route("/api/admin/clinics", methods=["GET"])
+@require_admin
+def admin_clinics():
+    return jsonify({"success": True, "data": {"clinics": list_all_clinics()}})
+
+
+@app.route("/api/admin/clinics/<clinic_id>/verify", methods=["POST"])
+@require_admin
+def admin_clinic_verify(clinic_id):
+    """核验解锁（verified）/ 冻结（frozen），动作生成 CV 编号审核记录"""
+    data = request.get_json() or {}
+    ok, err = verify_clinic(
+        clinic_id=clinic_id,
+        action=data.get("action", ""),
+        reviewer="admin",
+        note=data.get("note", "").strip(),
+    )
+    if not ok:
+        return jsonify({"success": False, "error": err}), 400
+    return jsonify({"success": True, "data": {"clinic_id": clinic_id}})
+
+
+@app.route("/api/admin/users", methods=["GET"])
+@require_admin
+def admin_users():
+    """用户管理列表（P4）：分页、手机号脱敏、含病历数/订单数"""
+    from db import get_conn
+    from auth_service import mask_phone
+    page = max(1, int(request.args.get("page", 1)))
+    size = min(100, max(1, int(request.args.get("size", 20))))
+    conn = get_conn()
+    try:
+        total = conn.execute("SELECT COUNT(*) c FROM users").fetchone()["c"]
+        rows = conn.execute(
+            """SELECT u.user_id, u.phone, u.nickname, u.gender, u.birth_year, u.created_at,
+                      (SELECT COUNT(*) FROM emr e WHERE e.user_id = u.user_id) AS emr_count,
+                      (SELECT COUNT(*) FROM orders o WHERE o.user_id = u.user_id) AS order_count
+               FROM users u ORDER BY u.created_at DESC LIMIT ? OFFSET ?""",
+            (size, (page - 1) * size),
+        ).fetchall()
+        users = []
+        for r in rows:
+            d = dict(r)
+            d["phone"] = mask_phone(d["phone"])
+            users.append(d)
+        return jsonify({"success": True, "data": {"users": users, "total": total, "page": page, "size": size}})
+    finally:
+        conn.close()
+
+
+@app.route("/api/admin/orders", methods=["GET"])
+@require_admin
+def admin_orders():
+    """订单总览（P4）：按状态/类型过滤，含医馆名"""
+    from db import get_conn
+    status = request.args.get("status", "")
+    order_type = request.args.get("order_type", "")
+    page = max(1, int(request.args.get("page", 1)))
+    size = min(100, max(1, int(request.args.get("size", 20))))
+    where, params = [], []
+    if status:
+        where.append("o.status = ?")
+        params.append(status)
+    if order_type:
+        where.append("o.order_type = ?")
+        params.append(order_type)
+    where_sql = ("WHERE " + " AND ".join(where)) if where else ""
+    conn = get_conn()
+    try:
+        total = conn.execute(f"SELECT COUNT(*) c FROM orders o {where_sql}", params).fetchone()["c"]
+        rows = conn.execute(
+            f"""SELECT o.*, c.name AS clinic_name
+                FROM orders o LEFT JOIN clinics c ON c.clinic_id = o.clinic_id
+                {where_sql} ORDER BY o.created_at DESC LIMIT ? OFFSET ?""",
+            params + [size, (page - 1) * size],
+        ).fetchall()
+        orders = []
+        for r in rows:
+            d = dict(r)
+            if d.get("items"):
+                try:
+                    d["items"] = json.loads(d["items"])
+                except Exception:
+                    pass
+            orders.append(d)
+        return jsonify({"success": True, "data": {"orders": orders, "total": total, "page": page, "size": size}})
+    finally:
+        conn.close()
+
+
+@app.route("/api/admin/clinics/<clinic_id>/verifications", methods=["GET"])
+@require_admin
+def admin_clinic_verifications(clinic_id):
+    """某医馆的核验记录（CV 编号留痕）"""
+    from db import get_conn
+    conn = get_conn()
+    try:
+        rows = conn.execute(
+            "SELECT * FROM clinic_verifications WHERE clinic_id=? ORDER BY created_at DESC",
+            (clinic_id,),
+        ).fetchall()
+        return jsonify({"success": True, "data": {"list": [dict(r) for r in rows]}})
+    finally:
+        conn.close()
 
 
 # ============ 养生商城接口（简化版） ============
@@ -792,7 +1293,9 @@ def list_products():
         "success": True,
         "data": {
             "products": products,
-            "total": len(products)
+            "total": len(products),
+            "notice": "本商城产品均为药食同源养生品，不能替代药品。中药材原材料销售将于「医馆货架」二期开放，由具备药品经营资质的入驻医馆提供。",
+            "raw_herbs_coming_soon": True
         }
     })
 
@@ -862,7 +1365,19 @@ def dialogue_start():
     """
     try:
         dialogue_engine = get_dialogue_engine_lazy()
-        session_id = dialogue_engine.create_session()
+        
+        # 可选：登录用户（body 传 user_id 或 Authorization token），预载病历
+        data = request.get_json(silent=True) or {}
+        user_id = data.get("user_id", "")
+        if not user_id:
+            from auth_service import resolve_token
+            auth = request.headers.get("Authorization", "")
+            token = auth[7:].strip() if auth.startswith("Bearer ") else request.headers.get("X-User-Token", "")
+            sess = resolve_token(token) if token else None
+            if sess and sess["role"] == "user":
+                user_id = sess["user_id"]
+        
+        session_id = dialogue_engine.create_session(user_id=user_id or None)
         
         # 模拟第一轮（问候语）
         result = dialogue_engine.process_turn(session_id, "")
@@ -871,6 +1386,7 @@ def dialogue_start():
             "success": True,
             "data": {
                 "session_id": session_id,
+                "user_id": user_id or None,
                 "bot_response": result["bot_response"],
                 "phase": result["phase"],
                 "suggested_questions": result["suggested_questions"],
@@ -934,6 +1450,26 @@ def dialogue_turn():
             print(f"[API] 对话达到辨证条件，触发辨证: {result['diagnosis_query']}")
             diag = rag_engine.diagnose(result["diagnosis_query"], llm_client)
             diagnosis_result = format_diagnosis_result(diag)
+            # 保存快照到会话，供「转医馆审核开方」使用（服务端可信来源）
+            sess_state = dialogue_engine.get_session(session_id)
+            if sess_state is not None:
+                sess_state.last_diagnosis = diagnosis_result
+        
+        # 登录用户：问诊完成写回一条就诊病历（M3）
+        visit_emr_id = None
+        if diagnosis_result and result.get("user_id"):
+            try:
+                from emr_service import add_visit
+                symptom_names = "、".join(s["name"] for s in result["collected_symptoms"])
+                visit_emr_id = add_visit(
+                    user_id=result["user_id"],
+                    chief_complaint=result.get("first_complaint") or symptom_names,
+                    present_illness=f"共问诊{result['turn_count']}轮，收集症状：{symptom_names}",
+                    ai_diagnosis=diagnosis_result,
+                )
+                print(f"[API] 就诊病历已写回: {visit_emr_id}")
+            except Exception as e:
+                print(f"[API] 病历写回失败（不影响辨证）: {e}")
         
         response_data = {
             "session_id": result["session_id"],
@@ -950,6 +1486,8 @@ def dialogue_turn():
         
         if diagnosis_result:
             response_data["diagnosis_result"] = diagnosis_result
+        if visit_emr_id:
+            response_data["visit_emr_id"] = visit_emr_id
         
         return jsonify({
             "success": True,
@@ -1179,8 +1717,18 @@ def admin_stats():
         dialogue_engine = get_dialogue_engine_lazy()
         session_count = len(dialogue_engine.sessions) if dialogue_engine else 0
         
-        # 统计用户
-        user_count = len(users_db)
+        # 统计用户/医馆/订单/处方（SQLite 持久层，P4）
+        from db import get_conn as _get_stats_conn
+        _conn = _get_stats_conn()
+        try:
+            user_count = _conn.execute("SELECT COUNT(*) c FROM users").fetchone()["c"]
+            clinic_total = _conn.execute("SELECT COUNT(*) c FROM clinics").fetchone()["c"]
+            clinic_pending = _conn.execute("SELECT COUNT(*) c FROM clinics WHERE status='pending'").fetchone()["c"]
+            order_total = _conn.execute("SELECT COUNT(*) c FROM orders").fetchone()["c"]
+            rx_total = _conn.execute("SELECT COUNT(*) c FROM prescriptions").fetchone()["c"]
+            rx_pending = _conn.execute("SELECT COUNT(*) c FROM prescriptions WHERE status='pending_review'").fetchone()["c"]
+        finally:
+            _conn.close()
         
         return jsonify({
             "success": True,
@@ -1192,6 +1740,9 @@ def admin_stats():
                 "knowledge": rag_stats,
                 "sessions": {"active": session_count},
                 "users": {"total": user_count},
+                "clinics": {"total": clinic_total, "pending": clinic_pending},
+                "orders": {"total": order_total},
+                "prescriptions": {"total": rx_total, "pending_review": rx_pending},
                 "rules": {"total": sum(len(rules) for rules in RULE_GROUP_CODES.values()) if isinstance(RULE_GROUP_CODES, dict) else 0},
                 "timestamp": datetime.now().isoformat()
             }

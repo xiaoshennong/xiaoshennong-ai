@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>小神农中医AI - 知识图谱可视化</title>
+    <title>小神农中医AI · 知识图谱</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23a53232'/%3E%3Crect x='6' y='6' width='52' height='52' rx='8' fill='none' stroke='%23fffdf8' stroke-opacity='0.45' stroke-width='2'/%3E%3Ctext x='32' y='42' font-family='serif' font-size='24' font-weight='bold' fill='%23fffdf8' text-anchor='middle'%3E%E7%A5%9E%E5%86%9C%3C/text%3E%3C/svg%3E">
+    <link rel="stylesheet" href="assets/xsn-theme.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>:root {
     --paper: #f7f3e9;
@@ -285,12 +287,15 @@ body::before {
         @media (max-width: 900px) {
             .left-panel, .right-panel { display: none; }
         }
+
+        /* P3 设计系统接入 */
+        button:active { transform: scale(0.97); transition-duration: 100ms; }
     </style>
 </head>
 <body>
     <div class="header">
         <div>
-            <h1>🌿 小神农中医AI · 知识图谱可视化</h1>
+            <h1><span class="xsn-seal">谱</span>小神农中医AI · 知识图谱可视化</h1>
             <div class="subtitle">症状 · 药物 · 方剂 · 证型 · 患者 · 副作用 · 共现关系</div>
         </div>
         <a href="index.html" class="back-link">← 返回主界面</a>
@@ -298,7 +303,7 @@ body::before {
 
     <div class="main">
         <div class="left-panel">
-            <div class="panel-title">🔍 搜索与筛选</div>
+            <div class="panel-title"><span class="xsn-seal">索</span>搜索与筛选</div>
             <div class="search-box">
                 <input type="text" class="search-input" id="searchInput" placeholder="搜索症状、药物、方剂..." oninput="handleSearch()">
             </div>
@@ -314,9 +319,9 @@ body::before {
             </div>
 
             <button class="btn" onclick="resetView()">重置视图</button>
-            <button class="btn btn-secondary" onclick="runSideEffectDemo()">🧪 副作用辨别演示</button>
+            <button class="btn btn-secondary" onclick="runSideEffectDemo()"><span class="xsn-seal">辨</span>副作用辨别演示</button>
 
-            <div class="panel-title" style="margin-top: 20px;">📊 图谱统计</div>
+            <div class="panel-title" style="margin-top: 20px;"><span class="xsn-seal">图</span>图谱统计</div>
             <div class="stats-card" id="statsCard">
                 <div class="stat-row"><span>节点总数</span><span id="statNodes">-</span></div>
                 <div class="stat-row"><span>关系总数</span><span id="statLinks">-</span></div>
@@ -334,7 +339,7 @@ body::before {
         </div>
 
         <div class="right-panel" id="rightPanel">
-            <div class="panel-title">📋 节点详情</div>
+            <div class="panel-title"><span class="xsn-seal">详</span>节点详情</div>
             <div class="empty-state" id="emptyState">
                 点击图谱中的节点<br>查看详细信息
             </div>

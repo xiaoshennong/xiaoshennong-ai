@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小神农中医AI · 古有神农尝百草，今有小神农辩百症</title>
+    <meta name="description" content="小神农中医AI：以十二万五千零五条古籍条文为底、执业医师审核为证的中医智能问诊平台，辨证论治，每条结论皆可溯源。">
+    <meta property="og:title" content="小神农中医AI · 古有神农尝百草，今有小神农辩百症">
+    <meta property="og:description" content="AI 十问辨证，古籍智库可溯源，执业医师审核开方——小神农以 AI 续写本草。">
+    <meta property="og:type" content="website">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23a53232'/%3E%3Crect x='6' y='6' width='52' height='52' rx='8' fill='none' stroke='%23fffdf8' stroke-opacity='0.45' stroke-width='2'/%3E%3Ctext x='32' y='42' font-family='serif' font-size='24' font-weight='bold' fill='%23fffdf8' text-anchor='middle'%3E%E7%A5%9E%E5%86%9C%3C/text%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="assets/xsn-theme.css">
+    <script src="assets/xsn-motion.js" defer></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-serif);
+            background: var(--paper);
+            background-image: var(--paper-texture);
+            color: var(--ink);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* ============ 吸顶 nav（材质栏 + 渐变淡出边） ============ */
+        .home-nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 12px 28px;
+        }
+        .home-nav::after {
+            content: '';
+            position: absolute;
+            left: 0; right: 0; top: 100%;
+            height: 14px;
+            background: linear-gradient(to bottom, rgba(43, 27, 18, 0.10), rgba(43, 27, 18, 0));
+            opacity: 0;
+            transition: opacity var(--dur-med) ease;
+            pointer-events: none;
+        }
+        .home-nav.scrolled::after { opacity: 1; }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--ink);
+            flex-shrink: 0;
+        }
+        .brand-name { font-size: 1.25rem; font-weight: 700; letter-spacing: 0.18em; }
+        .seal-word { width: 54px; font-size: 15px; letter-spacing: 0.04em; }
+        .nav-links { display: flex; align-items: center; gap: 26px; }
+        .nav-links a {
+            color: var(--ink);
+            text-decoration: none;
+            font-size: var(--text-base);
+            letter-spacing: 0.1em;
+            transition: color var(--dur-fast) ease;
+            white-space: nowrap;
+        }
+        .nav-links a:hover { color: var(--cinnabar); }
+        .nav-links a.nav-login {
+            border: 1px solid var(--cinnabar-light);
+            color: var(--cinnabar);
+            padding: 5px 16px;
+            border-radius: var(--radius);
+            transition: background var(--dur-fast) var(--ease-spring), color var(--dur-fast) var(--ease-spring);
+        }
+        .nav-links a.nav-login:hover { background: var(--cinnabar); color: #fffdf8; }
+
+        /* ============ Hero：三层淡墨山水 ============ */
+        .hero {
+            position: relative;
+            height: 100vh;
+            min-height: 620px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .hero-ink {
+            position: absolute;
+            left: 0; right: 0; bottom: 0;
+            height: 66.7%;
+            pointer-events: none;
+        }
+        .hero-ink .layer { position: absolute; inset: 0; width: 100%; height: 100%; }
+        .hero-inner {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding: 0 24px;
+            margin-top: -10vh;
+        }
+        .hero-title-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+        .hero h1 {
+            font-size: var(--text-display);
+            letter-spacing: var(--tracking-display);
+            text-indent: var(--tracking-display); /* 平衡末字后的加宽字距，视觉居中 */
+            line-height: 1.1;
+            font-weight: 700;
+            color: var(--ink);
+        }
+        .hero-slogan {
+            margin-top: 20px;
+            color: var(--cinnabar);
+            font-size: 1.1rem;
+            letter-spacing: 0.28em;
+        }
+        .hero-vertical {
+            position: absolute;
+            right: 6vw;
+            top: 0; bottom: 0;
+            display: flex;
+            align-items: center;
+            z-index: 2;
+        }
+        .hero-vertical span {
+            writing-mode: vertical-rl;
+            color: var(--ink-faint);
+            font-size: 0.95rem;
+            letter-spacing: 0.35em;
+        }
+        .hero-cta {
+            margin-top: 36px;
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* ============ 品牌故事：粘性三段 ============ */
+        .story-track { position: relative; height: 300vh; }
+        .story-sticky {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+        }
+        .story-grid {
+            width: min(1120px, 92vw);
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 64px;
+            align-items: center;
+        }
+        .story-eyebrow {
+            color: var(--cinnabar);
+            font-size: var(--text-sm);
+            letter-spacing: 0.35em;
+            margin-bottom: 10px;
+        }
+        .story-texts { position: relative; min-height: 22em; }
+        .story-seg {
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            opacity: 0;
+            transform: translateY(14px);
+            transition: opacity var(--dur-slow) var(--ease-spring),
+                        transform var(--dur-slow) var(--ease-spring);
+        }
+        .story-seg.active { opacity: 1; transform: none; }
+        .story-seg h2 {
+            font-size: var(--text-title);
+            letter-spacing: 0.12em;
+            margin-bottom: 18px;
+            font-weight: 700;
+        }
+        .story-seg p { color: var(--ink-light); margin-bottom: 0.9em; }
+        .story-ink { text-align: center; will-change: transform; }
+        .story-ink svg { width: min(400px, 100%); height: auto; }
+        /* reduced-motion / 移动端降级：普通三段顺序排列 */
+        .story-track.story-flat { height: auto; }
+        .story-flat .story-sticky { position: static; height: auto; padding: 96px 0; overflow: visible; }
+        .story-flat .story-texts { min-height: 0; }
+        .story-flat .story-seg {
+            position: static;
+            opacity: 1;
+            transform: none;
+            transition: none;
+            margin-bottom: 3em;
+        }
+        .story-flat .story-ink { transform: none !important; margin-top: 24px; }
+
+        /* ============ 章节通用 ============ */
+        .section-head { text-align: center; margin-bottom: 56px; padding: 0 24px; }
+        .section-head .eyebrow {
+            color: var(--cinnabar);
+            font-size: var(--text-sm);
+            letter-spacing: 0.35em;
+            margin-bottom: 10px;
+        }
+        .section-head h2 { font-size: var(--text-title); letter-spacing: 0.2em; font-weight: 700; }
+
+        /* ============ 核心能力四卡 ============ */
+        .cap-section { padding: 110px 0 96px; }
+        .cap-grid {
+            width: min(1120px, 92vw);
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 22px;
+        }
+        .cap-card { padding: 30px 24px 28px; }
+        .cap-card h3 { font-size: 1.05rem; letter-spacing: 0.1em; margin: 16px 0 10px; }
+        .cap-card p { color: var(--ink-light); font-size: var(--text-base); }
+        .xsn-seal-deep { background: var(--cinnabar-dark); }
+
+        /* ============ 数字带 ============ */
+        .band { background: #2b2b2b; padding: 84px 0 72px; }
+        .band-grid {
+            width: min(1000px, 92vw);
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            text-align: center;
+        }
+        .band-num {
+            font-size: clamp(2rem, 4.5vw, 3.1rem);
+            color: var(--gold-light);
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            line-height: 1.2;
+        }
+        .band-label {
+            margin-top: 8px;
+            color: rgba(247, 243, 233, 0.6);
+            font-size: var(--text-sm);
+            letter-spacing: 0.22em;
+        }
+        .band-note {
+            text-align: center;
+            margin-top: 46px;
+            color: rgba(247, 243, 233, 0.5);
+            font-size: var(--text-sm);
+            letter-spacing: 0.3em;
+        }
+
+        /* ============ 问诊流程 ============ */
+        .flow-section { padding: 110px 0 120px; }
+        .flow-wrap { position: relative; width: min(1120px, 94vw); margin: 0 auto; padding: 30px 0; }
+        .flow-line { position: absolute; inset: 0; width: 100%; height: 100%; }
+        .flow-line-v { display: none; }
+        .flow-nodes { position: relative; display: flex; justify-content: space-between; }
+        .flow-node { width: 22%; text-align: center; position: relative; }
+        .flow-node h4 { margin: 14px 0 6px; font-size: 1rem; letter-spacing: 0.12em; }
+        .flow-node p { color: var(--ink-faint); font-size: var(--text-sm); }
+
+        /* ============ 医馆入驻：卷轴卡 ============ */
+        .clinic-section { padding: 30px 0 130px; }
+        .scroll-card {
+            position: relative;
+            width: min(860px, 90vw);
+            margin: 0 auto;
+            background: var(--card);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-card);
+            padding: 64px 72px 60px;
+            text-align: center;
+        }
+        .scroll-card::before, .scroll-card::after {
+            content: '';
+            position: absolute;
+            top: -16px; bottom: -16px;
+            width: 14px;
+            border-radius: 7px;
+            background: linear-gradient(to bottom, var(--cinnabar-dark), #6d1d1d);
+            box-shadow: inset 0 0 0 1px rgba(255, 253, 248, 0.18), 0 2px 6px rgba(43, 27, 18, 0.28);
+        }
+        .scroll-card::before { left: -24px; }
+        .scroll-card::after { right: -24px; }
+        .scroll-card h2 { font-size: var(--text-title); letter-spacing: 0.14em; margin-bottom: 14px; }
+        .scroll-card > p { color: var(--ink-light); }
+        .clinic-points {
+            display: flex;
+            justify-content: center;
+            gap: 36px;
+            margin: 34px 0 38px;
+            flex-wrap: wrap;
+        }
+        .clinic-point { max-width: 200px; }
+        .clinic-point h5 { font-size: var(--text-base); letter-spacing: 0.12em; margin-bottom: 6px; color: var(--cinnabar-dark); }
+        .clinic-point p { color: var(--ink-faint); font-size: var(--text-sm); }
+
+        /* ============ 页脚 ============ */
+        .footer {
+            background: var(--ink);
+            color: rgba(247, 243, 233, 0.55);
+            text-align: center;
+            padding: 60px 24px 46px;
+            font-size: var(--text-sm);
+        }
+        .footer .f-brand {
+            color: rgba(247, 243, 233, 0.88);
+            font-size: 1rem;
+            letter-spacing: 0.3em;
+            margin-bottom: 20px;
+        }
+        .footer p { margin-bottom: 8px; line-height: 1.9; }
+        .footer .f-disclaimer { max-width: 640px; margin: 0 auto 14px; }
+        .footer a { color: rgba(247, 243, 233, 0.7); text-decoration: none; }
+
+        /* ============ 响应式 ============ */
+        @media (max-width: 1024px) {
+            .cap-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .home-nav { padding: 10px 16px; }
+            .brand-name { font-size: 1.05rem; }
+            .nav-links { gap: 14px; flex-wrap: wrap; justify-content: flex-end; row-gap: 4px; }
+            .nav-links a { font-size: var(--text-sm); }
+            .hero-vertical { display: none; }                 /* 竖排文字隐藏 */
+            .hero-ink .layer-cloud { display: none; }         /* 山水减为两层 */
+            .hero h1 { letter-spacing: 0.14em; text-indent: 0.14em; }
+            .hero-slogan { font-size: 0.95rem; letter-spacing: 0.18em; }
+            .story-track { height: auto; }                    /* 粘性段降级为顺序排列 */
+            .story-sticky { position: static; height: auto; padding: 84px 0 20px; overflow: visible; }
+            .story-grid { grid-template-columns: 1fr; gap: 40px; }
+            .story-texts { min-height: 0; }
+            .story-seg { position: static; opacity: 1; transform: none; transition: none; margin-bottom: 3em; }
+            .story-ink { transform: none !important; }
+            .cap-grid { grid-template-columns: 1fr; }         /* 四卡单列 */
+            .band-grid { grid-template-columns: repeat(2, 1fr); gap: 34px 16px; }
+            .flow-line { display: none; }                     /* 流程改纵向 */
+            .flow-line-v {
+                display: block;
+                position: absolute;
+                left: 50%; top: 0;
+                width: 60px; height: 100%;
+                transform: translateX(-50%);
+            }
+            .flow-nodes { flex-direction: column; gap: 52px; }
+            .flow-node { width: 100%; }
+            .scroll-card { padding: 48px 30px 44px; }
+            .scroll-card::before { left: -10px; }
+            .scroll-card::after { right: -10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============ 吸顶 nav ============ -->
+    <nav class="xsn-material-bar home-nav" id="homeNav">
+        <a class="brand" href="home.html">
+            <span class="xsn-seal xsn-seal-lg seal-word">神农</span>
+            <span class="brand-name">小神农</span>
+        </a>
+        <div class="nav-links">
+            <a href="index.html">开始问诊</a>
+            <a href="index.html#mall">商城</a>
+            <a href="kg_visual.html">知识图谱</a>
+            <a href="clinic.html">医馆后台</a>
+            <a class="nav-login" href="index.html" target="_blank" rel="noopener">登录 / 注册</a>
+        </div>
+    </nav>
+
+    <!-- ============ Hero ============ -->
+    <header class="hero" data-parallax>
+        <div class="hero-ink" aria-hidden="true">
+            <!-- 远山：淡墨低透明渐变剪影 -->
+            <svg class="layer layer-far" data-parallax-depth="0.15" viewBox="0 0 1440 600" preserveAspectRatio="xMidYMax slice">
+                <defs>
+                    <linearGradient id="inkFar" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0" stop-color="#5a5a5a" stop-opacity="0.04"/>
+                        <stop offset="0.55" stop-color="#5a5a5a" stop-opacity="0.15"/>
+                        <stop offset="1" stop-color="#46463e" stop-opacity="0.30"/>
+                    </linearGradient>
+                </defs>
+                <path fill="url(#inkFar)" d="M0,600 L0,420 C110,380 190,300 320,285 C450,270 520,360 640,350 C770,339 830,230 980,215 C1110,202 1190,300 1300,305 C1370,308 1410,290 1440,280 L1440,600 Z"/>
+                <path fill="url(#inkFar)" opacity="0.7" d="M0,600 L0,480 C160,440 260,400 400,410 C540,420 620,470 780,455 C940,440 1020,380 1180,390 C1300,398 1380,430 1440,425 L1440,600 Z"/>
+            </svg>
+            <!-- 云雾：半透明白纱横带 -->
+            <svg class="layer layer-cloud" data-parallax-depth="0.3" viewBox="0 0 1440 600" preserveAspectRatio="xMidYMax slice">
+                <path fill="#fffdf8" opacity="0.50" d="M-60,240 C220,205 420,240 700,228 C980,216 1180,244 1500,222 L1500,268 C1200,290 960,262 700,272 C440,282 200,258 -60,282 Z"/>
+                <path fill="#fffdf8" opacity="0.34" d="M-60,360 C260,330 480,362 760,352 C1040,342 1240,368 1500,350 L1500,392 C1230,410 1000,386 740,394 C480,402 220,382 -60,398 Z"/>
+                <ellipse cx="360" cy="170" rx="210" ry="24" fill="#fffdf8" opacity="0.30"/>
+                <ellipse cx="1120" cy="140" rx="250" ry="22" fill="#fffdf8" opacity="0.26"/>
+            </svg>
+            <!-- 近竹与草：深墨绿剪影 -->
+            <svg class="layer layer-near" data-parallax-depth="0.5" viewBox="0 0 1440 600" preserveAspectRatio="xMidYMax slice">
+                <path fill="#33523c" opacity="0.88" d="M0,600 L0,540 C180,520 320,548 520,540 C720,532 860,556 1060,548 C1240,541 1360,556 1440,548 L1440,600 Z"/>
+                <g stroke="#2d4a35" stroke-width="6" stroke-linecap="round" fill="none" opacity="0.85">
+                    <path d="M96,600 C94,480 92,380 98,242"/>
+                    <path d="M142,600 C142,500 144,420 139,322"/>
+                    <path d="M1336,600 C1338,490 1340,400 1334,272"/>
+                    <path d="M1380,600 C1380,510 1378,440 1383,352"/>
+                </g>
+                <g fill="#2d4a35" opacity="0.8">
+                    <path d="M98,262 C140,242 182,240 216,252 C178,264 136,268 98,262 Z"/>
+                    <path d="M96,302 C60,286 30,286 4,296 C38,306 72,308 96,302 Z"/>
+                    <path d="M140,342 C178,328 212,328 240,338 C208,350 172,352 140,342 Z"/>
+                    <path d="M1335,292 C1296,274 1258,272 1226,282 C1262,296 1302,300 1335,292 Z"/>
+                    <path d="M1337,332 C1372,318 1404,318 1430,328 C1398,340 1364,342 1337,332 Z"/>
+                    <path d="M1382,372 C1350,358 1320,358 1296,368 C1324,380 1356,382 1382,372 Z"/>
+                    <path d="M300,600 C296,572 290,550 278,530 C296,546 306,570 308,600 Z"/>
+                    <path d="M340,600 C342,574 350,552 364,534 C350,548 336,572 332,600 Z"/>
+                    <path d="M1140,600 C1138,574 1132,552 1120,534 C1136,548 1146,572 1148,600 Z"/>
+                </g>
+            </svg>
+        </div>
+
+        <div class="hero-inner">
+            <div class="hero-title-row">
+                <h1 data-reveal>小神农</h1>
+                <span class="xsn-seal xsn-seal-lg seal-word" data-reveal data-reveal-delay="450">神农</span>
+            </div>
+            <p class="hero-slogan" data-reveal data-reveal-delay="150">古有神农尝百草，今有小神农辩百症</p>
+            <div class="hero-cta" data-reveal data-reveal-delay="600">
+                <a class="xsn-btn xsn-btn-cinnabar" href="index.html">开始问诊</a>
+                <a class="xsn-btn xsn-btn-outline-gold" href="clinic.html">医馆入驻</a>
+            </div>
+        </div>
+
+        <div class="hero-vertical">
+            <span data-reveal data-reveal-delay="300">神农尝百草，一日而遇七十毒</span>
+        </div>
+    </header>
+
+    <!-- ============ 品牌故事（粘性三段） ============ -->
+    <section class="story-track" id="storyTrack">
+        <div class="story-sticky">
+            <div class="story-grid">
+                <div class="story-texts">
+                    <div class="story-seg active">
+                        <p class="story-eyebrow">上古 · 源起</p>
+                        <h2>神农尝百草，始有医药</h2>
+                        <p>上古之时，民多疾病而未知药石。神农氏遍尝百草，一日而遇七十毒，乃辨草木寒温之性、有毒无毒之分。</p>
+                        <p>医药之兴，自此而始。后人不忍其苦，辑其所尝，是为《神农本草经》，传之千秋而不朽。</p>
+                        <p>尝百草者，非为好奇，乃以身为试，为天下先。</p>
+                    </div>
+                    <div class="story-seg">
+                        <p class="story-eyebrow">千年 · 传承</p>
+                        <h2>《伤寒》《纲目》，辨证论治自成体系</h2>
+                        <p>仲景作《伤寒杂病论》，立六经辨证之纲；时珍历二十七载，成《本草纲目》，收药一千八百九十二种。</p>
+                        <p>千载之间，医家以望闻问切为法，以辨证论治为宗。</p>
+                        <p>理、法、方、药，环环相扣，自成体系，历久而不衰。</p>
+                    </div>
+                    <div class="story-seg">
+                        <p class="story-eyebrow">今日 · 续写</p>
+                        <h2>小神农以 AI 续写本草</h2>
+                        <p>今以小神农为名，不敢忘尝百草之心。平台汇古籍条文十二万五千零五条为底，每一条结论皆可溯源。</p>
+                        <p>AI 所拟建议，必经执业医师审核为证，全程编号存案。</p>
+                        <p>古人以舌尝草，今人以算力辨症——敬医之心，古今一也。</p>
+                    </div>
+                </div>
+                <div class="story-ink" id="storyInk">
+                    <!-- 药碾 · 药炉 · 草药：淡墨线描 -->
+                    <svg viewBox="0 0 360 300" aria-hidden="true">
+                        <g stroke="#5a5a5a" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.85">
+                            <path d="M20,268 H330" stroke-width="1.5" opacity="0.5"/>
+                            <!-- 药碾：船形碾槽与碾轮 -->
+                            <path d="M35,238 C55,254 150,254 172,238 C172,230 166,224 156,222 L52,222 C42,224 35,230 35,238 Z"/>
+                            <circle cx="104" cy="212" r="18"/>
+                            <circle cx="104" cy="212" r="4"/>
+                            <path d="M104,194 L104,178 M96,178 H112"/>
+                            <!-- 草药一株 -->
+                            <path d="M168,262 C166,232 172,206 164,182"/>
+                            <path d="M166,226 C154,220 147,210 148,202 C158,206 165,214 166,226 Z" fill="#5a5a5a" opacity="0.35"/>
+                            <path d="M168,244 C180,238 187,228 186,220 C176,224 169,232 168,244 Z" fill="#5a5a5a" opacity="0.35"/>
+                            <path d="M165,206 C155,200 150,192 151,185 C160,189 165,196 165,206 Z" fill="#5a5a5a" opacity="0.35"/>
+                            <path d="M164,182 C172,176 176,168 175,162 C167,166 163,173 164,182 Z" fill="#5a5a5a" opacity="0.35"/>
+                            <!-- 药炉：带盖砂锅，三足，热气 -->
+                            <path d="M215,206 L215,244 C215,256 228,262 245,262 C262,262 275,256 275,244 L275,206"/>
+                            <ellipse cx="245" cy="206" rx="30" ry="7"/>
+                            <path d="M226,200 C231,188 259,188 264,200"/>
+                            <circle cx="245" cy="184" r="4"/>
+                            <path d="M229,262 L225,276 M261,262 L265,276 M245,262 L245,276"/>
+                            <path d="M236,160 C232,150 238,144 236,134" opacity="0.45"/>
+                            <path d="M254,164 C250,154 256,148 254,138" opacity="0.45"/>
+                        </g>
+                        <!-- 本草小印 -->
+                        <rect x="308" y="240" width="26" height="26" rx="5" fill="#a53232"/>
+                        <text x="321" y="259" font-family="'Noto Serif SC', serif" font-size="15" font-weight="bold" fill="#fffdf8" text-anchor="middle">本</text>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 核心能力四卡 ============ -->
+    <section class="cap-section">
+        <div class="section-head">
+            <p class="eyebrow">核心能力</p>
+            <h2>问 · 典 · 历 · 证</h2>
+        </div>
+        <div class="cap-grid">
+            <div class="xsn-card xsn-card-hover cap-card" data-reveal>
+                <span class="xsn-seal">问</span>
+                <h3>AI 十问辨证</h3>
+                <p>如老中医坐诊一般，自基本信息至过敏史，逐层问全，而后参合辨证，不遗漏，不妄断。</p>
+            </div>
+            <div class="xsn-card xsn-card-hover cap-card" data-reveal data-reveal-delay="100">
+                <span class="xsn-seal xsn-seal-jade">典</span>
+                <h3>古籍智库</h3>
+                <p>以十二万五千零五条古籍条文为底，每一句结论皆可回溯出处，言必有据。</p>
+            </div>
+            <div class="xsn-card xsn-card-hover cap-card" data-reveal data-reveal-delay="200">
+                <span class="xsn-seal xsn-seal-gold">历</span>
+                <h3>电子病历</h3>
+                <p>历次问诊皆成医案，细细累积。问得越多，越知你体质之寒热虚实。</p>
+            </div>
+            <div class="xsn-card xsn-card-hover cap-card" data-reveal data-reveal-delay="300">
+                <span class="xsn-seal xsn-seal-deep">证</span>
+                <h3>医师审核开方</h3>
+                <p>AI 所拟建议，必经执业医师审核方可成方，全程编号存证，责有所归。</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 数字带 ============ -->
+    <section class="band">
+        <div class="band-grid">
+            <div>
+                <div class="band-num" data-counter="125005">0</div>
+                <div class="band-label">古籍条文</div>
+            </div>
+            <div>
+                <div class="band-num" data-counter="282">0</div>
+                <div class="band-label">症状编码</div>
+            </div>
+            <div>
+                <div class="band-num" data-counter="28">0</div>
+                <div class="band-label">证型</div>
+            </div>
+            <div>
+                <div class="band-num" data-counter="724">0</div>
+                <div class="band-label">时辰守候</div>
+            </div>
+        </div>
+        <p class="band-note">每一条结论，都可溯源</p>
+    </section>
+
+    <!-- ============ 问诊流程 ============ -->
+    <section class="flow-section">
+        <div class="section-head">
+            <p class="eyebrow">问诊流程</p>
+            <h2>四步之间，方药至门</h2>
+        </div>
+        <div class="flow-wrap">
+            <svg class="flow-line" viewBox="0 0 1200 140" preserveAspectRatio="none" aria-hidden="true">
+                <path data-draw d="M10,96 C180,40 300,120 480,78 C660,36 760,116 940,72 C1060,44 1130,60 1190,52"
+                      stroke="#8b7355" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.55"/>
+            </svg>
+            <svg class="flow-line-v" viewBox="0 0 60 720" preserveAspectRatio="none" aria-hidden="true">
+                <path data-draw d="M30,10 C50,130 12,240 32,360 C52,480 14,580 30,710"
+                      stroke="#8b7355" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.55"/>
+            </svg>
+            <div class="flow-nodes">
+                <div class="flow-node" data-reveal>
+                    <span class="xsn-seal xsn-seal-lg">问</span>
+                    <h4>问诊</h4>
+                    <p>十问详尽，如临坐诊</p>
+                </div>
+                <div class="flow-node" data-reveal data-reveal-delay="150">
+                    <span class="xsn-seal xsn-seal-lg xsn-seal-jade">辨</span>
+                    <h4>辨证</h4>
+                    <p>参合古籍，辨明证型</p>
+                </div>
+                <div class="flow-node" data-reveal data-reveal-delay="300">
+                    <span class="xsn-seal xsn-seal-lg xsn-seal-gold">审</span>
+                    <h4>医师审核</h4>
+                    <p>执业医师复核，方可成方</p>
+                </div>
+                <div class="flow-node" data-reveal data-reveal-delay="450">
+                    <span class="xsn-seal xsn-seal-lg xsn-seal-deep">送</span>
+                    <h4>送药到家</h4>
+                    <p>药房直配，送药上门</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 医馆入驻 ============ -->
+    <section class="clinic-section">
+        <div class="scroll-card" data-reveal>
+            <h2>入驻医馆，共守辨证论治之本</h2>
+            <p>AI 为器，医师为本。小神农愿与天下医馆同行，让每一张处方都经得起推敲。</p>
+            <div class="clinic-points">
+                <div class="clinic-point">
+                    <h5>资质审核</h5>
+                    <p>医馆执业资质，平台逐一核验</p>
+                </div>
+                <div class="clinic-point">
+                    <h5>独立后台</h5>
+                    <p>医馆专属后台，问诊开方一目了然</p>
+                </div>
+                <div class="clinic-point">
+                    <h5>编号存证</h5>
+                    <p>每张处方皆有编号，全程可溯</p>
+                </div>
+            </div>
+            <a class="xsn-btn xsn-btn-gold" href="clinic.html">申请入驻</a>
+        </div>
+    </section>
+
+    <!-- ============ 页脚 ============ -->
+    <footer class="footer">
+        <p class="f-brand">小神农</p>
+        <p class="f-disclaimer">本平台所有 AI 输出均为健康建议，不能替代执业医师诊断；如有不适，请及时就医。</p>
+        <p>联系我们：<a href="mailto:contact@xiaoshennong.ai">contact@xiaoshennong.ai</a></p>
+        <p>京ICP备XXXXXXXX号</p>
+        <p>&copy; 2026 小神农</p>
+    </footer>
+
+    <script>
+    (function () {
+        'use strict';
+
+        function ready(fn) {
+            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+            else fn();
+        }
+
+        ready(function () {
+            /* reduced-motion：主题包已降级 reveal/draw，粘性段在此降级为顺序排列 */
+            var reduced = (window.XSNMotion && window.XSNMotion.reducedMotion) ||
+                          window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            var nav = document.getElementById('homeNav');
+            var track = document.getElementById('storyTrack');
+            var ink = document.getElementById('storyInk');
+            var segs = track ? Array.prototype.slice.call(track.querySelectorAll('.story-seg')) : [];
+            var flat = !track || reduced;
+            if (track && reduced) track.classList.add('story-flat');
+
+            var current = 0;
+            var ticking = false;
+
+            function update() {
+                ticking = false;
+                var y = window.pageYOffset || document.documentElement.scrollTop;
+                if (nav) nav.classList.toggle('scrolled', y > 40);
+                if (flat || !segs.length || window.innerWidth <= 768) return;
+                var r = track.getBoundingClientRect();
+                var total = r.height - window.innerHeight;
+                var p = total > 0 ? Math.min(1, Math.max(0, -r.top / total)) : 0;
+                var idx = Math.min(segs.length - 1, Math.floor(p * segs.length));
+                if (idx !== current) {
+                    current = idx;
+                    segs.forEach(function (seg, i) { seg.classList.toggle('active', i === idx); });
+                }
+                if (ink) ink.style.transform = 'translateY(' + ((0.5 - p) * 44).toFixed(1) + 'px)';
+            }
+
+            function onScroll() {
+                if (!ticking) { ticking = true; requestAnimationFrame(update); }
+            }
+
+            window.addEventListener('scroll', onScroll, { passive: true });
+            window.addEventListener('resize', onScroll, { passive: true });
+            update();
+        });
+    })();
+    </script>
+</body>
+</html>

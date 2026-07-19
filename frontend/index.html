@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>小神农中医AI v5.0 - Agent+语义匹配</title>
+    <meta name="description" content="小神农中医AI——古有神农尝百草，今有小神农辩百症。AI 十问辨证，执业医师审核开方，全程编号存证。">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23a53232'/%3E%3Crect x='6' y='6' width='52' height='52' rx='8' fill='none' stroke='%23fffdf8' stroke-opacity='0.45' stroke-width='2'/%3E%3Ctext x='32' y='42' font-family='serif' font-size='24' font-weight='bold' fill='%23fffdf8' text-anchor='middle'%3E%E7%A5%9E%E5%86%9C%3C/text%3E%3C/svg%3E">
+    <link rel="stylesheet" href="assets/xsn-theme.css">
+    <script src="assets/xsn-motion.js" defer></script>
+    <title>小神农中医AI · 智能问诊</title>
     <style>:root {
     --paper: #f7f3e9;
     --paper-dark: #efe8d8;
@@ -323,29 +327,6 @@ body::before {
             padding: 10px 15px;
             flex-shrink: 0;
         }
-        .quick-symptoms {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            padding-bottom: 10px;
-            margin-bottom: 10px;
-        }
-        .quick-symptoms::-webkit-scrollbar { display: none; }
-        .quick-tag {
-            padding: 6px 14px;
-            background: #efe8d8;
-            border-radius: 4px;
-            font-size: 13px;
-            color: #5a5a5a;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: all 0.3s;
-            border: none;
-        }
-        .quick-tag:hover {
-            background: #f0e8d8;
-            color: #a53232;
-        }
         
         .input-row {
             display: flex;
@@ -421,6 +402,21 @@ body::before {
             color: #a53232;
             margin-bottom: 8px;
             font-size: 14px;
+        }
+        .seal-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            background: #a53232;
+            color: #fffdf8;
+            font-size: 13px;
+            font-weight: bold;
+            border-radius: 4px;
+            margin-right: 6px;
+            vertical-align: -5px;
+            box-shadow: inset 0 0 0 1px rgba(255,253,248,0.35), 0 1px 2px rgba(0,0,0,0.12);
         }
         .result-section-content {
             color: #5a5a5a;
@@ -520,12 +516,346 @@ body::before {
         .agent-stats { display: flex; gap: 15px; margin-top: 8px; font-size: 12px; }
         .agent-stat { color: #a53232; }
         
+        /* 页头用户入口 */
+        .header-auth {
+            position: absolute;
+            right: 16px;
+            top: 14px;
+            display: flex;
+            gap: 8px;
+            z-index: 2;
+        }
+        .header-btn {
+            padding: 5px 14px;
+            border-radius: 4px;
+            background: transparent;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 12px;
+            letter-spacing: 1px;
+            transition: all 0.25s;
+        }
+        .btn-cinnabar-outline { border: 1px solid #c45c48; color: #e8b0a5; }
+        .btn-cinnabar-outline:hover { background: #a53232; color: #fff; }
+        .btn-gold-outline { border: 1px solid #b8860b; color: #d4a84b; }
+        .btn-gold-outline:hover { background: #b8860b; color: #fff; }
+
+        /* 古风弹窗（遮罩 + 宣纸卡片 + 朱砂标题栏 + 角饰） */
+        .xsn-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(43, 27, 18, 0.5);
+            z-index: 300;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .xsn-modal-overlay.active { display: flex; }
+        .xsn-modal {
+            background: #fffdf8;
+            border: 1px solid #d4c4b0;
+            border-radius: 4px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 86vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+            position: relative;
+        }
+        .xsn-modal::before, .xsn-modal::after {
+            content: '';
+            position: absolute;
+            width: 16px; height: 16px;
+            border: 2px solid #a53232;
+            pointer-events: none;
+            z-index: 3;
+        }
+        .xsn-modal::before { top: 8px; left: 8px; border-right: none; border-bottom: none; }
+        .xsn-modal::after { bottom: 8px; right: 8px; border-left: none; border-top: none; }
+        .xsn-modal-header {
+            padding: 13px 20px;
+            background: linear-gradient(135deg, #a53232 0%, #8a2525 100%);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+        .xsn-modal-header h3 { font-size: 16px; letter-spacing: 2px; font-weight: 600; }
+        .xsn-modal-close {
+            background: none;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.85);
+            line-height: 1;
+        }
+        .xsn-modal-close:hover { color: #fff; }
+        .xsn-modal-body { padding: 20px; }
+
+        /* 弹窗内 tab */
+        .xsn-tabs { display: flex; gap: 6px; margin-bottom: 18px; border-bottom: 1px solid #d4c4b0; padding-bottom: 10px; flex-wrap: wrap; }
+        .xsn-tab {
+            padding: 6px 16px;
+            border: none;
+            border-radius: 4px;
+            background: #efe8d8;
+            color: #5a5a5a;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 13px;
+            letter-spacing: 1px;
+            transition: all 0.25s;
+        }
+        .xsn-tab:hover { color: #a53232; }
+        .xsn-tab.active { background: linear-gradient(135deg, #a53232 0%, #8a2525 100%); color: #fff; }
+
+        /* 弹窗表单 */
+        .xsn-form-group { margin-bottom: 14px; }
+        .xsn-form-group label { display: block; font-size: 13px; margin-bottom: 6px; color: #5a5a5a; }
+        .xsn-input {
+            width: 100%;
+            padding: 10px 13px;
+            border: 1px solid #d4c4b0;
+            border-radius: 2px;
+            background: #fffdf8;
+            font-family: inherit;
+            font-size: 14px;
+            color: #2b2b2b;
+            transition: all 0.25s;
+        }
+        .xsn-input:focus { outline: none; border-color: #c45c48; box-shadow: 0 0 0 3px rgba(165, 50, 50, 0.08); }
+        textarea.xsn-input { resize: vertical; min-height: 60px; }
+        .xsn-input-row { display: flex; gap: 8px; }
+        .xsn-input-row .xsn-input { flex: 1; }
+        .xsn-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 22px;
+            border: none;
+            border-radius: 2px;
+            font-family: inherit;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.25s;
+            letter-spacing: 1px;
+        }
+        .xsn-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .xsn-btn-primary { background: linear-gradient(135deg, #a53232 0%, #8a2525 100%); color: #fff; }
+        .xsn-btn-primary:hover:not(:disabled) { filter: brightness(1.1); }
+        .xsn-btn-jade { background: linear-gradient(135deg, #4a7c59 0%, #2d4a35 100%); color: #fff; }
+        .xsn-btn-jade:hover:not(:disabled) { filter: brightness(1.1); }
+        .xsn-btn-plain { background: #efe8d8; color: #2b2b2b; border: 1px solid #d4c4b0; }
+        .xsn-btn-plain:hover:not(:disabled) { background: #e8e0d0; }
+        .xsn-btn-sm { padding: 5px 13px; font-size: 12px; }
+        .xsn-btn-block { width: 100%; }
+        .xsn-form-msg { font-size: 12px; margin-top: 10px; min-height: 18px; text-align: center; }
+        .xsn-form-msg.error { color: #a53232; }
+        .xsn-form-msg.ok { color: #4a7c59; }
+        .xsn-hint { font-size: 12px; color: #b8860b; margin-top: 5px; }
+        .xsn-consent { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; color: #5a5a5a; line-height: 1.6; }
+        .xsn-consent input { margin-top: 3px; accent-color: #a53232; }
+
+        /* 转医馆开方按钮（结果卡片内） */
+        .rx-apply-btn {
+            padding: 10px 28px;
+            background: linear-gradient(135deg, #4a7c59 0%, #2d4a35 100%);
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 14px;
+            letter-spacing: 2px;
+            transition: all 0.25s;
+            box-shadow: 0 4px 12px rgba(74, 124, 89, 0.25);
+        }
+        .rx-apply-btn:hover { transform: translateY(-1px); filter: brightness(1.08); }
+
+        /* 医馆单选列表 */
+        .clinic-option {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 12px 14px;
+            border: 1px solid #d4c4b0;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #fffdf8;
+        }
+        .clinic-option:hover { border-color: #4a7c59; }
+        .clinic-option.selected { border-color: #4a7c59; background: #f2f7f3; box-shadow: 0 0 0 2px rgba(74, 124, 89, 0.12); }
+        .clinic-option input { margin-top: 4px; accent-color: #4a7c59; }
+        .clinic-option .opt-name { font-weight: 600; font-size: 14px; }
+        .clinic-option .opt-sub { font-size: 12px; color: #5a5a5a; margin-top: 3px; }
+
+        /* 用户中心 / 订单 / 处方 / 病历卡片 */
+        .uc-list-card {
+            background: #f7f3e9;
+            border: 1px solid #d4c4b0;
+            border-radius: 4px;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            font-size: 13px;
+        }
+        .uc-list-card .uc-title { font-weight: 600; color: #2b2b2b; font-size: 14px; }
+        .uc-list-card .uc-sub { color: #5a5a5a; font-size: 12px; margin-top: 4px; }
+        .uc-badge { display: inline-block; padding: 2px 9px; border-radius: 2px; font-size: 11px; margin-left: 6px; }
+        .uc-badge-gold { background: #fbf3e0; color: #b8860b; }
+        .uc-badge-jade { background: #eef5f0; color: #4a7c59; }
+        .uc-badge-cinnabar { background: #fdf2f2; color: #a53232; }
+        .uc-badge-ink { background: #f0ede6; color: #5a5a5a; }
+        .uc-expand { margin-top: 8px; }
+        .uc-expand summary { cursor: pointer; color: #8b7355; font-size: 12px; }
+        .uc-expand .uc-expand-body {
+            margin-top: 8px;
+            background: #fffdf8;
+            border: 1px solid #ebe4d6;
+            border-radius: 2px;
+            padding: 10px;
+            font-size: 12px;
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 260px;
+            overflow-y: auto;
+        }
+        .uc-empty { text-align: center; color: #8b7355; padding: 30px 10px; font-size: 13px; }
+        .uc-userbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+            padding-bottom: 12px;
+            border-bottom: 1px dashed #d4c4b0;
+        }
+        .uc-userbar .u-name { font-weight: 600; font-size: 15px; }
+        .uc-userbar .u-sub { font-size: 12px; color: #5a5a5a; }
+
+        /* 商城 */
+        .notice-banner {
+            background: #fbf3e0;
+            border: 1px solid #b8860b;
+            border-radius: 4px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            font-size: 12px;
+            color: #8a6d1a;
+            line-height: 1.7;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 14px;
+        }
+        .product-card {
+            background: #fffdf8;
+            border: 1px solid #d4c4b0;
+            border-radius: 4px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 2px 8px rgba(43, 27, 18, 0.08);
+            position: relative;
+        }
+        .product-card::before {
+            content: '';
+            position: absolute;
+            top: 8px; left: 8px;
+            width: 14px; height: 14px;
+            border: 2px solid #b8860b;
+            border-right: none;
+            border-bottom: none;
+            pointer-events: none;
+        }
+        .product-name { font-size: 15px; font-weight: 700; color: #2b2b2b; }
+        .product-subtitle { font-size: 12px; color: #5a5a5a; margin-top: 3px; }
+        .product-price { margin-top: 8px; color: #a53232; font-size: 18px; font-weight: 700; }
+        .product-price .orig { font-size: 12px; color: #8b7355; text-decoration: line-through; font-weight: 400; margin-left: 6px; }
+        .product-meta { font-size: 11px; color: #8b7355; margin-top: 8px; line-height: 1.8; }
+        .product-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+        .product-tag { background: #f7f3e9; border: 1px solid #d4c4b0; border-radius: 10px; padding: 2px 9px; font-size: 11px; color: #5a5a5a; }
+        .product-card .xsn-btn { margin-top: 12px; }
+        .product-card.coming-soon { opacity: 0.55; background: #efe8d8; }
+        .product-card.coming-soon::before { border-color: #8b7355; }
+
         /* 响应式 */
         @media (max-width: 600px) {
             .header h1 { font-size: 16px; }
             .nav-btn { padding: 4px 10px; font-size: 11px; }
             .chat-input { font-size: 16px; }
+            .header-auth { position: static; justify-content: center; margin-top: 8px; }
         }
+
+        /* ============ P3 设计系统接入 ============ */
+        /* 全站按钮按压即时反馈（100ms，pointer-down 瞬间响应） */
+        button, .search-btn, .nav-btn, .header-btn, .send-btn { transition-property: transform, background, color, box-shadow, border-color; }
+        button:active, .search-btn:active, .nav-btn:active, .header-btn:active, .send-btn:active { transform: scale(0.97); transition-duration: 100ms; }
+
+        /* section 切换一次性淡入（200ms 临界阻尼；reduced-motion 由主题包全局压掉） */
+        .section.active-section { animation: xsnSectionIn 200ms var(--ease-spring); }
+        @keyframes xsnSectionIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* 导航条半透明宣纸材质（本不吸顶，保持不吸顶，仅换材质；底部 12px 渐变淡出替代实线） */
+        .nav {
+            position: relative;
+            background: rgba(247, 243, 233, 0.82);
+            backdrop-filter: blur(16px) saturate(160%);
+            -webkit-backdrop-filter: blur(16px) saturate(160%);
+            border-bottom: none;
+        }
+        .nav::after {
+            content: '';
+            position: absolute;
+            left: 0; right: 0; bottom: -12px;
+            height: 12px;
+            background: linear-gradient(to bottom, rgba(247, 243, 233, 0.82), rgba(247, 243, 233, 0));
+            pointer-events: none;
+        }
+
+        /* 欢迎语主页入口（枯墨小字链接，不突兀） */
+        .xsn-home-link { display: inline-block; margin-top: 8px; font-size: 12px; color: #8b7355; text-decoration: none; }
+        .xsn-home-link:hover { color: #a53232; text-decoration: underline; }
+
+        /* 对话问诊模式 */
+        .inquiry-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+        .inquiry-switch { display: flex; gap: 0; flex-shrink: 0; }
+        .inquiry-mode-btn {
+            padding: 4px 14px;
+            border: 1px solid #a53232;
+            background: transparent;
+            color: #a53232;
+            cursor: pointer;
+            font-size: 12px;
+            font-family: inherit;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+        }
+        .inquiry-mode-btn:first-child { border-radius: 4px 0 0 4px; border-right: none; }
+        .inquiry-mode-btn:last-child { border-radius: 0 4px 4px 0; }
+        .inquiry-mode-btn.active { background: linear-gradient(135deg, #a53232 0%, #8a2525 100%); color: #fffdf8; }
+        .dialogue-progress { flex: 1; display: flex; align-items: center; gap: 8px; }
+        .dialogue-progress-track { flex: 1; height: 4px; background: #e8dcc8; border-radius: 2px; overflow: hidden; }
+        .dialogue-progress-fill {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, #b8860b, #d4a84b);
+            border-radius: 2px;
+            transform: scaleX(0);
+            transform-origin: left center;
+            transition: transform 300ms var(--ease-spring, ease-out);
+        }
+        .dialogue-progress-text { font-size: 11px; color: #8b7355; flex-shrink: 0; min-width: 32px; text-align: right; }
+        .phase-tag { font-size: 11px; color: #8b7355; letter-spacing: 1px; margin-bottom: 6px; }
+        .emr-note { font-size: 11px; color: #8b7355; letter-spacing: 1px; margin: -6px 0 12px 46px; }
     </style>
 </head>
 <body>
@@ -536,6 +866,10 @@ body::before {
         </div>
         <div class="subtitle">Agent协作 · 语义匹配 · 批判性思维 · 可溯源</div>
         <div class="api-status disconnected" id="apiStatus">API连接中...</div>
+        <div class="header-auth">
+            <button class="header-btn btn-cinnabar-outline" id="authBtn" onclick="onAuthBtnClick(this)">登录/注册</button>
+            <button class="header-btn btn-gold-outline" onclick="openClinicApplyModal(this)">医馆入驻</button>
+        </div>
     </div>
 
     <!-- 功能标签 -->
@@ -552,6 +886,7 @@ body::before {
         <button class="nav-btn" onclick="showSection('agents', this)">Agent系统</button>
         <button class="nav-btn" onclick="showSection('api', this)">API测试</button>
         <button class="nav-btn" onclick="window.open('kg_visual.html', '_blank')">知识图谱</button>
+        <button class="nav-btn" onclick="showSection('mall', this); loadMall()">商城</button>
     </div>
     
     <div class="container">
@@ -560,19 +895,22 @@ body::before {
             <div class="chat-container" id="chatContainer"></div>
             
             <div class="chat-input-area">
-                <div class="quick-symptoms" id="quickSymptoms">
-                    <span class="quick-tag" onclick="sendQuick('我最近失眠')">失眠</span>
-                    <span class="quick-tag" onclick="sendQuick('头痛')">头痛</span>
-                    <span class="quick-tag" onclick="sendQuick('胃不舒服')">胃痛</span>
-                    <span class="quick-tag" onclick="sendQuick('口干口苦')">口干</span>
-                    <span class="quick-tag" onclick="sendQuick('腰酸乏力')">腰酸</span>
-                    <span class="quick-tag" onclick="sendQuick('月经不调')">月经</span>
+                <!-- 问诊模式切换（对话问诊默认）+ 对话进度 -->
+                <div class="inquiry-bar">
+                    <div class="inquiry-switch">
+                        <button class="inquiry-mode-btn active" id="modeBtnDialogue" onclick="switchChatMode('dialogue', this)">对话问诊</button>
+                        <button class="inquiry-mode-btn" id="modeBtnQuick" onclick="switchChatMode('quick', this)">快速辨证</button>
+                    </div>
+                    <div class="dialogue-progress" id="dialogueProgress">
+                        <div class="dialogue-progress-track"><div class="dialogue-progress-fill" id="dialogueProgressFill"></div></div>
+                        <span class="dialogue-progress-text" id="dialogueProgressText">0%</span>
+                    </div>
                 </div>
                 <div class="input-row">
                     <textarea 
                         class="chat-input" 
                         id="chatInput" 
-                        placeholder="描述您的症状，如：最近失眠多梦，口干口苦..."
+                        placeholder="请说清四点：哪里不舒服、什么样的感觉（胀痛/刺痛/隐痛等）、持续多久了、什么情况会加重或缓解"
                         rows="1"
                         oninput="autoResize(this)"
                         onkeydown="handleKeyDown(event)"
@@ -586,7 +924,7 @@ body::before {
         <div class="section" id="section-semantic">
             <div class="page-content">
                 <div class="card">
-                    <div class="card-title">🔍 语义搜索测试</div>
+                    <div class="card-title"><span class="seal-badge">检</span>语义搜索测试</div>
                     <div class="search-box">
                         <input type="text" class="search-input" id="semanticInput" 
                                placeholder="输入症状描述，如：睡不着、胃疼、头晕..." 
@@ -602,11 +940,11 @@ body::before {
         <div class="section" id="section-agents">
             <div class="page-content">
                 <div class="card">
-                    <div class="card-title">🤖 多Agent协作系统</div>
+                    <div class="card-title"><span class="seal-badge">协</span>多Agent协作系统</div>
                     <div id="agentList"></div>
                 </div>
                 <div class="card">
-                    <div class="card-title">📊 Agent分析测试</div>
+                    <div class="card-title"><span class="seal-badge">析</span>Agent分析测试</div>
                     <div class="search-box">
                         <input type="text" class="search-input" id="agentInput" 
                                placeholder="输入症状让Agent分析..." 
@@ -622,7 +960,7 @@ body::before {
         <div class="section" id="section-api">
             <div class="page-content">
                 <div class="card">
-                    <div class="card-title">🔧 API接口测试</div>
+                    <div class="card-title"><span class="seal-badge">试</span>API接口测试</div>
                     <div style="margin-bottom: 15px;">
                         <label style="display: block; margin-bottom: 5px; color: #5a5a5a;">API地址</label>
                         <input type="text" class="search-input" id="apiBase" value="http://localhost:5001">
@@ -637,7 +975,278 @@ body::before {
                 </div>
             </div>
         </div>
+
+        <!-- 商城页面 -->
+        <div class="section" id="section-mall">
+            <div class="page-content">
+                <div class="card">
+                    <div class="card-title"><span class="seal-badge" style="background:#b8860b">市</span>小神农商城 · 药食同源养生品</div>
+                    <div id="mallNotice"></div>
+                    <div class="product-grid" id="productGrid">
+                        <div style="text-align:center; padding:40px; color:#8b7355; grid-column:1/-1;">商品加载中...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <!-- 登录/注册弹窗 -->
+    <div class="xsn-modal-overlay xsn-m-overlay" id="authModal">
+        <div class="xsn-modal xsn-m-dialog" style="max-width:440px;">
+            <div class="xsn-modal-header">
+                <h3 id="authModalTitle">用户登录</h3>
+                <button class="xsn-modal-close" onclick="closeXsnModal('authModal')">&times;</button>
+            </div>
+            <div class="xsn-modal-body">
+                <div class="xsn-tabs">
+                    <button class="xsn-tab active" id="authTabLogin" onclick="switchAuthTab('login')">登录</button>
+                    <button class="xsn-tab" id="authTabRegister" onclick="switchAuthTab('register')">注册</button>
+                    <button class="xsn-tab" id="authTabReset" onclick="switchAuthTab('reset')">忘记密码</button>
+                </div>
+
+                <!-- 登录（账密） -->
+                <form id="loginPane" onsubmit="return handleUserLogin(event)">
+                    <div class="xsn-form-group">
+                        <label>手机号</label>
+                        <input type="tel" class="xsn-input" id="loginPhone" placeholder="请输入手机号" required>
+                    </div>
+                    <div class="xsn-form-group">
+                        <label>密码</label>
+                        <input type="password" class="xsn-input" id="loginPassword" placeholder="请输入密码" required>
+                    </div>
+                    <button type="submit" class="xsn-btn xsn-btn-primary xsn-btn-block">登 录</button>
+                    <div class="xsn-form-msg error" id="loginMsg"></div>
+                </form>
+
+                <!-- 注册 -->
+                <form id="registerPane" style="display:none;" onsubmit="return handleUserRegister(event)">
+                    <div class="xsn-form-group">
+                        <label>手机号</label>
+                        <input type="tel" class="xsn-input" id="regPhone" placeholder="请输入手机号" required>
+                    </div>
+                    <div class="xsn-form-group">
+                        <label>设置密码（至少 8 位）</label>
+                        <input type="password" class="xsn-input" id="regPassword" placeholder="请设置登录密码" required>
+                    </div>
+                    <div class="xsn-form-group">
+                        <label>昵称（选填）</label>
+                        <input type="text" class="xsn-input" id="regNickname" placeholder="怎么称呼您">
+                    </div>
+                    <div class="xsn-form-group">
+                        <label>短信验证码</label>
+                        <div class="xsn-input-row">
+                            <input type="text" class="xsn-input" id="regCode" placeholder="6 位验证码" required>
+                            <button type="button" class="xsn-btn xsn-btn-plain xsn-btn-sm" id="regCodeBtn" onclick="sendSmsCode('register', 'regPhone', this, 'regCodeHint')">获取验证码</button>
+                        </div>
+                        <div class="xsn-hint" id="regCodeHint"></div>
+                    </div>
+                    <div class="xsn-form-group">
+                        <label class="xsn-consent">
+                            <input type="checkbox" id="regConsent" onchange="document.getElementById('regSubmitBtn').disabled = !this.checked">
+                            <span>《用户协议与隐私政策》：本人同意平台收集健康信息用于 AI 问诊服务，理解 AI 建议不能替代医师诊断</span>
+                        </label>
+                    </div>
+                    <button type="submit" class="xsn-btn xsn-btn-primary xsn-btn-block" id="regSubmitBtn" disabled>注 册</button>
+                    <div class="xsn-form-msg error" id="regMsg"></div>
+                </form>
+
+                <!-- 忘记密码 -->
+                <form id="resetPane" style="display:none;" onsubmit="return handleUserReset(event)">
+                    <div class="xsn-form-group">
+                        <label>手机号</label>
+                        <input type="tel" class="xsn-input" id="resetPhone" placeholder="请输入手机号" required>
+                    </div>
+                    <div class="xsn-form-group">
+                        <label>短信验证码</label>
+                        <div class="xsn-input-row">
+                            <input type="text" class="xsn-input" id="resetCode" placeholder="6 位验证码" required>
+                            <button type="button" class="xsn-btn xsn-btn-plain xsn-btn-sm" onclick="sendSmsCode('reset', 'resetPhone', this, 'resetCodeHint')">获取验证码</button>
+                        </div>
+                        <div class="xsn-hint" id="resetCodeHint"></div>
+                    </div>
+                    <div class="xsn-form-group">
+                        <label>新密码（至少 8 位）</label>
+                        <input type="password" class="xsn-input" id="resetPassword" placeholder="请设置新密码" required>
+                    </div>
+                    <button type="submit" class="xsn-btn xsn-btn-primary xsn-btn-block">重置密码</button>
+                    <div class="xsn-form-msg" id="resetMsg"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 医馆入驻弹窗 -->
+    <div class="xsn-modal-overlay xsn-m-overlay" id="clinicApplyModal">
+        <div class="xsn-modal xsn-m-dialog" style="max-width:520px;">
+            <div class="xsn-modal-header" style="background:linear-gradient(135deg, #b8860b 0%, #8a6508 100%);">
+                <h3>医馆入驻申请</h3>
+                <button class="xsn-modal-close" onclick="closeXsnModal('clinicApplyModal')">&times;</button>
+            </div>
+            <div class="xsn-modal-body">
+                <form id="clinicApplyForm" onsubmit="return submitClinicApply(event)">
+                    <div class="xsn-form-group">
+                        <label>医馆名称</label>
+                        <input type="text" class="xsn-input" id="caName" placeholder="如：仁心堂中医馆" required>
+                    </div>
+                    <div class="xsn-form-group">
+                        <label>执业许可证号</label>
+                        <input type="text" class="xsn-input" id="caLicense" placeholder="医疗机构执业许可证号" required>
+                    </div>
+                    <div class="xsn-form-group">
+                        <label>地址</label>
+                        <input type="text" class="xsn-input" id="caAddress" placeholder="医馆经营地址">
+                    </div>
+                    <div class="xsn-form-group">
+                        <label>联系电话</label>
+                        <input type="tel" class="xsn-input" id="caPhone" placeholder="对外联系电话">
+                    </div>
+                    <div class="xsn-form-group">
+                        <label>登录手机号（后台账号）</label>
+                        <input type="tel" class="xsn-input" id="caAccountPhone" placeholder="用于登录医馆管理后台" required>
+                    </div>
+                    <div class="xsn-form-group">
+                        <label>登录密码（至少 6 位）</label>
+                        <input type="password" class="xsn-input" id="caPassword" placeholder="请设置登录密码" required>
+                    </div>
+                    <div class="xsn-form-group">
+                        <label>联系人姓名</label>
+                        <input type="text" class="xsn-input" id="caContact" placeholder="联系人 / 医师姓名">
+                    </div>
+                    <div class="xsn-form-group">
+                        <label class="xsn-consent" style="font-size:13px; color:#2b2b2b;">
+                            <input type="checkbox" id="caDecoction" onchange="document.getElementById('caFeeGroup').style.display = this.checked ? 'block' : 'none'">
+                            <span>支持中药代煎服务</span>
+                        </label>
+                    </div>
+                    <div class="xsn-form-group" id="caFeeGroup" style="display:none;">
+                        <label>代煎费（元 / 单）</label>
+                        <input type="number" class="xsn-input" id="caDecoctionFee" min="0" step="0.01" placeholder="如：15">
+                    </div>
+                    <div class="xsn-form-group">
+                        <label>配送范围</label>
+                        <input type="text" class="xsn-input" id="caDeliveryScope" placeholder="如：北京市 / 本区 5 公里内">
+                    </div>
+                    <button type="submit" class="xsn-btn xsn-btn-primary xsn-btn-block">提交入驻申请</button>
+                    <div class="xsn-form-msg" id="caMsg"></div>
+                </form>
+                <div id="caSuccess" style="display:none; text-align:center; padding:20px 10px;">
+                    <div class="seal-badge" style="width:44px; height:44px; font-size:22px; margin:0 auto 14px; border-radius:6px; background:#b8860b;">驻</div>
+                    <p style="font-size:14px; line-height:2;">已开通账号，资质审核通过后即可接单审核。<br>请前往医馆管理后台登录。</p>
+                    <a href="clinic.html" target="_blank" class="xsn-btn xsn-btn-jade" style="margin-top:14px; text-decoration:none;">打开医馆管理后台</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 个人中心弹窗 -->
+    <div class="xsn-modal-overlay xsn-m-overlay" id="userCenterModal">
+        <div class="xsn-modal xsn-m-dialog" style="max-width:680px;">
+            <div class="xsn-modal-header" style="background:linear-gradient(135deg, #4a7c59 0%, #2d4a35 100%);">
+                <h3>个人中心</h3>
+                <button class="xsn-modal-close" onclick="closeXsnModal('userCenterModal')">&times;</button>
+            </div>
+            <div class="xsn-modal-body">
+                <div class="uc-userbar">
+                    <div>
+                        <div class="u-name" id="ucNickname">用户</div>
+                        <div class="u-sub" id="ucPhone"></div>
+                    </div>
+                    <button class="xsn-btn xsn-btn-plain xsn-btn-sm" onclick="handleUserLogout()">退出登录</button>
+                </div>
+                <div class="xsn-tabs">
+                    <button class="xsn-tab active" id="ucTabEmr" onclick="switchUserTab('emr')">我的病历</button>
+                    <button class="xsn-tab" id="ucTabRx" onclick="switchUserTab('rx')">我的处方</button>
+                    <button class="xsn-tab" id="ucTabOrders" onclick="switchUserTab('orders')">我的订单</button>
+                </div>
+                <div id="ucPaneEmr"></div>
+                <div id="ucPaneRx" style="display:none;"></div>
+                <div id="ucPaneOrders" style="display:none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 选择医馆弹窗（转医馆审核开方） -->
+    <div class="xsn-modal-overlay xsn-m-overlay" id="clinicSelectModal">
+        <div class="xsn-modal xsn-m-dialog" style="max-width:520px;">
+            <div class="xsn-modal-header" style="background:linear-gradient(135deg, #4a7c59 0%, #2d4a35 100%);">
+                <h3>选择医馆审核开方</h3>
+                <button class="xsn-modal-close" onclick="closeXsnModal('clinicSelectModal')">&times;</button>
+            </div>
+            <div class="xsn-modal-body">
+                <p style="font-size:12px; color:#5a5a5a; margin-bottom:14px; line-height:1.8;">AI 辨证建议与您的病历快照将发送给所选医馆，由执业医师审核后开具正式处方。</p>
+                <div id="clinicSelectList"><div class="uc-empty">医馆加载中...</div></div>
+                <button class="xsn-btn xsn-btn-jade xsn-btn-block" id="clinicSelectConfirm" onclick="confirmRxApply()" style="margin-top:12px;">确认提交开方申请</button>
+                <div class="xsn-form-msg" id="clinicSelectMsg"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 处方下单弹窗 -->
+    <div class="xsn-modal-overlay xsn-m-overlay" id="rxOrderModal">
+        <div class="xsn-modal xsn-m-dialog" style="max-width:440px;">
+            <div class="xsn-modal-header" style="background:linear-gradient(135deg, #4a7c59 0%, #2d4a35 100%);">
+                <h3>处方下单</h3>
+                <button class="xsn-modal-close" onclick="closeXsnModal('rxOrderModal')">&times;</button>
+            </div>
+            <div class="xsn-modal-body">
+                <div class="uc-list-card" style="margin-bottom:16px;">
+                    <div class="uc-title" id="rxOrderRxId"></div>
+                    <div class="uc-sub">医师已审核通过，请选择履约方式</div>
+                </div>
+                <form onsubmit="return submitRxOrder(event)">
+                    <div class="xsn-form-group">
+                        <label>履约方式</label>
+                        <label class="xsn-consent" style="font-size:13px; color:#2b2b2b; margin-bottom:6px;">
+                            <input type="radio" name="rxFulfillment" value="delivery" checked> <span>邮寄配送</span>
+                        </label>
+                        <label class="xsn-consent" style="font-size:13px; color:#2b2b2b;">
+                            <input type="radio" name="rxFulfillment" value="pickup"> <span>到店自取</span>
+                        </label>
+                    </div>
+                    <div class="xsn-form-group">
+                        <label class="xsn-consent" style="font-size:13px; color:#2b2b2b;">
+                            <input type="checkbox" id="rxOrderDecoction"> <span>需要医馆代煎（医馆不支持时下单会失败并提示）</span>
+                        </label>
+                    </div>
+                    <div class="xsn-form-group">
+                        <label>收货地址 / 自取备注</label>
+                        <textarea class="xsn-input" id="rxOrderAddress" placeholder="邮寄请填写详细收货地址"></textarea>
+                    </div>
+                    <button type="submit" class="xsn-btn xsn-btn-jade xsn-btn-block">提交订单</button>
+                    <div class="xsn-form-msg error" id="rxOrderMsg"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 商城购买弹窗 -->
+    <div class="xsn-modal-overlay xsn-m-overlay" id="mallBuyModal">
+        <div class="xsn-modal xsn-m-dialog" style="max-width:440px;">
+            <div class="xsn-modal-header" style="background:linear-gradient(135deg, #b8860b 0%, #8a6508 100%);">
+                <h3>购买商品</h3>
+                <button class="xsn-modal-close" onclick="closeXsnModal('mallBuyModal')">&times;</button>
+            </div>
+            <div class="xsn-modal-body">
+                <div class="uc-list-card" style="margin-bottom:16px;">
+                    <div class="uc-title" id="mallBuyName"></div>
+                    <div class="uc-sub" id="mallBuyPrice"></div>
+                </div>
+                <form onsubmit="return submitMallOrder(event)">
+                    <div class="xsn-form-group">
+                        <label>数量</label>
+                        <input type="number" class="xsn-input" id="mallBuyQty" min="1" value="1" required>
+                    </div>
+                    <div class="xsn-form-group">
+                        <label>收货地址</label>
+                        <textarea class="xsn-input" id="mallBuyAddress" placeholder="请填写详细收货地址" required></textarea>
+                    </div>
+                    <button type="submit" class="xsn-btn xsn-btn-primary xsn-btn-block">提交订单</button>
+                    <div class="xsn-form-msg" id="mallBuyMsg"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     
     <script>
         // API配置
@@ -665,6 +1274,8 @@ body::before {
         let API_BASE = detectApiBase();
         console.log('[XiaoShennong] API_BASE:', API_BASE || '(relative)');
         let isProcessing = false;
+        let chatMode = 'dialogue';    // 问诊模式：dialogue=对话问诊（默认，多轮问诊）/ quick=快速辨证（一次性流式）
+        let dialogueSessionId = '';   // 对话问诊会话ID（切换模式或会话过期时重置，下次发送重新 start）
 
         // 页面加载
         document.addEventListener('DOMContentLoaded', () => {
@@ -724,15 +1335,19 @@ body::before {
             const container = document.getElementById('chatContainer');
             container.innerHTML = '';
             
-            await addBotMessage(`您好！我是小神农AI助手 v5.0
+            await addBotMessage(`您好，我是小神农。像老中医坐诊一样，我会先问您几个问题再辨证——哪里不舒服？持续多久了？请尽管细说。
 
-我具备以下能力：
-◈ 多Agent协作分析（症状 / 药物 / 方剂 / 副作用）
-◈ 语义匹配搜索（理解同义词、近义词）
-◈ 实时思考过程展示
-◈ 基于权威知识库的可溯源回答
+若想直接出辨证结果，可在下方切换到「快速辨证」。`);
 
-请描述您的症状，我会逐步分析并给出建议。`);
+            // P3 设计系统接入：欢迎气泡末尾附主页入口（枯墨小字链接）
+            const welcomeBubble = container.querySelector('.chat-message:last-child .message-bubble');
+            if (welcomeBubble) {
+                const homeLink = document.createElement('a');
+                homeLink.href = 'home.html';
+                homeLink.className = 'xsn-home-link';
+                homeLink.textContent = '了解小神农 →';
+                welcomeBubble.appendChild(homeLink);
+            }
         }
         
         // 打字机效果函数
@@ -752,9 +1367,13 @@ body::before {
         
         // 切换页面
         function showSection(name, btn) {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active', 'active-section'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(`section-${name}`).classList.add('active');
+            const target = document.getElementById(`section-${name}`);
+            target.classList.add('active');
+            /* P3 设计系统接入：重加 active-section 前强制 reflow，重触发一次性淡入 */
+            void target.offsetWidth;
+            target.classList.add('active-section');
             if (btn) btn.classList.add('active');
         }
         
@@ -772,12 +1391,6 @@ body::before {
             }
         }
         
-        // 发送快捷消息
-        function sendQuick(text) {
-            document.getElementById('chatInput').value = text;
-            sendMessage();
-        }
-        
         // 发送消息
         async function sendMessage() {
             const input = document.getElementById('chatInput');
@@ -785,6 +1398,31 @@ body::before {
             
             if (!text || isProcessing) return;
             
+            // 对话问诊模式：多轮真医生式问诊（先问清基本情况/症状/病史，再辨证）
+            if (chatMode === 'dialogue') {
+                addUserMessage(text);
+                input.value = '';
+                input.style.height = 'auto';
+                scrollToBottom();
+                
+                isProcessing = true;
+                document.getElementById('sendBtn').disabled = true;
+                try {
+                    await dialogueTurn(text);
+                } catch (e) {
+                    console.error('Error:', e);
+                    await addBotMessage('抱歉，连接失败。请确保后端服务已启动。');
+                } finally {
+                    isProcessing = false;
+                    document.getElementById('sendBtn').disabled = false;
+                    input.focus();
+                }
+                return;
+            }
+            
+            // 快速辨证模式：一次性流式辨证（原有逻辑）
+            lastSymptomsText = text;  // 记录用户输入原文，供「转医馆审核开方」使用
+            lastRxSessionId = '';     // 快速辨证结果的开方申请走 quick 路径（回传 symptoms+advice）
             addUserMessage(text);
             input.value = '';
             input.style.height = 'auto';
@@ -821,12 +1459,12 @@ body::before {
             
             container.innerHTML += `
                 <div class="chat-message thinking-message" id="${thinkingId}">
-                    <div class="message-avatar">🧠</div>
+                    <div class="message-avatar" style="color:#a53232; font-weight:bold;">思</div>
                     <div class="message-content">
                         <div class="message-bubble">
                             <div class="thinking-process">
                                 <div class="thinking-title">
-                                    <span>🧠</span> AI正在分析...
+                                    <span class="seal-badge" style="width:18px;height:18px;font-size:11px;vertical-align:-3px;">思</span> AI正在分析...
                                 </div>
                                 <div id="steps_${thinkingId}"></div>
                                 <div class="loading-dots" id="loading_${thinkingId}">
@@ -997,6 +1635,171 @@ body::before {
             }
         }
         
+        // ============ 对话问诊模式 ============
+        // 切换问诊模式：不清空聊天记录，但对话会话状态重置（下次发送重新 start）
+        function switchChatMode(mode, btn) {
+            chatMode = mode;
+            document.querySelectorAll('.inquiry-mode-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            dialogueSessionId = '';
+            document.getElementById('dialogueProgress').style.display = mode === 'dialogue' ? 'flex' : 'none';
+            if (mode === 'dialogue') updateDialogueProgress(0);
+        }
+        
+        // 对话进度条（鎏金，scaleX 只动 transform）
+        function updateDialogueProgress(pct) {
+            pct = Math.max(0, Math.min(100, Number(pct) || 0));
+            document.getElementById('dialogueProgressFill').style.transform = `scaleX(${pct / 100})`;
+            document.getElementById('dialogueProgressText').textContent = pct + '%';
+        }
+        
+        // 问诊阶段小字标签（枯墨色，.xsn-seal 小印章+文字）
+        const DIALOGUE_PHASE_LABELS = {
+            profile: '问·基本情况',
+            collecting: '问·症状细节',
+            clarifying: '问·症状细节',
+            history: '问·过敏与用药',
+            differentiating: '辨·鉴别分析',
+            ready: '断·辨证论治'
+        };
+        function dialoguePhaseTag(phase) {
+            const label = DIALOGUE_PHASE_LABELS[phase];
+            if (!label) return '';
+            return `<div class="phase-tag"><span class="xsn-seal" style="width:16px;height:16px;font-size:10px;border-radius:3px;margin-right:4px;vertical-align:-3px;">${label.charAt(0)}</span>${label}</div>`;
+        }
+        
+        // 对话思考中动画
+        function showDialogueThinking() {
+            const container = document.getElementById('chatContainer');
+            const time = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+            container.innerHTML += `
+                <div class="chat-message thinking-message" id="dialogueThinking">
+                    <div class="message-avatar" style="color:#a53232; font-weight:bold;">神</div>
+                    <div class="message-content">
+                        <div class="message-bubble">
+                            <div class="loading-dots"><span></span><span></span><span></span></div>
+                            <div style="font-size: 12px; color: #8b7355; margin-top: 4px;">正在问诊思索...</div>
+                        </div>
+                        <div class="message-time">${time}</div>
+                    </div>
+                </div>
+            `;
+            scrollToBottom();
+        }
+        function hideDialogueThinking() {
+            const el = document.getElementById('dialogueThinking');
+            if (el) el.remove();
+        }
+        
+        // 对话模式一轮问诊：首次发送先 start 拿 session_id，之后直接 turn；会话失效自动重试一次
+        async function dialogueTurn(userInput, retried) {
+            const base = isValidApiBase(API_BASE) ? API_BASE : DEFAULT_API_BASE;
+            const headers = { 'Content-Type': 'application/json' };
+            if (userToken) headers['Authorization'] = 'Bearer ' + userToken;  // 登录用户预载病历
+            
+            if (!dialogueSessionId) {
+                const startResp = await fetch(`${base}/api/dialogue/start`, { method: 'POST', headers, body: '{}' });
+                const startData = await startResp.json();
+                if (startData.success && startData.data && startData.data.session_id) {
+                    dialogueSessionId = startData.data.session_id;
+                } else {
+                    await addBotMessage('抱歉，问诊会话开启失败：' + (startData.error || '请稍后重试'));
+                    return;
+                }
+            }
+            
+            showDialogueThinking();
+            let data;
+            try {
+                const resp = await fetch(`${base}/api/dialogue/turn`, {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify({ session_id: dialogueSessionId, user_input: userInput })
+                });
+                data = await resp.json();
+            } finally {
+                hideDialogueThinking();
+            }
+            
+            // 会话不存在/过期：自动重新 start 并重发本次输入一次；仍失败则提示重置
+            if (!data.success || !data.data || data.data.phase === 'error') {
+                dialogueSessionId = '';
+                if (!retried) {
+                    await dialogueTurn(userInput, true);
+                } else {
+                    await addBotMessage('会话已重置，请重新描述症状');
+                }
+                return;
+            }
+            
+            const d = data.data;
+            
+            updateDialogueProgress(d.progress_percent);
+            
+            // 思考过程：字段映射后复用现有 thinking 渲染（与快速辨证共用）；
+            // 不 await，让思考步骤动画与回复打字并行，避免每轮对话空等数秒
+            if (d.thinking_steps && d.thinking_steps.length > 0) {
+                const steps = d.thinking_steps.map((s, i) => ({
+                    step: s.step || (i + 1),
+                    agent: s.name || s.agent || '分析步骤',
+                    content: s.description || s.content || '',
+                    detail: s.details ? JSON.stringify(s.details).slice(0, 120) : (s.detail || ''),
+                    status: s.status || 'completed'
+                }));
+                showThinkingSteps(steps);
+            }
+            
+            await addDialogueBotMessage(d);
+            
+            // 信息齐全，出辨证结果（复用现有结果卡片，含「转医馆审核开方」按钮）
+            if (d.is_ready_for_diagnosis && d.diagnosis_result) {
+                lastRxSessionId = dialogueSessionId;  // 开方申请走 session 路径（服务端取可信快照）
+                const dr = d.diagnosis_result;
+                // 映射为与流式辨证一致的结构，showDiagnosisResult/normalizeDiagnosis 直接复用
+                const mappedResult = {
+                    diagnosis: {
+                        symptoms: (d.collected_symptoms || []).slice(0, 10).map(s => ({ id: s.id || '', name: s.name || '' })),
+                        formulas: (dr.matched_formulas || []).slice(0, 5).map(f => ({
+                            id: f.id || '',
+                            name: f.name || '',
+                            functions: f.syndrome || f.source || f.functions || '',
+                            composition: f.composition || []
+                        })),
+                        acupoints: [],
+                        dietary: [],
+                        qigong: [],
+                        massage: []
+                    },
+                    constitution: dr.constitution || '',
+                    syndrome: dr.syndrome || '',
+                    advice: dr.advice || '',
+                    warning: dr.warning || ''
+                };
+                await showDiagnosisResult(mappedResult);
+                // 登录用户：问诊完成写回病历提示
+                if (d.visit_emr_id) addEmrNote(d.visit_emr_id);
+            }
+        }
+        
+        // 对话模式 bot 气泡：阶段标签 + 打字机回复（复用 addBotMessage）。
+        // 问诊交互原则：医生主导提问、患者自由回答，不提供任何选项按钮（避免诱导主诉）。
+        async function addDialogueBotMessage(d) {
+            const container = document.getElementById('chatContainer');
+            await addBotMessage(d.bot_response || '');
+            const bubble = container.querySelector('.chat-message:last-child .message-bubble');
+            if (!bubble) return;
+            const tag = dialoguePhaseTag(d.phase);
+            if (tag) bubble.insertAdjacentHTML('afterbegin', tag);
+            scrollToBottom();
+        }
+        
+        // 登录用户问诊写回病历的提示（枯墨小字，挂在结果卡片下方）
+        function addEmrNote(emrId) {
+            const container = document.getElementById('chatContainer');
+            container.innerHTML += `<div class="emr-note">本次问诊已存入病历（编号 ${escapeHtml(emrId)}），可在个人中心查看</div>`;
+            scrollToBottom();
+        }
+        
         // 显示思考步骤
         async function showThinkingSteps(steps) {
             const container = document.getElementById('chatContainer');
@@ -1005,12 +1808,12 @@ body::before {
             const stepsId = 'steps_' + Date.now();
             container.innerHTML += `
                 <div class="chat-message thinking-message" id="${stepsId}">
-                    <div class="message-avatar">🧠</div>
+                    <div class="message-avatar" style="color:#a53232; font-weight:bold;">思</div>
                     <div class="message-content">
                         <div class="message-bubble">
                             <div class="thinking-process">
                                 <div class="thinking-title">
-                                    <span>🧠</span> AI思考过程
+                                    <span class="seal-badge" style="width:18px;height:18px;font-size:11px;vertical-align:-3px;">思</span> AI思考过程
                                 </div>
                                 <div id="content_${stepsId}"></div>
                             </div>
@@ -1095,6 +1898,7 @@ body::before {
             const time = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
 
             const result = normalizeDiagnosis(rawResult);
+            lastAdviceText = result.advice || '';  // 记录建议文本，供「转医馆审核开方」使用
 
             // 构建结果HTML
             let resultHtml = '';
@@ -1115,7 +1919,7 @@ body::before {
             // 症状分析
             if (result.symptoms && result.symptoms.length > 0) {
                 resultHtml += `<div style="margin-bottom: 12px;">
-                    <div class="result-section-title">📋 识别症状</div>
+                    <div class="result-section-title"><span class="seal-badge">辨</span>识别症状</div>
                     <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px;">
                         ${result.symptoms.map(s => `
                             <span style="background: #f7f3e9; color: #2b2b2b; padding: 4px 10px; border-radius: 12px; font-size: 12px;">
@@ -1129,7 +1933,7 @@ body::before {
             // 推荐方剂
             if (result.formulas && result.formulas.length > 0) {
                 resultHtml += `<div style="margin-bottom: 12px;">
-                    <div class="result-section-title">💊 推荐方剂</div>
+                    <div class="result-section-title"><span class="seal-badge">方</span>推荐方剂</div>
                     ${result.formulas.slice(0, 3).map(f => `
                         <div style="background: #fffdf8; border-radius: 8px; padding: 10px; margin-top: 6px; border-left: 3px solid #4a7c59;">
                             <div style="font-weight: bold; color: #2b2b2b;">${f.name || ''} <span style="font-size: 11px; color: #8b7355;">${f.id || ''}</span></div>
@@ -1143,7 +1947,7 @@ body::before {
             // 推荐穴位
             if (result.acupoints && result.acupoints.length > 0) {
                 resultHtml += `<div style="margin-bottom: 12px;">
-                    <div class="result-section-title">📍 推荐穴位</div>
+                    <div class="result-section-title"><span class="seal-badge" style="background:#b8860b">穴</span>推荐穴位</div>
                     ${result.acupoints.slice(0, 3).map(a => `
                         <div style="background: #fffdf8; border-radius: 8px; padding: 10px; margin-top: 6px; border-left: 3px solid #b8860b;">
                             <div style="font-weight: bold; color: #8b7355;">${a.name || ''} <span style="font-size: 11px; color: #8b7355;">${a.id || ''}</span></div>
@@ -1157,7 +1961,7 @@ body::before {
             // 推荐食疗
             if (result.dietary && result.dietary.length > 0) {
                 resultHtml += `<div style="margin-bottom: 12px;">
-                    <div class="result-section-title">🍵 推荐食疗</div>
+                    <div class="result-section-title"><span class="seal-badge" style="background:#4a7c59">食</span>推荐食疗</div>
                     ${result.dietary.slice(0, 2).map(d => `
                         <div style="background: #fffdf8; border-radius: 8px; padding: 10px; margin-top: 6px; border-left: 3px solid #4a7c59;">
                             <div style="font-weight: bold; color: #4a7c59;">${d.name || ''}</div>
@@ -1170,7 +1974,7 @@ body::before {
             // 推荐导引
             if (result.qigong && result.qigong.length > 0) {
                 resultHtml += `<div style="margin-bottom: 12px;">
-                    <div class="result-section-title">🧘 推荐导引</div>
+                    <div class="result-section-title"><span class="seal-badge" style="background:#4a7c59">引</span>推荐导引</div>
                     ${result.qigong.slice(0, 2).map(q => `
                         <div style="background: #fffdf8; border-radius: 8px; padding: 10px; margin-top: 6px; border-left: 3px solid #4a7c59;">
                             <div style="font-weight: bold; color: #a53232;">${q.name || ''}</div>
@@ -1184,7 +1988,7 @@ body::before {
             // 推荐推拿
             if (result.massage && result.massage.length > 0) {
                 resultHtml += `<div style="margin-bottom: 12px;">
-                    <div class="result-section-title">💆 推荐推拿</div>
+                    <div class="result-section-title"><span class="seal-badge" style="background:#4a7c59">按</span>推荐推拿</div>
                     ${result.massage.slice(0, 2).map(m => `
                         <div style="background: #fffdf8; border-radius: 8px; padding: 10px; margin-top: 6px; border-left: 3px solid #8b7355;">
                             <div style="font-weight: bold; color: #8b7355;">${m.name || ''}</div>
@@ -1194,17 +1998,25 @@ body::before {
                 </div>`;
             }
             
+            // 转医馆审核开方入口
+            resultHtml += `
+                <div style="margin-top: 14px; text-align: center;">
+                    <button class="rx-apply-btn" onclick="openRxApplyFlow(this)">转医馆审核开方</button>
+                    <div style="font-size: 11px; color: #8b7355; margin-top: 6px;">由入驻医馆执业医师审核 AI 建议后开具正式处方</div>
+                </div>
+            `;
+
             // 免责声明
             resultHtml += `
                 <div class="warning-box">
-                    <span class="warning-icon">⚠️</span>
+                    <span class="seal-badge" style="background:#b8860b">慎</span>
                     <span class="warning-text">本结果仅供参考，不能替代专业医生诊断。AI输出基于权威知识库，所有建议需经执业医师审核。如有不适，请及时就医。</span>
                 </div>
             `;
             
             container.innerHTML += `
                 <div class="chat-message bot-message">
-                    <div class="message-avatar">🌿</div>
+                    <div class="message-avatar" style="color:#a53232; font-weight:bold;">神</div>
                     <div class="message-content">
                         <div class="message-bubble">
                             <div class="result-card">
@@ -1226,7 +2038,7 @@ body::before {
             
             container.innerHTML += `
                 <div class="chat-message user-message">
-                    <div class="message-avatar">👤</div>
+                    <div class="message-avatar">我</div>
                     <div class="message-content">
                         <div class="message-bubble">${escapeHtml(text)}</div>
                         <div class="message-time">${time}</div>
@@ -1244,7 +2056,7 @@ body::before {
             const msgId = 'msg_' + Date.now();
             container.innerHTML += `
                 <div class="chat-message bot-message" id="${msgId}">
-                    <div class="message-avatar">🌿</div>
+                    <div class="message-avatar" style="color:#a53232; font-weight:bold;">神</div>
                     <div class="message-content">
                         <div class="message-bubble">
                             <span id="text_${msgId}"></span><span class="typing-cursor"></span>
@@ -1369,8 +2181,8 @@ body::before {
                     <div class="agent-name">${a.name} <span style="font-size: 11px; color: #8b7355;">${a.id}</span></div>
                     <div class="agent-desc">${a.desc}</div>
                     <div class="agent-stats">
-                        <span class="agent-stat">📊 ${a.stats}</span>
-                        <span class="agent-stat">🤖 已激活</span>
+                        <span class="agent-stat">${a.stats}</span>
+                        <span class="agent-stat">已激活</span>
                     </div>
                 </div>
             `).join('');
@@ -1465,6 +2277,673 @@ body::before {
                 }
                 return '<span class="' + cls + '">' + match + '</span>';
             });
+        }
+
+        /* ================= 用户体系 / 医馆入驻 / 处方订单 / 商城（M4 增量） ================= */
+        let userToken = localStorage.getItem('xsn_user_token') || '';
+        let currentUser = null;
+        let lastSymptomsText = '';   // 最近一次辨证的用户输入原文
+        let lastAdviceText = '';     // 最近一次辨证结果的建议文本
+        let lastRxSessionId = '';    // 最近一次出辨证结果的对话问诊会话（开方申请走 session 路径，为空则走 quick 路径）
+        let mallLoaded = false;
+        let mallProducts = [];
+        let currentRxOrderRxId = '';
+        let currentMallProduct = null;
+        let selectedClinicId = '';
+
+        const ORDER_STATUS_LABELS = {
+            created: '待接单', accepted: '已接单', preparing: '配药中', decocting: '代煎中',
+            shipped: '已发货', awaiting_pickup: '待取货', completed: '已完成', cancelled: '已取消'
+        };
+        const RX_STATUS_MAP = {
+            pending_review: ['待审核', 'uc-badge-gold'],
+            approved: ['已通过', 'uc-badge-jade'],
+            rejected: ['已驳回', 'uc-badge-cinnabar']
+        };
+
+        // 用户端 API 请求封装（带 Bearer token）
+        async function userApi(method, path, body = null, withAuth = true) {
+            const headers = { 'Content-Type': 'application/json' };
+            if (withAuth && userToken) headers['Authorization'] = 'Bearer ' + userToken;
+            const options = { method, headers };
+            if (body) options.body = JSON.stringify(body);
+            const base = isValidApiBase(API_BASE) ? API_BASE : DEFAULT_API_BASE;
+            try {
+                const res = await fetch(`${base}${path}`, options);
+                const data = await res.json();
+                return { ok: res.ok, status: res.status, data };
+            } catch (err) {
+                return { ok: false, status: 0, data: { success: false, error: '网络连接失败：' + err.message } };
+            }
+        }
+
+        function fenToYuan(fen) { return '¥' + ((Number(fen) || 0) / 100).toFixed(2); }
+        function isValidPhone(p) { return /^1\d{10}$/.test(p); }
+
+        /* P3 设计系统接入：弹窗开关统一委托 XSNModal（空间一致性：从触发点长出、进出同路）。
+           若动效库未加载则回退原有 class 开关，保证功能可用。 */
+        function openXsnModal(id, triggerEl) {
+            const ov = document.getElementById(id);
+            if (!ov) return;
+            if (window.XSNModal) XSNModal.open(ov, triggerEl || null);
+            else ov.classList.add('active');
+        }
+        function closeXsnModal(id) {
+            const ov = document.getElementById(id);
+            if (!ov) return;
+            if (window.XSNModal) XSNModal.close(ov);
+            else ov.classList.remove('active');
+        }
+
+        // 点击遮罩空白处关闭弹窗
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.xsn-modal-overlay').forEach(ov => {
+                ov.addEventListener('click', (e) => { if (e.target === ov) closeXsnModal(ov.id); });
+            });
+            initUserAuth();
+        });
+
+        // ============ 登录态 ============
+        function updateAuthUI() {
+            const btn = document.getElementById('authBtn');
+            if (currentUser) {
+                btn.textContent = currentUser.nickname || currentUser.phone || '个人中心';
+                btn.title = '打开个人中心';
+            } else {
+                btn.textContent = '登录/注册';
+                btn.title = '';
+            }
+        }
+
+        async function initUserAuth() {
+            if (!userToken) { updateAuthUI(); return; }
+            const res = await userApi('GET', '/api/auth/me');
+            if (res.ok && res.data.success) {
+                currentUser = res.data.data.user;
+            } else {
+                userToken = '';
+                localStorage.removeItem('xsn_user_token');
+                currentUser = null;
+            }
+            updateAuthUI();
+        }
+
+        function onAuthBtnClick(btn) {
+            if (currentUser) openUserCenter(btn);
+            else openAuthModal('login', btn);
+        }
+
+        function openAuthModal(tab, triggerEl) {
+            switchAuthTab(tab || 'login');
+            openXsnModal('authModal', triggerEl);
+        }
+
+        function switchAuthTab(tab) {
+            const titles = { login: '用户登录', register: '用户注册', reset: '重置密码' };
+            document.getElementById('authModalTitle').textContent = titles[tab] || '用户登录';
+            document.getElementById('authTabLogin').classList.toggle('active', tab === 'login');
+            document.getElementById('authTabRegister').classList.toggle('active', tab === 'register');
+            document.getElementById('authTabReset').classList.toggle('active', tab === 'reset');
+            document.getElementById('loginPane').style.display = tab === 'login' ? 'block' : 'none';
+            document.getElementById('registerPane').style.display = tab === 'register' ? 'block' : 'none';
+            document.getElementById('resetPane').style.display = tab === 'reset' ? 'block' : 'none';
+        }
+
+        async function sendSmsCode(purpose, phoneInputId, btnEl, hintId) {
+            const phone = document.getElementById(phoneInputId).value.trim();
+            const hintEl = document.getElementById(hintId);
+            if (!isValidPhone(phone)) {
+                hintEl.textContent = '请先输入正确的 11 位手机号';
+                return;
+            }
+            btnEl.disabled = true;
+            const res = await userApi('POST', '/api/auth/sms_code', { phone, purpose }, false);
+            if (res.ok && res.data.success) {
+                const devCode = res.data.data && res.data.data.dev_code;
+                hintEl.textContent = devCode ? `开发模式：验证码 ${devCode}` : '验证码已发送，请查收短信';
+                let sec = 60;
+                const rawText = '获取验证码';
+                btnEl.textContent = `${sec}s 后重发`;
+                const timer = setInterval(() => {
+                    sec--;
+                    if (sec <= 0) {
+                        clearInterval(timer);
+                        btnEl.disabled = false;
+                        btnEl.textContent = rawText;
+                    } else {
+                        btnEl.textContent = `${sec}s 后重发`;
+                    }
+                }, 1000);
+            } else {
+                hintEl.textContent = res.data.error || '发送失败，请稍后重试';
+                btnEl.disabled = false;
+            }
+        }
+
+        async function handleUserLogin(e) {
+            e.preventDefault();
+            const phone = document.getElementById('loginPhone').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const msgEl = document.getElementById('loginMsg');
+            msgEl.textContent = '登录中...';
+            const res = await userApi('POST', '/api/auth/login', { phone, password }, false);
+            if (res.ok && res.data.success) {
+                msgEl.textContent = '';
+                await afterLogin(res.data.data.token);
+            } else {
+                msgEl.textContent = res.data.error || '登录失败，请检查手机号与密码';
+            }
+            return false;
+        }
+
+        async function handleUserRegister(e) {
+            e.preventDefault();
+            const phone = document.getElementById('regPhone').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const nickname = document.getElementById('regNickname').value.trim();
+            const code = document.getElementById('regCode').value.trim();
+            const consent = document.getElementById('regConsent').checked;
+            const msgEl = document.getElementById('regMsg');
+
+            if (!isValidPhone(phone)) { msgEl.textContent = '请输入正确的 11 位手机号'; return false; }
+            if (!consent) { msgEl.textContent = '请先勾选并同意《用户协议与隐私政策》'; return false; }
+
+            msgEl.textContent = '注册中...';
+            const body = { phone, password, code, consent: true };
+            if (nickname) body.nickname = nickname;
+            const res = await userApi('POST', '/api/auth/register', body, false);
+            if (res.ok && res.data.success) {
+                msgEl.textContent = '';
+                await afterLogin(res.data.data.token);
+            } else {
+                msgEl.textContent = res.data.error || '注册失败，请检查后重试';
+            }
+            return false;
+        }
+
+        async function handleUserReset(e) {
+            e.preventDefault();
+            const phone = document.getElementById('resetPhone').value.trim();
+            const code = document.getElementById('resetCode').value.trim();
+            const newPassword = document.getElementById('resetPassword').value;
+            const msgEl = document.getElementById('resetMsg');
+            msgEl.className = 'xsn-form-msg';
+            msgEl.textContent = '提交中...';
+            const res = await userApi('POST', '/api/auth/reset_password', { phone, code, new_password: newPassword }, false);
+            if (res.ok && res.data.success) {
+                msgEl.className = 'xsn-form-msg ok';
+                msgEl.textContent = '密码已重置，请使用新密码登录';
+                setTimeout(() => switchAuthTab('login'), 1200);
+            } else {
+                msgEl.className = 'xsn-form-msg error';
+                msgEl.textContent = res.data.error || '重置失败，请检查后重试';
+            }
+            return false;
+        }
+
+        async function afterLogin(token) {
+            userToken = token;
+            localStorage.setItem('xsn_user_token', token);
+            const res = await userApi('GET', '/api/auth/me');
+            if (res.ok && res.data.success) currentUser = res.data.data.user;
+            updateAuthUI();
+            closeXsnModal('authModal');
+        }
+
+        async function handleUserLogout() {
+            if (userToken) await userApi('POST', '/api/auth/logout');
+            userToken = '';
+            currentUser = null;
+            localStorage.removeItem('xsn_user_token');
+            updateAuthUI();
+            closeXsnModal('userCenterModal');
+        }
+
+        // ============ 医馆入驻 ============
+        function openClinicApplyModal(triggerEl) {
+            document.getElementById('clinicApplyForm').style.display = 'block';
+            document.getElementById('caSuccess').style.display = 'none';
+            document.getElementById('caMsg').textContent = '';
+            openXsnModal('clinicApplyModal', triggerEl);
+        }
+
+        async function submitClinicApply(e) {
+            e.preventDefault();
+            const msgEl = document.getElementById('caMsg');
+            msgEl.className = 'xsn-form-msg';
+            msgEl.textContent = '提交中...';
+            const supportDecoction = document.getElementById('caDecoction').checked;
+            const feeYuan = parseFloat(document.getElementById('caDecoctionFee').value || '0');
+            const body = {
+                name: document.getElementById('caName').value.trim(),
+                license_no: document.getElementById('caLicense').value.trim(),
+                address: document.getElementById('caAddress').value.trim(),
+                phone: document.getElementById('caPhone').value.trim(),
+                account_phone: document.getElementById('caAccountPhone').value.trim(),
+                password: document.getElementById('caPassword').value,
+                contact_name: document.getElementById('caContact').value.trim(),
+                support_decoction: supportDecoction,
+                decoction_fee: supportDecoction ? Math.round(feeYuan * 100) : 0,
+                delivery_scope: document.getElementById('caDeliveryScope').value.trim()
+            };
+            const res = await userApi('POST', '/api/clinic/apply', body, false);
+            if (res.ok && res.data.success) {
+                document.getElementById('clinicApplyForm').style.display = 'none';
+                document.getElementById('caSuccess').style.display = 'block';
+            } else {
+                msgEl.className = 'xsn-form-msg error';
+                msgEl.textContent = res.data.error || '提交失败，请稍后重试';
+            }
+            return false;
+        }
+
+        // ============ 个人中心 ============
+        function openUserCenter(triggerEl) {
+            if (!currentUser) { openAuthModal('login', triggerEl); return; }
+            document.getElementById('ucNickname').textContent = currentUser.nickname || '用户';
+            document.getElementById('ucPhone').textContent = currentUser.phone || '';
+            openXsnModal('userCenterModal', triggerEl);
+            switchUserTab('emr');
+        }
+
+        function switchUserTab(tab) {
+            document.getElementById('ucTabEmr').classList.toggle('active', tab === 'emr');
+            document.getElementById('ucTabRx').classList.toggle('active', tab === 'rx');
+            document.getElementById('ucTabOrders').classList.toggle('active', tab === 'orders');
+            document.getElementById('ucPaneEmr').style.display = tab === 'emr' ? 'block' : 'none';
+            document.getElementById('ucPaneRx').style.display = tab === 'rx' ? 'block' : 'none';
+            document.getElementById('ucPaneOrders').style.display = tab === 'orders' ? 'block' : 'none';
+            if (tab === 'emr') loadEmrPane();
+            else if (tab === 'rx') loadRxPane();
+            else if (tab === 'orders') loadOrdersPane();
+        }
+
+        // ---- 我的病历 ----
+        async function loadEmrPane() {
+            const pane = document.getElementById('ucPaneEmr');
+            pane.innerHTML = '<div class="uc-empty">档案加载中...</div>';
+            const [profileRes, recordsRes] = await Promise.all([
+                userApi('GET', '/api/user/emr/profile'),
+                userApi('GET', '/api/user/emr')
+            ]);
+            if (!profileRes.ok || !profileRes.data.success) {
+                pane.innerHTML = `<div class="uc-empty">${escapeHtml(profileRes.data.error || '档案加载失败')}</div>`;
+                return;
+            }
+            const p = profileRes.data.data.profile || {};
+            const ph = (p.personal_history && typeof p.personal_history === 'object') ? p.personal_history : {};
+
+            const visits = (recordsRes.ok && recordsRes.data.success)
+                ? (recordsRes.data.data.records || []).filter(r => r.record_type === 'visit')
+                : [];
+
+            pane.innerHTML = `
+                <div style="font-size:14px; font-weight:600; color:#a53232; margin-bottom:10px; padding-left:10px; border-left:3px solid #a53232;">健康档案</div>
+                <form onsubmit="return saveEmrProfile(event)">
+                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                        <div class="xsn-form-group" style="flex:1; min-width:100px;">
+                            <label>身高（cm）</label>
+                            <input type="number" class="xsn-input" id="emrHeight" value="${escapeHtml(ph.height || '')}">
+                        </div>
+                        <div class="xsn-form-group" style="flex:1; min-width:100px;">
+                            <label>体重（kg）</label>
+                            <input type="number" class="xsn-input" id="emrWeight" value="${escapeHtml(ph.weight || '')}">
+                        </div>
+                        <div class="xsn-form-group" style="flex:1; min-width:100px;">
+                            <label>血型</label>
+                            <select class="xsn-input" id="emrBloodType">
+                                ${['', 'A', 'B', 'O', 'AB', '不详'].map(t => `<option value="${t}" ${ph.blood_type === t ? 'selected' : ''}>${t || '未知'}</option>`).join('')}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="xsn-form-group">
+                        <label>家族史</label>
+                        <textarea class="xsn-input" id="emrFamilyHistory" placeholder="如：父亲高血压病史">${escapeHtml(ph.family_history || '')}</textarea>
+                    </div>
+                    <div class="xsn-form-group">
+                        <label>既往史</label>
+                        <textarea class="xsn-input" id="emrPastHistory" placeholder="如：慢性胃炎">${escapeHtml(p.past_history || '')}</textarea>
+                    </div>
+                    <div class="xsn-form-group">
+                        <label>过敏史</label>
+                        <textarea class="xsn-input" id="emrAllergyHistory" placeholder="如：青霉素过敏">${escapeHtml(p.allergy_history || '')}</textarea>
+                    </div>
+                    <div class="xsn-form-group">
+                        <label>用药史</label>
+                        <textarea class="xsn-input" id="emrMedicationHistory" placeholder="如：长期服用降压药">${escapeHtml(p.medication_history || '')}</textarea>
+                    </div>
+                    <div class="xsn-form-group">
+                        <label>月经婚育史（女性填写）</label>
+                        <textarea class="xsn-input" id="emrGynecologyHistory" placeholder="如：月经周期 28 天，育有一子">${escapeHtml(p.gynecology_history || '')}</textarea>
+                    </div>
+                    <button type="submit" class="xsn-btn xsn-btn-jade xsn-btn-sm">保存健康档案</button>
+                    <span class="xsn-form-msg" id="emrSaveMsg" style="display:inline-block; margin-left:10px; text-align:left;"></span>
+                </form>
+                <div style="font-size:14px; font-weight:600; color:#a53232; margin:20px 0 10px; padding-left:10px; border-left:3px solid #a53232;">就诊记录</div>
+                <div id="emrVisitList">
+                    ${visits.length === 0 ? '<div class="uc-empty">暂无就诊记录</div>' : visits.map(v => {
+                        const diag = (v.ai_diagnosis && typeof v.ai_diagnosis === 'object') ? v.ai_diagnosis : {};
+                        const advice = diag.advice || '';
+                        return `
+                        <div class="uc-list-card">
+                            <div class="uc-title">${escapeHtml(v.emr_id || '')}</div>
+                            <div class="uc-sub">时间：${escapeHtml(v.created_at || '')}</div>
+                            <div class="uc-sub">主诉：${escapeHtml(v.chief_complaint || '—')}</div>
+                            ${advice ? `<details class="uc-expand"><summary>查看 AI 辨证结论</summary><div class="uc-expand-body">${escapeHtml(advice)}</div></details>` : ''}
+                        </div>`;
+                    }).join('')}
+                </div>
+            `;
+        }
+
+        async function saveEmrProfile(e) {
+            e.preventDefault();
+            const msgEl = document.getElementById('emrSaveMsg');
+            msgEl.className = 'xsn-form-msg';
+            msgEl.textContent = '保存中...';
+            const body = {
+                height: document.getElementById('emrHeight').value ? Number(document.getElementById('emrHeight').value) : '',
+                weight: document.getElementById('emrWeight').value ? Number(document.getElementById('emrWeight').value) : '',
+                blood_type: document.getElementById('emrBloodType').value,
+                family_history: document.getElementById('emrFamilyHistory').value.trim(),
+                past_history: document.getElementById('emrPastHistory').value.trim(),
+                allergy_history: document.getElementById('emrAllergyHistory').value.trim(),
+                medication_history: document.getElementById('emrMedicationHistory').value.trim(),
+                gynecology_history: document.getElementById('emrGynecologyHistory').value.trim()
+            };
+            const res = await userApi('PUT', '/api/user/emr/profile', body);
+            if (res.ok && res.data.success) {
+                msgEl.className = 'xsn-form-msg ok';
+                msgEl.textContent = '已保存';
+            } else {
+                msgEl.className = 'xsn-form-msg error';
+                msgEl.textContent = res.data.error || '保存失败';
+            }
+            setTimeout(() => { msgEl.textContent = ''; }, 2500);
+            return false;
+        }
+
+        // ---- 我的处方 ----
+        async function loadRxPane() {
+            const pane = document.getElementById('ucPaneRx');
+            pane.innerHTML = '<div class="uc-empty">处方加载中...</div>';
+            const res = await userApi('GET', '/api/rx/list');
+            if (!res.ok || !res.data.success) {
+                pane.innerHTML = `<div class="uc-empty">${escapeHtml(res.data.error || '加载失败')}</div>`;
+                return;
+            }
+            const list = res.data.data.list || [];
+            if (list.length === 0) {
+                pane.innerHTML = '<div class="uc-empty">暂无处方。完成辨证后可点击结果卡片中的「转医馆审核开方」。</div>';
+                return;
+            }
+            pane.innerHTML = list.map(rx => {
+                const [label, cls] = RX_STATUS_MAP[rx.status] || [rx.status, 'uc-badge-ink'];
+                const adjusted = rx.adjusted_formula
+                    ? (typeof rx.adjusted_formula === 'string' ? rx.adjusted_formula : JSON.stringify(rx.adjusted_formula))
+                    : '';
+                return `
+                <div class="uc-list-card">
+                    <div class="uc-title">${escapeHtml(rx.rx_id)}<span class="uc-badge ${cls}">${label}</span></div>
+                    <div class="uc-sub">申请时间：${escapeHtml(rx.created_at || '')}</div>
+                    ${rx.review_note ? `<div class="uc-sub">医师备注：${escapeHtml(rx.review_note)}</div>` : ''}
+                    ${adjusted ? `<div class="uc-sub">加减方：${escapeHtml(adjusted)}</div>` : ''}
+                    ${rx.status === 'approved' ? `<button class="xsn-btn xsn-btn-jade xsn-btn-sm" style="margin-top:8px;" onclick="openRxOrderModal('${escapeHtml(rx.rx_id)}', this)">去下单</button>` : ''}
+                </div>`;
+            }).join('');
+        }
+
+        function openRxOrderModal(rxId, triggerEl) {
+            currentRxOrderRxId = rxId;
+            document.getElementById('rxOrderRxId').textContent = rxId;
+            document.getElementById('rxOrderMsg').textContent = '';
+            document.getElementById('rxOrderDecoction').checked = false;
+            document.getElementById('rxOrderAddress').value = '';
+            openXsnModal('rxOrderModal', triggerEl);
+        }
+
+        async function submitRxOrder(e) {
+            e.preventDefault();
+            const fulfillment = document.querySelector('input[name="rxFulfillment"]:checked').value;
+            const decoction = document.getElementById('rxOrderDecoction').checked;
+            const address = document.getElementById('rxOrderAddress').value.trim();
+            const msgEl = document.getElementById('rxOrderMsg');
+            msgEl.className = 'xsn-form-msg error';
+            if (fulfillment === 'delivery' && !address) {
+                msgEl.textContent = '邮寄配送请填写收货地址';
+                return false;
+            }
+            msgEl.className = 'xsn-form-msg';
+            msgEl.textContent = '提交中...';
+            const res = await userApi('POST', '/api/orders', {
+                order_type: 'prescription',
+                rx_id: currentRxOrderRxId,
+                fulfillment,
+                decoction,
+                address
+            });
+            if (res.ok && res.data.success) {
+                closeXsnModal('rxOrderModal');
+                alert(`下单成功！订单号：${res.data.data.order_id}，金额：${fenToYuan(res.data.data.amount)}`);
+                switchUserTab('orders');
+            } else {
+                msgEl.className = 'xsn-form-msg error';
+                msgEl.textContent = res.data.error || '下单失败，请稍后重试';
+            }
+            return false;
+        }
+
+        // ---- 我的订单 ----
+        async function loadOrdersPane() {
+            const pane = document.getElementById('ucPaneOrders');
+            pane.innerHTML = '<div class="uc-empty">订单加载中...</div>';
+            const res = await userApi('GET', '/api/orders');
+            if (!res.ok || !res.data.success) {
+                pane.innerHTML = `<div class="uc-empty">${escapeHtml(res.data.error || '加载失败')}</div>`;
+                return;
+            }
+            const orders = res.data.data.orders || [];
+            if (orders.length === 0) {
+                pane.innerHTML = '<div class="uc-empty">暂无订单</div>';
+                return;
+            }
+            pane.innerHTML = orders.map(o => {
+                const typeLabel = o.order_type === 'prescription' ? '处方订单' : '商城订单';
+                const fulfillLabel = o.fulfillment === 'pickup' ? '自取' : '邮寄';
+                return `
+                <div class="uc-list-card">
+                    <div class="uc-title">${escapeHtml(o.order_id)}
+                        <span class="uc-badge uc-badge-ink">${typeLabel}</span>
+                        <span class="uc-badge uc-badge-jade">${escapeHtml(o.status_label || o.status)}</span>
+                    </div>
+                    <div class="uc-sub">金额：${fenToYuan(o.amount)} ｜ 履约：${fulfillLabel}${o.decoction ? ' ｜ 代煎' : ''}</div>
+                    <div class="uc-sub">地址：${escapeHtml(o.address || '—')} ｜ 下单：${escapeHtml(o.created_at || '')}</div>
+                    <details class="uc-expand" ontoggle="loadOrderEvents(this, '${escapeHtml(o.order_id)}')">
+                        <summary>查看流转留痕</summary>
+                        <div class="uc-expand-body">加载中...</div>
+                    </details>
+                </div>`;
+            }).join('');
+        }
+
+        async function loadOrderEvents(detailsEl, orderId) {
+            if (!detailsEl.open) return;
+            const bodyEl = detailsEl.querySelector('.uc-expand-body');
+            if (bodyEl.dataset.loaded) return;
+            const res = await userApi('GET', `/api/orders/${orderId}/events`);
+            if (!res.ok || !res.data.success) {
+                bodyEl.textContent = res.data.error || '留痕加载失败';
+                return;
+            }
+            const events = res.data.data.events || [];
+            if (events.length === 0) {
+                bodyEl.textContent = '暂无流转记录';
+                return;
+            }
+            bodyEl.innerHTML = events.map(ev => {
+                const fromLabel = ev.from_status ? (ORDER_STATUS_LABELS[ev.from_status] || ev.from_status) : '创建';
+                const toLabel = ORDER_STATUS_LABELS[ev.to_status] || ev.to_status;
+                return `<div style="padding:4px 0; border-bottom:1px dashed #ebe4d6;">
+                    ${escapeHtml(ev.created_at || '')} ｜ ${escapeHtml(fromLabel)} → ${escapeHtml(toLabel)} ｜ 操作方：${escapeHtml(ev.operator || '')}${ev.note ? ' ｜ 备注：' + escapeHtml(ev.note) : ''}
+                </div>`;
+            }).join('');
+            bodyEl.dataset.loaded = '1';
+        }
+
+        // ============ 转医馆审核开方 ============
+        function openRxApplyFlow(triggerEl) {
+            if (!lastRxSessionId && (!lastSymptomsText || !lastAdviceText)) {
+                alert('请先完成一次辨证，再提交医馆审核开方。');
+                return;
+            }
+            if (!currentUser) { openAuthModal('login', triggerEl); return; }
+            selectedClinicId = '';
+            document.getElementById('clinicSelectMsg').textContent = '';
+            openXsnModal('clinicSelectModal', triggerEl);
+            loadClinicSelect();
+        }
+
+        async function loadClinicSelect() {
+            const listEl = document.getElementById('clinicSelectList');
+            listEl.innerHTML = '<div class="uc-empty">医馆加载中...</div>';
+            const res = await userApi('GET', '/api/clinic/list', null, false);
+            if (!res.ok || !res.data.success) {
+                listEl.innerHTML = `<div class="uc-empty">${escapeHtml(res.data.error || '医馆列表加载失败')}</div>`;
+                return;
+            }
+            const clinics = res.data.data.clinics || [];
+            if (clinics.length === 0) {
+                listEl.innerHTML = '<div class="uc-empty">暂无已核验的医馆，请稍后再试</div>';
+                return;
+            }
+            listEl.innerHTML = clinics.map(c => `
+                <label class="clinic-option" id="clinicOpt_${escapeHtml(c.clinic_id)}" onclick="pickClinic('${escapeHtml(c.clinic_id)}')">
+                    <input type="radio" name="clinicPick" value="${escapeHtml(c.clinic_id)}">
+                    <div>
+                        <div class="opt-name">${escapeHtml(c.name)}</div>
+                        <div class="opt-sub">地址：${escapeHtml(c.address || '—')}</div>
+                        <div class="opt-sub">代煎：${c.support_decoction ? `支持（${fenToYuan(c.decoction_fee)} / 单）` : '不支持'} ｜ 配送范围：${escapeHtml(c.delivery_scope || '—')}</div>
+                    </div>
+                </label>
+            `).join('');
+        }
+
+        function pickClinic(clinicId) {
+            selectedClinicId = clinicId;
+            document.querySelectorAll('.clinic-option').forEach(el => el.classList.remove('selected'));
+            const el = document.getElementById('clinicOpt_' + clinicId);
+            if (el) {
+                el.classList.add('selected');
+                el.querySelector('input').checked = true;
+            }
+        }
+
+        async function confirmRxApply() {
+            const msgEl = document.getElementById('clinicSelectMsg');
+            msgEl.className = 'xsn-form-msg error';
+            if (!selectedClinicId) {
+                msgEl.textContent = '请先选择一家医馆';
+                return;
+            }
+            msgEl.className = 'xsn-form-msg';
+            msgEl.textContent = '提交中...';
+            // 对话问诊模式：传 session_id（服务端取会话可信快照）；
+            // 快速辨证模式：回传 symptoms（用户输入原文）+ advice（结果卡片建议文本）
+            const rxApplyBody = { clinic_id: selectedClinicId };
+            if (lastRxSessionId) {
+                rxApplyBody.session_id = lastRxSessionId;
+            } else {
+                rxApplyBody.symptoms = lastSymptomsText;
+                rxApplyBody.advice = lastAdviceText;
+            }
+            const res = await userApi('POST', '/api/rx/apply', rxApplyBody);
+            if (res.ok && res.data.success) {
+                msgEl.className = 'xsn-form-msg ok';
+                msgEl.textContent = '开方申请已提交医馆审核，请稍后在个人中心查看进度';
+                setTimeout(() => closeXsnModal('clinicSelectModal'), 1600);
+            } else {
+                msgEl.className = 'xsn-form-msg error';
+                msgEl.textContent = res.data.error || '提交失败，请稍后重试';
+            }
+        }
+
+        // ============ 商城 ============
+        async function loadMall() {
+            if (mallLoaded) return;
+            const grid = document.getElementById('productGrid');
+            const noticeEl = document.getElementById('mallNotice');
+            const res = await userApi('GET', '/api/products', null, false);
+            if (!res.ok || !res.data.success) {
+                grid.innerHTML = `<div style="text-align:center; padding:40px; color:#8b7355; grid-column:1/-1;">${escapeHtml(res.data.error || '商品加载失败')}</div>`;
+                return;
+            }
+            mallLoaded = true;
+            mallProducts = res.data.data.products || [];
+            const notice = res.data.data.notice || '';
+            noticeEl.innerHTML = notice ? `<div class="notice-banner"><span class="seal-badge" style="background:#b8860b">示</span><span>${escapeHtml(notice)}</span></div>` : '';
+
+            grid.innerHTML = mallProducts.map(p => `
+                <div class="product-card">
+                    <div class="product-name">${escapeHtml(p.name)}</div>
+                    <div class="product-subtitle">${escapeHtml(p.subtitle || '')}</div>
+                    <div class="product-price">${fenToYuan(p.price)}${p.original_price && p.original_price > p.price ? `<span class="orig">${fenToYuan(p.original_price)}</span>` : ''}</div>
+                    <div class="product-meta">
+                        源出典籍：${escapeHtml(p.source || '—')}<br>
+                        配料：${(p.ingredients || []).map(escapeHtml).join('、') || '—'}
+                    </div>
+                    <div class="product-tags">
+                        ${(p.suitable_constitutions || []).map(t => `<span class="product-tag">适宜：${escapeHtml(t)}</span>`).join('')}
+                        <span class="product-tag">已售 ${p.sales || 0}</span>
+                    </div>
+                    <button class="xsn-btn xsn-btn-primary xsn-btn-sm" onclick="openMallBuy('${escapeHtml(p.id)}', this)">购 买</button>
+                </div>
+            `).join('') + `
+                <div class="product-card coming-soon">
+                    <div class="product-name">中药材原材料</div>
+                    <div class="product-subtitle">敬请期待</div>
+                    <div class="product-meta" style="margin-top:10px;">
+                        中药材原材料销售将于「医馆货架」二期开放，<br>
+                        由具备药品经营资质的入驻医馆提供。
+                    </div>
+                    <button class="xsn-btn xsn-btn-plain xsn-btn-sm" disabled>暂未开放</button>
+                </div>
+            `;
+        }
+
+        function openMallBuy(productId, triggerEl) {
+            if (!currentUser) { openAuthModal('login', triggerEl); return; }
+            const p = mallProducts.find(x => x.id === productId);
+            if (!p) return;
+            currentMallProduct = p;
+            document.getElementById('mallBuyName').textContent = p.name;
+            document.getElementById('mallBuyPrice').textContent = `单价：${fenToYuan(p.price)}`;
+            document.getElementById('mallBuyQty').value = 1;
+            document.getElementById('mallBuyMsg').textContent = '';
+            openXsnModal('mallBuyModal', triggerEl);
+        }
+
+        async function submitMallOrder(e) {
+            e.preventDefault();
+            if (!currentMallProduct) return false;
+            const qty = Math.max(1, parseInt(document.getElementById('mallBuyQty').value || '1', 10));
+            const address = document.getElementById('mallBuyAddress').value.trim();
+            const msgEl = document.getElementById('mallBuyMsg');
+            msgEl.className = 'xsn-form-msg';
+            msgEl.textContent = '提交中...';
+            const res = await userApi('POST', '/api/orders', {
+                order_type: 'mall',
+                items: [{ product_id: currentMallProduct.id, qty }],
+                fulfillment: 'delivery',
+                address
+            });
+            if (res.ok && res.data.success) {
+                closeXsnModal('mallBuyModal');
+                alert(`下单成功！订单号：${res.data.data.order_id}，金额：${fenToYuan(res.data.data.amount)}`);
+            } else {
+                msgEl.className = 'xsn-form-msg error';
+                msgEl.textContent = res.data.error || '下单失败，请稍后重试';
+            }
+            return false;
         }
     </script>
 </body>

@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>小神农中医AI - 测试平台</title>
+    <title>小神农中医AI · 综合测试</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23a53232'/%3E%3Crect x='6' y='6' width='52' height='52' rx='8' fill='none' stroke='%23fffdf8' stroke-opacity='0.45' stroke-width='2'/%3E%3Ctext x='32' y='42' font-family='serif' font-size='24' font-weight='bold' fill='%23fffdf8' text-anchor='middle'%3E%E7%A5%9E%E5%86%9C%3C/text%3E%3C/svg%3E">
+    <link rel="stylesheet" href="assets/xsn-theme.css">
     <style>:root {
     --paper: #f7f3e9;
     --paper-dark: #efe8d8;
@@ -557,11 +559,14 @@ body::before {
             .product-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
             .chat-input { font-size: 16px; }
         }
+
+        /* P3 设计系统接入 */
+        button:active { transform: scale(0.97); transition-duration: 100ms; }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>🌿 小神农中医AI</h1>
+        <h1><span class="xsn-seal">神</span>小神农中医AI</h1>
         <div class="subtitle">纯古籍权威数据 · 100%可溯源 · 零幻觉</div>
         <div class="api-status disconnected" id="apiStatus">API连接中...</div>
     </div>
@@ -579,7 +584,7 @@ body::before {
             <div class="chat-container" id="chatContainer">
                 <!-- 欢迎消息 -->
                 <div class="chat-message bot-message">
-                    <div class="message-avatar">🌿</div>
+                    <div class="message-avatar">神</div>
                     <div class="message-content">
                         <div class="message-bubble">
                             <p>您好，我是小神农AI助手。</p>
@@ -590,7 +595,7 @@ body::before {
                                 <li>"腹胀腹泻，食欲不振，乏力"</li>
                             </ul>
                             <p style="margin-top: 10px; font-size: 12px; color: #8b7355;">
-                                ⚠️ 本结果仅供参考，不能替代专业医生诊断
+                                ⚠ 本结果仅供参考，不能替代专业医生诊断
                             </p>
                         </div>
                         <div class="message-time">刚刚</div>
@@ -625,7 +630,7 @@ body::before {
         <div class="section" id="section-search">
             <div class="page-content">
                 <div class="card">
-                    <div class="card-title">🔍 古籍知识检索</div>
+                    <div class="card-title"><span class="xsn-seal">检</span>古籍知识检索</div>
                     <div class="search-box">
                         <input type="text" class="search-input" id="searchInput" placeholder="输入中医术语，如：麻黄汤、风寒感冒、气虚..." onkeypress="if(event.key==='Enter') searchKnowledge()">
                         <button class="search-btn" onclick="searchKnowledge()">检索</button>
@@ -639,7 +644,7 @@ body::before {
         <div class="section" id="section-products">
             <div class="page-content">
                 <div class="card">
-                    <div class="card-title">🍵 药食同源养生方</div>
+                    <div class="card-title"><span class="xsn-seal">养</span>药食同源养生方</div>
                     <p style="color: #5a5a5a; margin-bottom: 15px;">根据中国中医科学院配方监制</p>
                     <div class="product-grid" id="productGrid"></div>
                 </div>
@@ -650,7 +655,7 @@ body::before {
         <div class="section" id="section-api">
             <div class="page-content">
                 <div class="card">
-                    <div class="card-title">🔧 API接口测试</div>
+                    <div class="card-title"><span class="xsn-seal">试</span>API接口测试</div>
                     <div style="margin-bottom: 15px;">
                         <label style="display: block; margin-bottom: 5px; color: #5a5a5a;">API地址</label>
                         <input type="text" class="search-input" id="apiBase" value="http://localhost:5001">
@@ -771,7 +776,7 @@ body::before {
             
             container.innerHTML += `
                 <div class="chat-message user-message">
-                    <div class="message-avatar">👤</div>
+                    <div class="message-avatar">我</div>
                     <div class="message-content">
                         <div class="message-bubble">${escapeHtml(text)}</div>
                         <div class="message-time">${time}</div>
@@ -788,7 +793,7 @@ body::before {
             
             container.innerHTML += `
                 <div class="chat-message bot-message">
-                    <div class="message-avatar">🌿</div>
+                    <div class="message-avatar">神</div>
                     <div class="message-content">
                         <div class="message-bubble">${text}</div>
                         <div class="message-time">${time}</div>
@@ -805,12 +810,12 @@ body::before {
             
             container.innerHTML += `
                 <div class="chat-message bot-message" id="thinkingMessage">
-                    <div class="message-avatar">🌿</div>
+                    <div class="message-avatar">神</div>
                     <div class="message-content">
                         <div class="message-bubble">
                             <div class="thinking-process">
                                 <div class="thinking-title">
-                                    <span>🧠</span> AI正在思考...
+                                    <span class="xsn-seal" style="width:18px;height:18px;font-size:11px;vertical-align:-3px;">思</span> AI正在思考...
                                 </div>
                                 <div id="thinkingSteps">
                                     <div class="thinking-step">
@@ -952,7 +957,7 @@ body::before {
                 thinkingHtml = `
                     <div class="thinking-process">
                         <div class="thinking-title">
-                            <span>🧠</span> AI双源验证思考过程（共${data.total_time_ms}ms）<span style="font-size:11px;color:#8b7355;font-weight:normal;margin-left:8px;">— 不可关闭</span>
+                            <span class="xsn-seal" style="width:18px;height:18px;font-size:11px;vertical-align:-3px;">思</span> AI双源验证思考过程（共${data.total_time_ms}ms）<span style="font-size:11px;color:#8b7355;font-weight:normal;margin-left:8px;">— 不可关闭</span>
                         </div>
                         ${steps}
                         <div class="thinking-summary">
@@ -993,7 +998,7 @@ body::before {
                         <div style="background: ${isTop ? '#f7f3e9' : '#fffdf8'}; border-radius: 8px; padding: 12px; margin-bottom: 10px; border-left: 3px solid ${severityColor};">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                                 <div style="font-weight: bold; color: #2b2b2b; font-size: 15px;">
-                                    ${isTop ? '⭐ ' : ''}${sa.name} <span style="font-size: 11px; color: #8b7355;">[${sa.id}]</span>
+                                    ${isTop ? '<span class="xsn-seal" style="background:#b8860b;vertical-align:-3px;">首</span>' : ''}${sa.name} <span style="font-size: 11px; color: #8b7355;">[${sa.id}]</span>
                                 </div>
                                 <div style="display: flex; gap: 8px; align-items: center;">
                                     <span style="background: ${severityColor}20; color: ${severityColor}; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: bold;">${sa.severity}</span>
@@ -1023,16 +1028,16 @@ body::before {
             // 构建配伍关系HTML（v2.1新增）
             let relationsHtml = '';
             if (data.drug_relations && data.drug_relations.length > 0) {
-                const critical = data.drug_relations.filter(r => r.alert && r.alert.includes('🔴'));
-                const warning = data.drug_relations.filter(r => r.alert && r.alert.includes('🟠'));
-                const good = data.drug_relations.filter(r => r.alert && r.alert.includes('🟢'));
+                const critical = data.drug_relations.filter(r => r.alert && r.alert.includes('\u{1F534}'));
+                const warning = data.drug_relations.filter(r => r.alert && r.alert.includes('\u{1F7E0}'));
+                const good = data.drug_relations.filter(r => r.alert && r.alert.includes('\u{1F7E2}'));
                 
                 let relationsSections = '';
                 
                 if (critical.length > 0) {
                     relationsSections += `
                         <div style="margin-bottom: 10px;">
-                            <div style="font-weight: bold; color: #a53232; font-size: 13px; margin-bottom: 6px;">🔴 严重禁忌 - 绝对不可同用</div>
+                            <div style="font-weight: bold; color: #a53232; font-size: 13px; margin-bottom: 6px;">● 严重禁忌 - 绝对不可同用</div>
                             ${critical.map(r => `
                                 <div style="background: #fdf2f2; border-radius: 6px; padding: 8px; margin-bottom: 6px; font-size: 12px;">
                                     <div style="font-weight: bold; color: #a53232;">${r.drug_a} + ${r.drug_b}</div>
@@ -1047,7 +1052,7 @@ body::before {
                 if (warning.length > 0) {
                     relationsSections += `
                         <div style="margin-bottom: 10px;">
-                            <div style="font-weight: bold; color: #b8860b; font-size: 13px; margin-bottom: 6px;">🟠 配伍警告 - 慎用</div>
+                            <div style="font-weight: bold; color: #b8860b; font-size: 13px; margin-bottom: 6px;">● 配伍警告 - 慎用</div>
                             ${warning.map(r => `
                                 <div style="background: #fffdf8; border-radius: 6px; padding: 8px; margin-bottom: 6px; font-size: 12px;">
                                     <div style="font-weight: bold; color: #b8860b;">${r.drug_a} + ${r.drug_b}</div>
@@ -1062,7 +1067,7 @@ body::before {
                 if (good.length > 0) {
                     relationsSections += `
                         <div style="margin-bottom: 10px;">
-                            <div style="font-weight: bold; color: #4a7c59; font-size: 13px; margin-bottom: 6px;">🟢 优良配伍 - 协同增效</div>
+                            <div style="font-weight: bold; color: #4a7c59; font-size: 13px; margin-bottom: 6px;">● 优良配伍 - 协同增效</div>
                             ${good.map(r => `
                                 <div style="background: #f7f3e9; border-radius: 6px; padding: 8px; margin-bottom: 6px; font-size: 12px;">
                                     <div style="font-weight: bold; color: #4a7c59;">${r.drug_a} + ${r.drug_b}</div>
@@ -1076,7 +1081,7 @@ body::before {
                 
                 relationsHtml = `
                     <div style="margin-bottom: 12px;">
-                        <div class="result-section-title">🔗 配伍关系分析</div>
+                        <div class="result-section-title"><span class="xsn-seal">配</span>配伍关系分析</div>
                         ${relationsSections}
                     </div>
                 `;
@@ -1118,7 +1123,7 @@ body::before {
             if (data.contraindications && data.contraindications.length > 0) {
                 contraHtml = data.contraindications.map(c => `
                     <div style="background: #fdf2f2; border-radius: 6px; padding: 8px; margin-bottom: 6px; font-size: 12px; color: #a53232;">
-                        <span style="font-weight: bold;">⚠️ ${c.type} - ${c.name}：</span>
+                        <span style="font-weight: bold;">⚠ ${c.type} - ${c.name}：</span>
                         ${c.contraindications ? c.contraindications.join('、') : ''}
                     </div>
                 `).join('');
@@ -1129,7 +1134,7 @@ body::before {
             
             container.innerHTML += `
                 <div class="chat-message bot-message">
-                    <div class="message-avatar">🌿</div>
+                    <div class="message-avatar">神</div>
                     <div class="message-content">
                         <div class="message-bubble">
                             ${thinkingHtml}
@@ -1138,42 +1143,42 @@ body::before {
                                 <div class="result-constitution">${data.constitution || '待辨识'}</div>
                                 
                                 <div style="margin-bottom: 12px;">
-                                    <div class="result-section-title">📋 症状分析</div>
+                                    <div class="result-section-title"><span class="xsn-seal">症</span>症状分析</div>
                                     <div style="margin-top: 8px;">${symptomHtml || '<span style="color: #8b7355; font-size: 12px;">未识别到标准症状</span>'}</div>
                                 </div>
                                 
                                 <div style="margin-bottom: 12px;">
-                                    <div class="result-section-title">🔬 证候分析</div>
+                                    <div class="result-section-title"><span class="xsn-seal">候</span>证候分析</div>
                                     <div class="result-section-content">${data.syndrome || ''}</div>
                                 </div>
                                 
                                 <div style="margin-bottom: 12px;">
-                                    <div class="result-section-title">🔬 证型分析</div>
+                                    <div class="result-section-title"><span class="xsn-seal">证</span>证型分析</div>
                                     ${syndromeHtml || '<p style="color: #8b7355; font-size: 12px;">未识别到匹配证型</p>'}
                                 </div>
                                 
                                 <div style="margin-bottom: 12px;">
-                                    <div class="result-section-title">💊 双源验证报告</div>
+                                    <div class="result-section-title"><span class="xsn-seal">验</span>双源验证报告</div>
                                     <div class="result-section-content" style="white-space: pre-wrap;">${data.advice || ''}</div>
                                 </div>
                                 
                                 <div style="margin-bottom: 12px;">
-                                    <div class="result-section-title">🔬 证型分析</div>
+                                    <div class="result-section-title"><span class="xsn-seal">证</span>证型分析</div>
                                     ${syndromeHtml || '<p style="color: #8b7355; font-size: 12px;">未识别到匹配证型</p>'}
                                 </div>
                                 
                                 <div style="margin-bottom: 12px;">
-                                    <div class="result-section-title">📜 古籍溯源</div>
+                                    <div class="result-section-title"><span class="xsn-seal">源</span>古籍溯源</div>
                                     ${sourcesHtml || '<p style="color: #8b7355; font-size: 12px;">暂无溯源信息</p>'}
                                 </div>
                                 
                                 <div style="margin-bottom: 12px;">
-                                    <div class="result-section-title">🏥 匹配方剂</div>
+                                    <div class="result-section-title"><span class="xsn-seal">方</span>匹配方剂</div>
                                     ${formulaHtml || '<p style="color: #8b7355; font-size: 12px;">未匹配到相关方剂</p>'}
                                 </div>
                                 
                                 <div style="margin-bottom: 12px;">
-                                    <div class="result-section-title">🌿 相关药物</div>
+                                    <div class="result-section-title"><span class="xsn-seal">药</span>相关药物</div>
                                     <div style="margin-top: 8px;">${drugHtml || '<span style="color: #8b7355; font-size: 12px;">未匹配到相关药物</span>'}</div>
                                 </div>
                                 
@@ -1181,48 +1186,48 @@ body::before {
                                 
                                 <!-- v2.2新增：批判性思维评估 -->
                                 <div style="margin-bottom: 12px;">
-                                    <div class="result-section-title">🧠 批判性思维验证</div>
+                                    <div class="result-section-title"><span class="xsn-seal">思</span>批判性思维验证</div>
                                     ${renderCredibilityAssessment(data.credibility_assessment)}
                                 </div>
                                 
                                 <!-- v2.2新增：症状共现分析 -->
                                 <div style="margin-bottom: 12px;">
-                                    <div class="result-section-title">📊 症状共现分析</div>
+                                    <div class="result-section-title"><span class="xsn-seal">析</span>症状共现分析</div>
                                     ${renderCooccurrenceAnalysis(data.cooccurrence_analysis)}
                                 </div>
                                 
                                 <!-- v2.2新增：副作用检测 -->
                                 <div style="margin-bottom: 12px;">
-                                    <div class="result-section-title">⚡ 副作用/不良反应检测</div>
+                                    <div class="result-section-title"><span class="xsn-seal">副</span>副作用/不良反应检测</div>
                                     ${renderAdverseDetection(data.adverse_detection)}
                                 </div>
                                 
                                 <!-- v2.2新增：相似患者参照 -->
                                 <div style="margin-bottom: 12px;">
-                                    <div class="result-section-title">👥 相似患者参照</div>
+                                    <div class="result-section-title"><span class="xsn-seal">例</span>相似患者参照</div>
                                     ${renderSimilarPatients(data.similar_patients)}
                                 </div>
                                 
                                 <!-- v2.2新增：知识缺口与入库建议 -->
                                 <div style="margin-bottom: 12px;">
-                                    <div class="result-section-title">📚 知识缺口与入库建议</div>
+                                    <div class="result-section-title"><span class="xsn-seal">库</span>知识缺口与入库建议</div>
                                     ${renderKnowledgeGaps(data.knowledge_gap_report, data.import_suggestions)}
                                 </div>
                                 
                                 <div style="margin-bottom: 12px;">
-                                    <div class="result-section-title">⚠️ 禁忌提醒</div>
+                                    <div class="result-section-title">⚠ 禁忌提醒</div>
                                     ${contraHtml || '<p style="color: #8b7355; font-size: 12px;">暂无禁忌提醒</p>'}
                                 </div>
                                 
                                 ${productsHtml ? `
                                 <div style="margin-bottom: 12px;">
-                                    <div class="result-section-title">🍵 推荐养生方</div>
+                                    <div class="result-section-title"><span class="xsn-seal">养</span>推荐养生方</div>
                                     <div class="product-recommend">${productsHtml}</div>
                                 </div>
                                 ` : ''}
                                 
                                 <div class="warning-box">
-                                    <span class="warning-icon">⚠️</span>
+                                    <span class="warning-icon">⚠</span>
                                     <span class="warning-text">${data.warning || '本结果仅供参考，不能替代专业医生诊断。如有不适，请及时就医。'}</span>
                                 </div>
                             </div>
@@ -1265,11 +1270,11 @@ body::before {
                             </div>
                         </div>
                         <div style="color: #5a5a5a; font-size: 12px; line-height: 1.6;">
-                            <div>📚 文献质量: ${a.literature_quality?.grade || 'N/A'} | 年代: ${a.literature_quality?.era || '未知'}</div>
-                            <div>🔬 临床验证: ${a.clinical_validation?.grade || 'N/A'} | 样本量: ${a.clinical_validation?.sample_size || 'N/A'}</div>
-                            <div>🔗 交叉验证: ${a.cross_validation?.grade || 'N/A'} | 一致性: ${a.cross_validation?.consistency_score || 'N/A'}</div>
+                            <div>文献质量: ${a.literature_quality?.grade || 'N/A'} | 年代: ${a.literature_quality?.era || '未知'}</div>
+                            <div>临床验证: ${a.clinical_validation?.grade || 'N/A'} | 样本量: ${a.clinical_validation?.sample_size || 'N/A'}</div>
+                            <div>交叉验证: ${a.cross_validation?.grade || 'N/A'} | 一致性: ${a.cross_validation?.consistency_score || 'N/A'}</div>
                             ${a.red_flags && a.red_flags.length > 0 ? `
-                                <div style="color: #a53232; margin-top: 4px;">⚠️ 红旗: ${a.red_flags.join('、')}</div>
+                                <div style="color: #a53232; margin-top: 4px;">⚠ 红旗: ${a.red_flags.join('、')}</div>
                             ` : ''}
                         </div>
                     </div>
@@ -1289,7 +1294,7 @@ body::before {
             
             // 正常共现
             if (pairs.length > 0) {
-                html += `<div style="margin-bottom: 8px;"><div style="font-size: 12px; color: #5a5a5a; font-weight: bold; margin-bottom: 4px;">✅ 正常症状共现</div>`;
+                html += `<div style="margin-bottom: 8px;"><div style="font-size: 12px; color: #5a5a5a; font-weight: bold; margin-bottom: 4px;">✓ 正常症状共现</div>`;
                 html += pairs.slice(0, 3).map(p => `
                     <div style="display: inline-block; background: #f7f3e9; color: #2b2b2b; padding: 3px 8px; border-radius: 8px; margin: 2px; font-size: 11px;">
                         ${p.symptom_a_name} + ${p.symptom_b_name} (强度: ${p.cooccurrence_strength?.toFixed(2) || 'N/A'})
@@ -1300,12 +1305,12 @@ body::before {
             
             // 异常共现警报
             if (anomalies.length > 0) {
-                html += `<div style="margin-bottom: 8px;"><div style="font-size: 12px; color: #a53232; font-weight: bold; margin-bottom: 4px;">🚨 异常共现警报</div>`;
+                html += `<div style="margin-bottom: 8px;"><div style="font-size: 12px; color: #a53232; font-weight: bold; margin-bottom: 4px;">⚠ 异常共现警报</div>`;
                 html += anomalies.map(a => `
                     <div style="background: #fdf2f2; border-radius: 6px; padding: 8px; margin-bottom: 6px; font-size: 12px;">
                         <div style="font-weight: bold; color: #a53232;">${a.symptom_a_name} + ${a.symptom_b_name}</div>
                         <div style="color: #5a5a5a; margin-top: 2px;">预期强度: ${a.expected_cooccurrence?.toFixed(2) || 'N/A'} | 实际: ${a.actual_cooccurrence?.toFixed(2) || 'N/A'} | 偏差: ${a.deviation?.toFixed(2) || 'N/A'}</div>
-                        <div style="color: #8b7355; font-size: 11px; margin-top: 2px;">⚠️ 可能提示：药物副作用或并发症，建议医师重点排查</div>
+                        <div style="color: #8b7355; font-size: 11px; margin-top: 2px;">⚠ 可能提示：药物副作用或并发症，建议医师重点排查</div>
                     </div>
                 `).join('');
                 html += '</div>';
@@ -1335,11 +1340,11 @@ body::before {
                         <div style="font-weight: bold; color: #2b2b2b;">${e.adverse_type} <span style="font-size: 11px; color: #8b7355;">[${e.severity}]</span></div>
                         <div style="color: #5a5a5a; margin-top: 2px;">涉及药物: ${e.related_drugs?.join('、') || '未知'}</div>
                         <div style="color: #5a5a5a;">时间窗口: ${e.time_window || '未知'}</div>
-                        ${e.recommendation ? `<div style="color: #4a7c59; margin-top: 4px;">💡 建议: ${e.recommendation}</div>` : ''}
+                        ${e.recommendation ? `<div style="color: #4a7c59; margin-top: 4px;">建议: ${e.recommendation}</div>` : ''}
                     </div>
                 `).join('');
             } else {
-                html += '<div style="color: #4a7c59; font-size: 12px;">✅ 未检测到明显不良反应信号</div>';
+                html += '<div style="color: #4a7c59; font-size: 12px;">✓ 未检测到明显不良反应信号</div>';
             }
             
             return html;
@@ -1354,7 +1359,7 @@ body::before {
                 <div style="background: #f7f3e9; border-radius: 8px; padding: 10px; margin-bottom: 8px; border-left: 3px solid #4a7c59;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                         <div style="font-weight: bold; font-size: 13px; color: #2b2b2b;">
-                            👤 相似患者 ${p.patient_id || '匿名'} 
+                            相似患者 ${p.patient_id || '匿名'} 
                             <span style="font-size: 11px; color: #8b7355;">(相似度: ${(p.similarity_score * 100).toFixed(1) || 'N/A'}%)</span>
                         </div>
                     </div>
@@ -1362,7 +1367,7 @@ body::before {
                         <div>症状重叠: ${p.shared_symptoms?.join('、') || 'N/A'}</div>
                         <div>处方: ${p.prescription || 'N/A'}</div>
                         <div>疗效: ${p.outcome || 'N/A'}</div>
-                        ${p.adjustment_suggestion ? `<div style="color: #4a7c59; margin-top: 4px;">💡 调整建议: ${p.adjustment_suggestion}</div>` : ''}
+                        ${p.adjustment_suggestion ? `<div style="color: #4a7c59; margin-top: 4px;">调整建议: ${p.adjustment_suggestion}</div>` : ''}
                     </div>
                 </div>
             `).join('');
@@ -1372,7 +1377,7 @@ body::before {
             let html = '';
             
             if (gaps && gaps.length > 0) {
-                html += `<div style="margin-bottom: 8px;"><div style="font-size: 12px; color: #b8860b; font-weight: bold; margin-bottom: 4px;">⚠️ 知识缺口</div>`;
+                html += `<div style="margin-bottom: 8px;"><div style="font-size: 12px; color: #b8860b; font-weight: bold; margin-bottom: 4px;">⚠ 知识缺口</div>`;
                 html += gaps.map(g => `
                     <div style="background: #fffdf8; border-radius: 6px; padding: 8px; margin-bottom: 6px; font-size: 12px;">
                         <div style="font-weight: bold; color: #b8860b;">[${g.severity || '中'}] ${g.type}</div>
@@ -1384,7 +1389,7 @@ body::before {
             }
             
             if (suggestions && suggestions.length > 0) {
-                html += `<div style="margin-bottom: 8px;"><div style="font-size: 12px; color: #4a7c59; font-weight: bold; margin-bottom: 4px;">📥 入库建议</div>`;
+                html += `<div style="margin-bottom: 8px;"><div style="font-size: 12px; color: #4a7c59; font-weight: bold; margin-bottom: 4px;">入库建议</div>`;
                 html += suggestions.map(s => `
                     <div style="background: #f7f3e9; border-radius: 6px; padding: 8px; margin-bottom: 6px; font-size: 12px;">
                         <div style="font-weight: bold; color: #2b2b2b;">[${s.priority || '中'}] ${s.type}</div>
@@ -1402,24 +1407,24 @@ body::before {
         function getRecommendedProducts(constitution) {
             const productMap = {
                 '风寒': [
-                    { name: '姜枣茶', price: '¥29.9', icon: '🫚', tag: '驱寒暖身' },
-                    { name: '桂枝汤料包', price: '¥39.9', icon: '🍵', tag: '解肌发表' }
+                    { name: '姜枣茶', price: '¥29.9', icon: '姜', tag: '驱寒暖身' },
+                    { name: '桂枝汤料包', price: '¥39.9', icon: '桂', tag: '解肌发表' }
                 ],
                 '风热': [
-                    { name: '菊花茶', price: '¥29.9', icon: '🌼', tag: '清热解表' },
-                    { name: '金银花茶', price: '¥35.9', icon: '🍃', tag: '清热解毒' }
+                    { name: '菊花茶', price: '¥29.9', icon: '菊', tag: '清热解表' },
+                    { name: '金银花茶', price: '¥35.9', icon: '银', tag: '清热解毒' }
                 ],
                 '气虚': [
-                    { name: '四神汤', price: '¥39.9', icon: '🫕', tag: '健脾养胃' },
-                    { name: '黄芪党参茶', price: '¥45.9', icon: '🍵', tag: '补气升阳' }
+                    { name: '四神汤', price: '¥39.9', icon: '神', tag: '健脾养胃' },
+                    { name: '黄芪党参茶', price: '¥45.9', icon: '芪', tag: '补气升阳' }
                 ],
                 '阴虚': [
-                    { name: '酸梅汤', price: '¥39.9', icon: '🍵', tag: '清热解暑' },
-                    { name: '菊花枸杞茶', price: '¥29.9', icon: '🌼', tag: '清肝明目' }
+                    { name: '酸梅汤', price: '¥39.9', icon: '梅', tag: '清热解暑' },
+                    { name: '菊花枸杞茶', price: '¥29.9', icon: '杞', tag: '清肝明目' }
                 ],
                 '湿热': [
-                    { name: '祛湿茶', price: '¥49.9', icon: '🍃', tag: '健脾祛湿' },
-                    { name: '清补凉', price: '¥29.9', icon: '🥣', tag: '清热润燥' }
+                    { name: '祛湿茶', price: '¥49.9', icon: '祛', tag: '健脾祛湿' },
+                    { name: '清补凉', price: '¥29.9', icon: '凉', tag: '清热润燥' }
                 ]
             };
             
@@ -1433,8 +1438,8 @@ body::before {
             
             if (products.length === 0) {
                 products = [
-                    { name: '清补凉', price: '¥29.9', icon: '🥣', tag: '清热润燥' },
-                    { name: '四神汤', price: '¥39.9', icon: '🫕', tag: '健脾养胃' }
+                    { name: '清补凉', price: '¥29.9', icon: '凉', tag: '清热润燥' },
+                    { name: '四神汤', price: '¥39.9', icon: '神', tag: '健脾养胃' }
                 ];
             }
             
@@ -1500,17 +1505,17 @@ body::before {
         // 加载商品
         function loadProducts() {
             const products = [
-                { id: 'sour_plum_soup', name: '小神农·酸梅汤', source: '《本草纲目》·梅', price: 39.9, original: 59.9, emoji: '🍵', tag: '清热解暑' },
-                { id: 'dampness_tea', name: '小神农·祛湿茶', source: '《食疗本草》', price: 49.9, original: 69.9, emoji: '🍃', tag: '健脾祛湿' },
-                { id: 'qing_bu_liang', name: '小神农·清补凉', source: '《岭南采药录》', price: 29.9, original: 39.9, emoji: '🥣', tag: '清热润燥' },
-                { id: 'sishen_tang', name: '小神农·四神汤', source: '《本草纲目》·山药', price: 39.9, original: 49.9, emoji: '🫕', tag: '健脾养胃' },
-                { id: 'chrysanthemum_tea', name: '小神农·菊花枸杞茶', source: '《神农本草经》·菊花', price: 29.9, original: 39.9, emoji: '🌼', tag: '清肝明目' },
-                { id: 'ginger_tea', name: '小神农·姜枣茶', source: '《伤寒论》', price: 29.9, original: 39.9, emoji: '🫚', tag: '驱寒暖身' },
+                { id: 'sour_plum_soup', name: '小神农·酸梅汤', source: '《本草纲目》·梅', price: 39.9, original: 59.9, icon: '梅', tag: '清热解暑' },
+                { id: 'dampness_tea', name: '小神农·祛湿茶', source: '《食疗本草》', price: 49.9, original: 69.9, icon: '祛', tag: '健脾祛湿' },
+                { id: 'qing_bu_liang', name: '小神农·清补凉', source: '《岭南采药录》', price: 29.9, original: 39.9, icon: '凉', tag: '清热润燥' },
+                { id: 'sishen_tang', name: '小神农·四神汤', source: '《本草纲目》·山药', price: 39.9, original: 49.9, icon: '神', tag: '健脾养胃' },
+                { id: 'chrysanthemum_tea', name: '小神农·菊花枸杞茶', source: '《神农本草经》·菊花', price: 29.9, original: 39.9, icon: '杞', tag: '清肝明目' },
+                { id: 'ginger_tea', name: '小神农·姜枣茶', source: '《伤寒论》', price: 29.9, original: 39.9, icon: '姜', tag: '驱寒暖身' },
             ];
             
             document.getElementById('productGrid').innerHTML = products.map(p => `
                 <div class="product-card">
-                    <div class="product-img">${p.emoji}</div>
+                    <div class="product-img">${p.icon}</div>
                     <div class="product-info">
                         <div class="product-name">${p.name}</div>
                         <div class="product-source">${p.source}</div>
